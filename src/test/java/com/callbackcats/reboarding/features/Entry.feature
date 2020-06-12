@@ -9,3 +9,7 @@ Feature: Entry
       | currentUserId | valid |
       | 0             | true  |
       | 1             | false |
+
+  Scenario Outline:
+
+    Examples:

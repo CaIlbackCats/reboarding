@@ -7,31 +7,32 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
-@Table(name = "reservation")
+@Table(name = "capacity")
 @NoArgsConstructor
 @Getter
 @Setter
 @AllArgsConstructor
-public class Reservation {
+public class Capacity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "date")
-    private LocalDateTime date;
+    @Column(name = "max")
+    private Integer max;
 
-    @OneToMany(mappedBy = "reservation")
-    private List<Employee> reservedEmployees;
+    @Column(name = "limit")
+    private Integer limit;
 
-    @OneToMany(mappedBy = "reservation")
-    private List<Employee> queuedEmployees;
+    @Column(name = "start_date")
+    private LocalDateTime startDate;
 
-    @OneToOne
-    @JoinColumn(name = "capacity_id")
-    private Capacity capacity;
+    @Column(name = "end_date")
+    private LocalDateTime endDate;
+
+    @OneToOne(mappedBy = "capacity")
+    private Reservation reservation;
 }

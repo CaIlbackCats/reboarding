@@ -1,6 +1,6 @@
 package com.callbackcats.reboarding.StepDefinitions;
 
-import com.callbackcats.reboarding.service.EntryService;
+import com.callbackcats.reboarding.service.ReservationService;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class EntryStepDefinitions {
 
     @Autowired
-    private EntryService entryService;
+    private ReservationService reservationService;
 
     private String currentUserId;
     private boolean isValid;
@@ -30,7 +30,7 @@ public class EntryStepDefinitions {
 
     @When("Service check User ID")
     public void service_check_user_id() {
-        isValid = entryService.checkUserId(currentUserId);
+        isValid = reservationService.checkUserId(currentUserId);
     }
 
     @Then("It should return {string}")

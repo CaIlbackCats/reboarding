@@ -1,12 +1,11 @@
 package com.callbackcats.reboarding.repository;
 
-import com.callbackcats.reboarding.domain.Reservation;
+import com.callbackcats.reboarding.domain.Capacity;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+public interface CapacityRepository extends JpaRepository<Capacity, Long> {
 
 
 }
