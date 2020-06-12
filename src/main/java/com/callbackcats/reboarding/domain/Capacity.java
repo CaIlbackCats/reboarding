@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "capacity")
+@Table(name = "office_capacity")
 @NoArgsConstructor
 @Getter
 @Setter
@@ -24,7 +24,7 @@ public class Capacity {
     @Column(name = "max")
     private Integer max;
 
-    @Column(name = "limit")
+    @Column(name = "capacity_limit")
     private Integer limit;
 
     @Column(name = "start_date")
