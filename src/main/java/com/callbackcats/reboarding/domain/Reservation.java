@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -22,14 +22,14 @@ public class Reservation {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "date")
-    private LocalDateTime date;
+    @Column(name = "r_date")
+    private LocalDate date;
 
     @OneToMany(mappedBy = "reservation")
-    private List<Employee> reservedEmployees;
+    private List<EmployeeReservation> reservedEmployees;
 
     @OneToMany(mappedBy = "reservation")
-    private List<Employee> queuedEmployees;
+    private List<EmployeeReservation> queuedEmployees;
 
     @OneToOne
     @JoinColumn(name = "capacity_id")

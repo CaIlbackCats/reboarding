@@ -19,22 +19,22 @@ public class EntryStepDefinitions {
     @Autowired
     private ReservationService reservationService;
 
-    private String currentUserId;
+    private String currentEmployeeId;
     private boolean isValid;
 
 
-    @Given("User ID is {string}")
-    public void user_id_is(String currentUserId) {
-        this.currentUserId = currentUserId;
+    @Given("Employee ID is {string}")
+    public void employee_id_is(String currentEmployeeId) {
+        this.currentEmployeeId = currentEmployeeId;
     }
 
-    @When("Service check User ID")
-    public void service_check_user_id() {
-        isValid = reservationService.checkUserId(currentUserId);
+    @When("Service check Employee ID")
+    public void service_check_employee_id() {
+        isValid = reservationService.isEmployeeIdReservedToday(currentEmployeeId);
     }
 
     @Then("It should return {string}")
-    public void i_should_be_told(String expectedAnswer) {
+    public void it_should_return(String expectedAnswer) {
         boolean expectedBoolean = Boolean.parseBoolean(expectedAnswer);
         assertEquals(expectedBoolean, isValid);
     }

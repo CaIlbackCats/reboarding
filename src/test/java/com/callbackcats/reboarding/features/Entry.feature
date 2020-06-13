@@ -1,14 +1,14 @@
 Feature: Entry
 
-  Scenario Outline: User ID is valid or not
-    Given User ID is "<currentUserId>"
-    When Service check User ID
+  Scenario Outline: Employee ID is reserved today or not
+    Given Employee ID is "<currentEmployeeId>"
+    When Service check Employee ID
     Then It should return "<valid>"
 
     Examples:
-      | currentUserId | valid |
-      | 0             | true  |
-      | 1             | false |
+      | currentEmployeeId | valid |
+      | 0                 | true  |
+      | 1                 | false |
 
   Scenario Outline:
 

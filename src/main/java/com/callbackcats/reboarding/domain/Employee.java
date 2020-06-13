@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "employee")
@@ -25,7 +26,6 @@ public class Employee {
     @Column(name = "in_office")
     private Boolean inOffice;
 
-    @ManyToOne
-    @JoinColumn(name = "reservation_id")
-    private Reservation reservation;
+    @OneToMany(mappedBy = "employee")
+    private List<EmployeeReservation> reservation;
 }
