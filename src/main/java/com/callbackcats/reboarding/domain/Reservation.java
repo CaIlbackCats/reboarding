@@ -31,7 +31,7 @@ public class Reservation {
     @OneToMany(mappedBy = "reservation")
     private List<EmployeeReservation> queuedEmployees;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "capacity_id")
     private Capacity capacity;
 }
