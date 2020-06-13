@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -13,5 +14,5 @@ public class ReservationCreationData {
 
     private String employeeId;
 
-    private LocalDate reservedDate;
+    private List<LocalDate> reservedDate;
 }

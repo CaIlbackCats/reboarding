@@ -32,7 +32,7 @@ public class StepDefinitions {
     private boolean isValid;
     private List<CapacityCreationData> capacities = new ArrayList<>();
     private List<CapacityData> savedCapacities = new ArrayList<>();
-    private List<ReservationCreationData> reservationCreationData = new ArrayList<>();
+    private ReservationCreationData reservationCreationData;
     private EmployeeReservationData employeeReservationData;
 
     @DataTableType
@@ -75,7 +75,7 @@ public class StepDefinitions {
 
 
     @Given("employee id and chosen date")
-    public void employee_id_and_chosen_date(List<ReservationCreationData> reservationCreationData) {
+    public void employee_id_and_chosen_date(ReservationCreationData reservationCreationData) {
         this.reservationCreationData = reservationCreationData;
     }
 
