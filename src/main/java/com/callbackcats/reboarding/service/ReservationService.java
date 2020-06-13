@@ -74,8 +74,17 @@ public class ReservationService {
             reservation = createQueuedReservation(reservationCreationData.getReservedDate());
         }
         employeeReservationRepository.save(new EmployeeReservation(employee, reservation));
-        Integer position = reservation.getReservedEmployees().size()+1;
-        return new EmployeeReservationData(reservation.getReservationType(),position);
+        Integer position = reservation.getReservedEmployees().size() + 1;
+        return new EmployeeReservationData(reservation.getReservationType(), position);
+    }
+
+    public Integer findPosition(String currentEmployeeId) {
+        Employee employee = findEmployeeById(currentEmployeeId);
+        LocalDate today = LocalDate.now();
+        Reservation reservation = findReservationByDateAndType(today, ReservationType.QUEUED);
+        List<Employee> employees = reservation.getReservedEmployees().stream().map(EmployeeReservation::getEmployee).collect(Collectors.toList());
+
+        return employees.indexOf(employee);
     }
 
     private Boolean isOfficeOverCrowded(Reservation reservation) {
@@ -89,7 +98,6 @@ public class ReservationService {
         reservationRepository.save(reservation);
         return reservation;
     }
-
 
     private Reservation findOrCreateReservationByDate(LocalDate reservationDate) {
         Reservation reservation;
@@ -113,6 +121,11 @@ public class ReservationService {
 
     private Reservation findReservationByDate(LocalDate reservationDate) {
         return reservationRepository.findReservationByDate(reservationDate).orElseThrow(() -> new NoSuchElementException("There has been no reservation yet for the given day"));
+    }
+
+    private Reservation findReservationByDateAndType(LocalDate reservationDate, ReservationType reservationType) {
+        return reservationRepository.findReservationByDateAndType(reservationDate, reservationType)
+                .orElseThrow(() -> new NoSuchElementException("There are no " + reservationType + " reservations for the given day:\t" + reservationDate));
     }
 
 }

@@ -5,7 +5,6 @@ Feature: Save Reservation
     Given employee id and chosen date
       | id | date       |
       | 0  | 2020-06-15 |
-    #  | 1  | 2020-06-22 |
 
     When service decides where to save the reservation
     Then saved_reservation_should_have_proper_fields_and_should_be_reserved_type

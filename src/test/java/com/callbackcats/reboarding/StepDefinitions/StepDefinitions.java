@@ -33,6 +33,7 @@ public class StepDefinitions {
     private List<CapacityData> savedCapacities = new ArrayList<>();
     private ReservationCreationData reservationCreationData;
     private EmployeeReservationData employeeReservationData;
+    private Integer position;
 
     @DataTableType
     public CapacityCreationData createCapacity(Map<String, String> dataTable) {
@@ -101,10 +102,27 @@ public class StepDefinitions {
         ReservationType reservationType = ReservationType.valueOf(employeeReservationData.getReservationType());
         assertSame(ReservationType.QUEUED, reservationType);
     }
+
     @Then("saved_reservation_should_return_correct_position_upon_new_reservation")
-    public void saved_reservation_should_return_correct_position_upon_new_reservation(){
-        assertEquals(1,employeeReservationData.getPosition());
+    public void saved_reservation_should_return_correct_position_upon_new_reservation() {
+        assertEquals(1, employeeReservationData.getPosition());
         ReservationType reservationType = ReservationType.valueOf(employeeReservationData.getReservationType());
         assertSame(ReservationType.RESERVED, reservationType);
+    }
+
+
+    @Given("employee ID {string}")
+    public void employeeID(String employeeId) {
+        this.currentEmployeeId = employeeId;
+    }
+
+    @When("service looks for the position")
+    public void serviceLooksForThePosition() {
+        this.position = this.reservationService.findPosition(currentEmployeeId);
+    }
+
+    @Then("returns {string}")
+    public void returns(Integer position) {
+        assertEquals(position, this.position);
     }
 }
