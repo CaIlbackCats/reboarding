@@ -87,21 +87,24 @@ public class StepDefinitions {
     public void service_decides_where_to_save_the_reservations() {
         employeeReservationData = reservationService.saveReservation(reservationCreationData);
     }
-    @Then("saved_reservation_should_have_proper_fields")
-    public void saved_reservation_should_have_proper_fields(){
-        assertNotNull(employeeReservationData);
-        assertEquals("0", employeeReservationData.getEmployeeData().getId());
-        assertFalse(employeeReservationData.getReservations().isEmpty());
-    }
 
     @Then("saved_reservation_should_have_proper_fields_and_should_be_reserved_type")
     public void saved_reservation_should_be_reserved_type() {
-        ReservationData reservation = employeeReservationData.getReservations().get(0);
-        assertSame(ReservationType.RESERVED, ReservationType.valueOf(reservation.getReservationType()));
+        assertEquals(4, employeeReservationData.getPosition());
+        ReservationType reservationType = ReservationType.valueOf(employeeReservationData.getReservationType());
+        assertSame(ReservationType.RESERVED, reservationType);
     }
 
     @Then("saved_reservation_should_have_proper_fields_and_should_be_queued_type")
-    public void saved_reservation_should_be_queued_type(){
-
+    public void saved_reservation_should_be_queued_type() {
+        assertEquals(1, employeeReservationData.getPosition());
+        ReservationType reservationType = ReservationType.valueOf(employeeReservationData.getReservationType());
+        assertSame(ReservationType.QUEUED, reservationType);
+    }
+    @Then("saved_reservation_should_return_correct_position_upon_new_reservation")
+    public void saved_reservation_should_return_correct_position_upon_new_reservation(){
+        assertEquals(1,employeeReservationData.getPosition());
+        ReservationType reservationType = ReservationType.valueOf(employeeReservationData.getReservationType());
+        assertSame(ReservationType.RESERVED, reservationType);
     }
 }

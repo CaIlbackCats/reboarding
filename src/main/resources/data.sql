@@ -2,9 +2,16 @@ INSERT INTO reservation (r_date)
 VALUES (CURRENT_DATE);
 INSERT INTO employee (id,in_office)
 VALUES ('0',false);
+INSERT INTO employee (id,in_office)
+VALUES ('4',false);
+INSERT INTO employee (id,in_office)
+VALUES ('2',false);
+INSERT INTO employee (id,in_office)
+VALUES ('3',false);
 
 INSERT INTO employee_reservation (reservation_id,employee_id)
 VALUES ((SELECT id FROM reservation WHERE r_date = CURRENT_DATE),'0');
+
 
 INSERT INTO reservation (r_date)
 VALUES (CURRENT_DATE+1);
@@ -18,3 +25,13 @@ VALUES (0,250,'2020-06-01','2020-06-30');
 
 INSERT INTO office_capacity(id,capacity_limit,start_date,end_date)
 VALUES (1,0,'2020-07-01','2020-07-31');
+
+INSERT INTO reservation (r_date,capacity_id,reservation_type)
+VALUES ('2020-06-15',0,'RESERVED');
+
+INSERT INTO employee_reservation (reservation_id,employee_id)
+VALUES ((SELECT id FROM reservation WHERE r_date = '2020-06-15'),'4');
+INSERT INTO employee_reservation (reservation_id,employee_id)
+VALUES ((SELECT id FROM reservation WHERE r_date = '2020-06-15'),'2');
+INSERT INTO employee_reservation (reservation_id,employee_id)
+VALUES ((SELECT id FROM reservation WHERE r_date = '2020-06-15'),'3');

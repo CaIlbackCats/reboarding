@@ -69,19 +69,13 @@ public class ReservationService {
 
     public EmployeeReservationData saveReservation(ReservationCreationData reservationCreationData) {
         Employee employee = findEmployeeById(reservationCreationData.getEmployeeId());
-        List<Reservation> reservations = new ArrayList<>();
-        reservationCreationData.getReservedDate()
-                .stream()
-                .map(this::findOrCreateReservationByDate)
-                .forEach(reservation -> {
-                    if (isOfficeOverCrowded(reservation)) {
-                        reservation = createQueuedReservation(reservation.getDate());
-                    }
-                    employeeReservationRepository.save(new EmployeeReservation(employee, reservation));
-                    reservations.add(reservation);
-                });
-
-        return new EmployeeReservationData(reservations, employee);
+        Reservation reservation = findOrCreateReservationByDate(reservationCreationData.getReservedDate());
+        if (isOfficeOverCrowded(reservation)) {
+            reservation = createQueuedReservation(reservationCreationData.getReservedDate());
+        }
+        employeeReservationRepository.save(new EmployeeReservation(employee, reservation));
+        Integer position = reservation.getReservedEmployees().size()+1;
+        return new EmployeeReservationData(reservation.getReservationType(),position);
     }
 
     private Boolean isOfficeOverCrowded(Reservation reservation) {

@@ -1,28 +1,23 @@
 package com.callbackcats.reboarding.dto;
 
-import com.callbackcats.reboarding.domain.Employee;
-import com.callbackcats.reboarding.domain.Reservation;
+import com.callbackcats.reboarding.domain.ReservationType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmployeeReservationData {
 
-    private Long id;
 
-    private List<ReservationData> reservations;
+    private String reservationType;
 
-    private EmployeeData employeeData;
+    private Integer position;
 
-
-    public EmployeeReservationData(List<Reservation> reservations, Employee employee) {
-        this.reservations = reservations.stream().map(ReservationData::new).collect(Collectors.toList());
-        this.employeeData = new EmployeeData(employee);
+    public EmployeeReservationData(ReservationType reservationType, Integer position) {
+        this.reservationType = String.valueOf(reservationType);
+        this.position = position;
     }
 }
