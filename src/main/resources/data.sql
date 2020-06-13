@@ -35,3 +35,15 @@ INSERT INTO employee_reservation (reservation_id,employee_id)
 VALUES ((SELECT id FROM reservation WHERE r_date = '2020-06-15'),'2');
 INSERT INTO employee_reservation (reservation_id,employee_id)
 VALUES ((SELECT id FROM reservation WHERE r_date = '2020-06-15'),'3');
+
+INSERT INTO reservation(id,r_date,capacity_id,reservation_type)
+VALUES (10,CURRENT_DATE,1,'QUEUED');
+
+INSERT INTO employee_reservation(reservation_id,employee_id)
+VALUES (10,0);
+INSERT INTO employee_reservation(reservation_id,employee_id)
+VALUES (10,2);
+INSERT INTO employee_reservation(reservation_id,employee_id)
+VALUES (10,3);
+INSERT INTO employee_reservation(reservation_id,employee_id)
+VALUES (10,1);

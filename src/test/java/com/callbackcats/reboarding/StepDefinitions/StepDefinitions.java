@@ -122,7 +122,8 @@ public class StepDefinitions {
     }
 
     @Then("returns {string}")
-    public void returns(Integer position) {
+    public void returns(String positionString) {
+        Integer position = Integer.parseInt(positionString);
         assertEquals(position, this.position);
     }
 }

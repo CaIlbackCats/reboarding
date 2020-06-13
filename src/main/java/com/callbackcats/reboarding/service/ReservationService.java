@@ -84,7 +84,7 @@ public class ReservationService {
         Reservation reservation = findReservationByDateAndType(today, ReservationType.QUEUED);
         List<Employee> employees = reservation.getReservedEmployees().stream().map(EmployeeReservation::getEmployee).collect(Collectors.toList());
 
-        return employees.indexOf(employee);
+        return employees.indexOf(employee) + 1;
     }
 
     private Boolean isOfficeOverCrowded(Reservation reservation) {
