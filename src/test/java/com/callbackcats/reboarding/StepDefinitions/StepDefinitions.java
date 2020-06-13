@@ -1,9 +1,8 @@
 package com.callbackcats.reboarding.StepDefinitions;
 
-import com.callbackcats.reboarding.dto.CapacityCreationData;
-import com.callbackcats.reboarding.dto.CapacityData;
-import com.callbackcats.reboarding.dto.ReservationCreationData;
-import com.callbackcats.reboarding.dto.EmployeeReservationData;
+import com.callbackcats.reboarding.domain.Reservation;
+import com.callbackcats.reboarding.domain.ReservationType;
+import com.callbackcats.reboarding.dto.*;
 import com.callbackcats.reboarding.service.ReservationService;
 import io.cucumber.java.DataTableType;
 import io.cucumber.java.en.Given;
@@ -38,6 +37,11 @@ public class StepDefinitions {
     @DataTableType
     public CapacityCreationData createCapacity(Map<String, String> dataTable) {
         return new CapacityCreationData(dataTable);
+    }
+
+    @DataTableType
+    public ReservationCreationData createReservation(Map<String, String> dataTable) {
+        return new ReservationCreationData(dataTable);
     }
 
 
@@ -81,12 +85,23 @@ public class StepDefinitions {
 
     @When("service decides where to save the reservation")
     public void service_decides_where_to_save_the_reservations() {
-        //save
-        reservationService.saveReservation(reservationCreationData);
+        employeeReservationData = reservationService.saveReservation(reservationCreationData);
+    }
+    @Then("saved_reservation_should_have_proper_fields")
+    public void saved_reservation_should_have_proper_fields(){
+        assertNotNull(employeeReservationData);
+        assertEquals("0", employeeReservationData.getEmployeeData().getId());
+        assertFalse(employeeReservationData.getReservations().isEmpty());
     }
 
-    @Then("return saved reservation")
-    public void return_saved_reservation() {
-        assertNotNull(employeeReservationData);
+    @Then("saved_reservation_should_have_proper_fields_and_should_be_reserved_type")
+    public void saved_reservation_should_be_reserved_type() {
+        ReservationData reservation = employeeReservationData.getReservations().get(0);
+        assertSame(ReservationType.RESERVED, ReservationType.valueOf(reservation.getReservationType()));
+    }
+
+    @Then("saved_reservation_should_have_proper_fields_and_should_be_queued_type")
+    public void saved_reservation_should_be_queued_type(){
+
     }
 }

@@ -1,21 +1,20 @@
 package com.callbackcats.reboarding.service;
 
-import com.callbackcats.reboarding.domain.Capacity;
-import com.callbackcats.reboarding.domain.Employee;
-import com.callbackcats.reboarding.domain.EmployeeReservation;
-import com.callbackcats.reboarding.domain.Reservation;
+import com.callbackcats.reboarding.domain.*;
 import com.callbackcats.reboarding.dto.CapacityCreationData;
 import com.callbackcats.reboarding.dto.CapacityData;
 import com.callbackcats.reboarding.dto.EmployeeReservationData;
 import com.callbackcats.reboarding.dto.ReservationCreationData;
 import com.callbackcats.reboarding.repository.CapacityRepository;
 import com.callbackcats.reboarding.repository.EmployeeRepository;
+import com.callbackcats.reboarding.repository.EmployeeReservationRepository;
 import com.callbackcats.reboarding.repository.ReservationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -28,11 +27,13 @@ public class ReservationService {
     private ReservationRepository reservationRepository;
     private EmployeeRepository employeeRepository;
     private final CapacityRepository capacityRepository;
+    private final EmployeeReservationRepository employeeReservationRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, EmployeeRepository employeeRepository, CapacityRepository capacityRepository) {
+    public ReservationService(ReservationRepository reservationRepository, EmployeeRepository employeeRepository, CapacityRepository capacityRepository, EmployeeReservationRepository employeeReservationRepository) {
         this.reservationRepository = reservationRepository;
         this.employeeRepository = employeeRepository;
         this.capacityRepository = capacityRepository;
+        this.employeeReservationRepository = employeeReservationRepository;
     }
 
     /**
@@ -52,7 +53,7 @@ public class ReservationService {
             isReservationDateToday =
                     employee.getReservation()
                             .stream()
-                            .map(EmployeeReservation::getReservation)
+                            .map(EmployeeReservation::getReserved)
                             .map(Reservation::getDate)
                             .anyMatch(localDate -> localDate.equals(LocalDate.now()));
         }
@@ -67,13 +68,57 @@ public class ReservationService {
     }
 
     public EmployeeReservationData saveReservation(ReservationCreationData reservationCreationData) {
+        Employee employee = findEmployeeById(reservationCreationData.getEmployeeId());
+        List<Reservation> reservations = new ArrayList<>();
+        reservationCreationData.getReservedDate()
+                .stream()
+                .map(this::findOrCreateReservationByDate)
+                .forEach(reservation -> {
+                    if (isOfficeOverCrowded(reservation)) {
+                        reservation = createQueuedReservation(reservation.getDate());
+                    }
+                    employeeReservationRepository.save(new EmployeeReservation(employee, reservation));
+                    reservations.add(reservation);
+                });
 
-        return null;
+        return new EmployeeReservationData(reservations, employee);
+    }
+
+    private Boolean isOfficeOverCrowded(Reservation reservation) {
+        Capacity capacity = reservation.getCapacity();
+        return capacity.getLimit() == reservation.getReservedEmployees().size();
+    }
+
+    private Reservation createQueuedReservation(LocalDate reservationDate) {
+        Capacity capacity = findCapacityByReservationDate(reservationDate);
+        Reservation reservation = new Reservation(reservationDate, capacity, ReservationType.QUEUED);
+        reservationRepository.save(reservation);
+        return reservation;
+    }
+
+
+    private Reservation findOrCreateReservationByDate(LocalDate reservationDate) {
+        Reservation reservation;
+        try {
+            reservation = findReservationByDate(reservationDate);
+        } catch (NoSuchElementException e) {
+            Capacity capacity = findCapacityByReservationDate(reservationDate);
+            reservation = new Reservation(reservationDate, capacity, ReservationType.RESERVED);
+            reservationRepository.save(reservation);
+        }
+        return reservation;
     }
 
     private Employee findEmployeeById(String employeeId) {
         return employeeRepository.findEmployeeById(employeeId).orElseThrow(() -> new NoSuchElementException("No employee found by given id:\t" + employeeId));
     }
 
+    private Capacity findCapacityByReservationDate(LocalDate reservationDate) {
+        return capacityRepository.findCapacityByReservationDate(reservationDate).orElseThrow(() -> new NoSuchElementException("There is no capacity set for the given date:\t" + reservationDate));
+    }
+
+    private Reservation findReservationByDate(LocalDate reservationDate) {
+        return reservationRepository.findReservationByDate(reservationDate).orElseThrow(() -> new NoSuchElementException("There has been no reservation yet for the given day"));
+    }
 
 }

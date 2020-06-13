@@ -22,9 +22,14 @@ public class EmployeeReservation {
 
     @ManyToOne
     @JoinColumn(name = "reservation_id")
-    private Reservation reservation;
+    private Reservation reserved;
 
     @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
+
+    public EmployeeReservation(Employee employee, Reservation reserved) {
+        this.employee = employee;
+        this.reserved = reserved;
+    }
 }

@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,16 +23,23 @@ public class Reservation {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "reservation_type")
+    @Enumerated(EnumType.STRING)
+    private ReservationType reservationType;
+
     @Column(name = "r_date")
     private LocalDate date;
 
-    @OneToMany(mappedBy = "reservation")
-    private List<EmployeeReservation> reservedEmployees;
-
-    @OneToMany(mappedBy = "reservation")
-    private List<EmployeeReservation> queuedEmployees;
+    @OneToMany(mappedBy = "reserved")
+    private List<EmployeeReservation> reservedEmployees = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "capacity_id")
     private Capacity capacity;
+
+    public Reservation(LocalDate reservationDate, Capacity capacity, ReservationType reservationType) {
+        this.date = reservationDate;
+        this.capacity = capacity;
+        this.reservationType = reservationType;
+    }
 }
