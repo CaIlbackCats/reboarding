@@ -30,11 +30,6 @@ public class Employee {
     @OneToMany(mappedBy = "employee")
     private List<EmployeeReservation> reservation;
 
-    public Employee(String id) {
-        this.id = id;
-        this.inOffice = false;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

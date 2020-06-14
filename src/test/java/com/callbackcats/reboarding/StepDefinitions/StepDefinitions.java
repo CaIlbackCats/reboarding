@@ -1,6 +1,5 @@
 package com.callbackcats.reboarding.StepDefinitions;
 
-import com.callbackcats.reboarding.domain.Reservation;
 import com.callbackcats.reboarding.domain.ReservationType;
 import com.callbackcats.reboarding.dto.*;
 import com.callbackcats.reboarding.service.ReservationService;
@@ -86,7 +85,7 @@ public class StepDefinitions {
 
     @When("service decides where to save the reservation")
     public void service_decides_where_to_save_the_reservations() {
-        employeeReservationData = reservationService.saveReservation(reservationCreationData);
+        employeeReservationData = reservationService.handleReservationRequest(reservationCreationData);
     }
 
     @Then("saved_reservation_should_have_proper_fields_and_should_be_reserved_type")
@@ -125,5 +124,16 @@ public class StepDefinitions {
     public void returns(String positionString) {
         Integer position = Integer.parseInt(positionString);
         assertEquals(position, this.position);
+    }
+
+    @When("service enters the qualified employee")
+    public void serviceEntersTheQualifiedEmployee() {
+        reservationService.enterEmployee(this.currentEmployeeId);
+    }
+
+    @Then("employee should be in office")
+    public void employeeShouldBeInOffice() {
+        EmployeeData employee = reservationService.findEmployeeDataById(this.currentEmployeeId);
+        assertTrue(employee.getInOffice());
     }
 }

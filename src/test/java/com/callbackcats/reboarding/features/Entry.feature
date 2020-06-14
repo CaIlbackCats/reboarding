@@ -1,15 +1,7 @@
 Feature: Entry
+ #Employee can enter the office
 
-  Scenario Outline: Employee ID is reserved today or not
-    Given Employee ID is "<currentEmployeeId>"
-    When Service check Employee ID
-    Then It should return "<valid>"
-
-    Examples:
-      | currentEmployeeId | valid |
-      | 0                 | true  |
-      | 1                 | false |
-
-  Scenario Outline:
-
-    Examples:
+  Scenario: Employee enters the office
+    Given employee ID "<employeeId>"
+    When service enters the qualified employee
+    Then employee should be in office

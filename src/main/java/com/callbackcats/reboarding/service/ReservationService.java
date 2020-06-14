@@ -1,10 +1,7 @@
 package com.callbackcats.reboarding.service;
 
 import com.callbackcats.reboarding.domain.*;
-import com.callbackcats.reboarding.dto.CapacityCreationData;
-import com.callbackcats.reboarding.dto.CapacityData;
-import com.callbackcats.reboarding.dto.EmployeeReservationData;
-import com.callbackcats.reboarding.dto.ReservationCreationData;
+import com.callbackcats.reboarding.dto.*;
 import com.callbackcats.reboarding.repository.CapacityRepository;
 import com.callbackcats.reboarding.repository.EmployeeRepository;
 import com.callbackcats.reboarding.repository.EmployeeReservationRepository;
@@ -60,6 +57,11 @@ public class ReservationService {
         return isReservationDateToday;
     }
 
+    public void enterEmployee(String employeeId) {
+        Employee employee = findEmployeeById(employeeId);
+
+    }
+
     public List<CapacityData> saveCapacities(List<CapacityCreationData> capacityCreationData) {
         List<Capacity> capacities = capacityCreationData.stream().map(Capacity::new).collect(Collectors.toList());
         capacityRepository.saveAll(capacities);
@@ -67,15 +69,23 @@ public class ReservationService {
         return capacities.stream().map(CapacityData::new).collect(Collectors.toList());
     }
 
-    public EmployeeReservationData saveReservation(ReservationCreationData reservationCreationData) {
+    public EmployeeReservationData handleReservationRequest(ReservationCreationData reservationCreationData) {
         Employee employee = findEmployeeById(reservationCreationData.getEmployeeId());
         Reservation reservation = findOrCreateReservationByDate(reservationCreationData.getReservedDate());
-        if (isOfficeOverCrowded(reservation)) {
-            reservation = createQueuedReservation(reservationCreationData.getReservedDate());
-        }
-        employeeReservationRepository.save(new EmployeeReservation(employee, reservation));
+        saveReservationToEmployee(reservationCreationData.getReservedDate(), employee, reservation);
         Integer position = reservation.getReservedEmployees().size() + 1;
         return new EmployeeReservationData(reservation.getReservationType(), position);
+    }
+
+    private void saveReservationToEmployee(LocalDate reservedDate, Employee employee, Reservation reservation) {
+        EmployeeReservation employeeReservation;
+        if (isOfficeOverCrowded(reservation)) {
+            reservation = createQueuedReservation(reservedDate);
+            employeeReservation = new EmployeeReservation(employee, reservation, false);
+        } else {
+            employeeReservation = new EmployeeReservation(employee, reservation, true);
+        }
+        employeeReservationRepository.save(employeeReservation);
     }
 
     public Integer findPosition(String currentEmployeeId) {
@@ -85,6 +95,10 @@ public class ReservationService {
         List<Employee> employees = reservation.getReservedEmployees().stream().map(EmployeeReservation::getEmployee).collect(Collectors.toList());
 
         return employees.indexOf(employee) + 1;
+    }
+
+    public EmployeeData findEmployeeDataById(String employeeId) {
+        return new EmployeeData(findEmployeeById(employeeId));
     }
 
     private Boolean isOfficeOverCrowded(Reservation reservation) {

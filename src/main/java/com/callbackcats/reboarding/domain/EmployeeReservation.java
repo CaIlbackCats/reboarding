@@ -28,8 +28,12 @@ public class EmployeeReservation {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
-    public EmployeeReservation(Employee employee, Reservation reserved) {
+    @Column(name = "can_enter_office")
+    private Boolean enterOffice;
+
+    public EmployeeReservation(Employee employee, Reservation reserved, Boolean enterOffice) {
         this.employee = employee;
         this.reserved = reserved;
+        this.enterOffice = enterOffice;
     }
 }
