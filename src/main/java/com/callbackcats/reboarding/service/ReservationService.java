@@ -57,9 +57,16 @@ public class ReservationService {
         return isReservationDateToday;
     }
 
-    public void enterEmployee(String employeeId) {
-        Employee employee = findEmployeeById(employeeId);
-
+    public Boolean enterEmployee(String employeeId) {
+        boolean employeeEntered = false;
+        EmployeeReservation employeeReservation = findEmployeeReservationByIdAndDate(employeeId, LocalDate.now());
+        if (employeeReservation.getEnterOffice()) {
+            Employee employee = employeeReservation.getEmployee();
+            employee.setInOffice(true);
+            employeeRepository.save(employee);
+            employeeEntered = true;
+        }
+        return employeeEntered;
     }
 
     public List<CapacityData> saveCapacities(List<CapacityCreationData> capacityCreationData) {
@@ -116,7 +123,7 @@ public class ReservationService {
     private Reservation findOrCreateReservationByDate(LocalDate reservationDate) {
         Reservation reservation;
         try {
-            reservation = findReservationByDate(reservationDate);
+            reservation = findReservationByDateAndType(reservationDate, ReservationType.RESERVED);
         } catch (NoSuchElementException e) {
             Capacity capacity = findCapacityByReservationDate(reservationDate);
             reservation = new Reservation(reservationDate, capacity, ReservationType.RESERVED);
@@ -133,13 +140,18 @@ public class ReservationService {
         return capacityRepository.findCapacityByReservationDate(reservationDate).orElseThrow(() -> new NoSuchElementException("There is no capacity set for the given date:\t" + reservationDate));
     }
 
-    private Reservation findReservationByDate(LocalDate reservationDate) {
-        return reservationRepository.findReservationByDate(reservationDate).orElseThrow(() -> new NoSuchElementException("There has been no reservation yet for the given day"));
+    private List<Reservation> findReservationsByDate(LocalDate date) {
+        return reservationRepository.findReservationsByDate(date);
     }
 
     private Reservation findReservationByDateAndType(LocalDate reservationDate, ReservationType reservationType) {
         return reservationRepository.findReservationByDateAndType(reservationDate, reservationType)
                 .orElseThrow(() -> new NoSuchElementException("There are no " + reservationType + " reservations for the given day:\t" + reservationDate));
+    }
+
+    private EmployeeReservation findEmployeeReservationByIdAndDate(String employeeId, LocalDate date) {
+        return employeeReservationRepository.findEmployeeReservationByEmployeeIdAndReservationDate(employeeId, date)
+                .orElseThrow(() -> new NoSuchElementException("Employee by id: " + employeeId + " has no reservation for the given day: " + date));
     }
 
 }

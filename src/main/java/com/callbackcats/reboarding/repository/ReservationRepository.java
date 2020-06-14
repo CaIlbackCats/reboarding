@@ -8,13 +8,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
     @Query("select r from Reservation r where r.date= :reservationDate")
-    Optional<Reservation> findReservationByDate(@Param("reservationDate") LocalDate reservationDate);
+    List<Reservation> findReservationsByDate(@Param("reservationDate") LocalDate reservationDate);
 
     @Query("select r from Reservation r where r.date= :reservationDate and r.reservationType= :reservationType")
     Optional<Reservation> findReservationByDateAndType(@Param("reservationDate") LocalDate reservationDate, @Param("reservationType") ReservationType reservationType);

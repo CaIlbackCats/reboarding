@@ -136,4 +136,10 @@ public class StepDefinitions {
         EmployeeData employee = reservationService.findEmployeeDataById(this.currentEmployeeId);
         assertTrue(employee.getInOffice());
     }
+
+    @Then("employee should not be in office")
+    public void employeeShouldNotBeInOffice() {
+        EmployeeData employee = reservationService.findEmployeeDataById(this.currentEmployeeId);
+        assertFalse(employee.getInOffice());
+    }
 }

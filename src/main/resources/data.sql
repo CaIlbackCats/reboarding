@@ -41,7 +41,7 @@ VALUES (10,CURRENT_DATE,1,'QUEUED');
 
 INSERT INTO employee_reservation(reservation_id,employee_id)
 VALUES (10,0);
-INSERT INTO employee_reservation(reservation_id,employee_id)
-VALUES (10,2);
-INSERT INTO employee_reservation(reservation_id,employee_id)
-VALUES (10,3);
+INSERT INTO employee_reservation(reservation_id,employee_id,can_enter_office)
+VALUES (10,2,true);
+INSERT INTO employee_reservation(reservation_id,employee_id,can_enter_office)
+VALUES (10,3,false);
