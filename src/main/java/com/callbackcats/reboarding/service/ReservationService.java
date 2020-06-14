@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -59,11 +58,14 @@ public class ReservationService {
 
     public Boolean enterEmployee(String employeeId) {
         boolean employeeEntered = false;
-        EmployeeReservation employeeReservation = findEmployeeReservationByIdAndDate(employeeId, LocalDate.now());
-        if (employeeReservation.getEnterOffice()) {
+        LocalDate today = LocalDate.now();
+        EmployeeReservation employeeReservation = findEmployeeReservationByIdAndDate(employeeId, today);
+        List<EmployeeReservation> employeeReservations = findEmployeeReservationsByDate(today);
+        Capacity capacity = findCapacityByReservationDate(today);
+        boolean isOfficeAtLimit = getEmployeesInOffice(employeeReservations).equals(capacity.getLimit());
+        if (!isOfficeAtLimit && employeeReservation.getEnterOffice()) {
             Employee employee = employeeReservation.getEmployee();
-            employee.setInOffice(true);
-            employeeRepository.save(employee);
+            setEmployeeInOffice(employee, true);
             employeeEntered = true;
         }
         return employeeEntered;
@@ -84,17 +86,6 @@ public class ReservationService {
         return new EmployeeReservationData(reservation.getReservationType(), position);
     }
 
-    private void saveReservationToEmployee(LocalDate reservedDate, Employee employee, Reservation reservation) {
-        EmployeeReservation employeeReservation;
-        if (isOfficeOverCrowded(reservation)) {
-            reservation = createQueuedReservation(reservedDate);
-            employeeReservation = new EmployeeReservation(employee, reservation, false);
-        } else {
-            employeeReservation = new EmployeeReservation(employee, reservation, true);
-        }
-        employeeReservationRepository.save(employeeReservation);
-    }
-
     public Integer findPosition(String currentEmployeeId) {
         Employee employee = findEmployeeById(currentEmployeeId);
         LocalDate today = LocalDate.now();
@@ -104,11 +95,62 @@ public class ReservationService {
         return employees.indexOf(employee) + 1;
     }
 
+    public void handleEmployeeExit(String employeeId) {
+        Employee employee = findEmployeeById(employeeId);
+        setEmployeeInOffice(employee, false);
+
+        EmployeeReservation employeeReservation = findEmployeeReservationByIdAndDate(employeeId, LocalDate.now());
+        employeeReservationRepository.delete(employeeReservation);
+
+        updateEmployeesCanEnterOffice();
+    }
+
+    private void updateEmployeesCanEnterOffice() {
+        LocalDate today = LocalDate.now();
+        List<EmployeeReservation> employeeReservations = findEmployeeReservationsByDate(today);
+        Capacity capacity = findCapacityByReservationDate(today);
+        Integer employeesInOffice = getEmployeesInOffice(employeeReservations);
+        int freeSpace = capacity.getLimit() - employeesInOffice;
+        if (freeSpace > 0) {
+            Reservation reservation = findReservationByDateAndType(today, ReservationType.QUEUED);
+            List<EmployeeReservation> reservedEmployees = reservation.getReservedEmployees();
+            for (int i = 0; i < freeSpace && i < reservedEmployees.size(); i++) {
+                reservedEmployees.get(i).setEnterOffice(true);
+            }
+            employeeReservationRepository.saveAll(reservedEmployees);
+        }
+
+    }
+
+    private void setEmployeeInOffice(Employee employee, boolean inOffice) {
+        employee.setInOffice(inOffice);
+        employeeRepository.save(employee);
+    }
+
     public EmployeeData findEmployeeDataById(String employeeId) {
         return new EmployeeData(findEmployeeById(employeeId));
     }
 
-    private Boolean isOfficeOverCrowded(Reservation reservation) {
+    private void saveReservationToEmployee(LocalDate reservedDate, Employee employee, Reservation reservation) {
+        EmployeeReservation employeeReservation;
+        if (isReservationsAtCapacityLimit(reservation)) {
+            reservation = createQueuedReservation(reservedDate);
+            employeeReservation = new EmployeeReservation(employee, reservation, false);
+        } else {
+            employeeReservation = new EmployeeReservation(employee, reservation, true);
+        }
+        employeeReservationRepository.save(employeeReservation);
+    }
+
+    private Integer getEmployeesInOffice(List<EmployeeReservation> employeeReservations) {
+        return (int) employeeReservations
+                .stream()
+                .map(EmployeeReservation::getEmployee)
+                .filter(Employee::getInOffice)
+                .count();
+    }
+
+    private Boolean isReservationsAtCapacityLimit(Reservation reservation) {
         Capacity capacity = reservation.getCapacity();
         return capacity.getLimit() == reservation.getReservedEmployees().size();
     }
@@ -152,6 +194,10 @@ public class ReservationService {
     private EmployeeReservation findEmployeeReservationByIdAndDate(String employeeId, LocalDate date) {
         return employeeReservationRepository.findEmployeeReservationByEmployeeIdAndReservationDate(employeeId, date)
                 .orElseThrow(() -> new NoSuchElementException("Employee by id: " + employeeId + " has no reservation for the given day: " + date));
+    }
+
+    private List<EmployeeReservation> findEmployeeReservationsByDate(LocalDate date) {
+        return employeeReservationRepository.findEmployeeReservationsByDate(date);
     }
 
 }

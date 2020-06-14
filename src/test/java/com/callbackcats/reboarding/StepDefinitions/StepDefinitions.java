@@ -142,4 +142,9 @@ public class StepDefinitions {
         EmployeeData employee = reservationService.findEmployeeDataById(this.currentEmployeeId);
         assertFalse(employee.getInOffice());
     }
+
+    @When("service signs out an already in office employee")
+    public void serviceSignsOutAnAlreadyInOfficeEmployee() {
+        reservationService.handleEmployeeExit(currentEmployeeId);
+    }
 }
