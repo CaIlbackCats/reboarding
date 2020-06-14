@@ -18,14 +18,14 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @Slf4j
-public class ReservationService {
+public class ReboardingService {
 
     private ReservationRepository reservationRepository;
     private EmployeeRepository employeeRepository;
     private final CapacityRepository capacityRepository;
     private final EmployeeReservationRepository employeeReservationRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, EmployeeRepository employeeRepository, CapacityRepository capacityRepository, EmployeeReservationRepository employeeReservationRepository) {
+    public ReboardingService(ReservationRepository reservationRepository, EmployeeRepository employeeRepository, CapacityRepository capacityRepository, EmployeeReservationRepository employeeReservationRepository) {
         this.reservationRepository = reservationRepository;
         this.employeeRepository = employeeRepository;
         this.capacityRepository = capacityRepository;
@@ -42,18 +42,18 @@ public class ReservationService {
      * @see <a href="http://www.link_to_jira/HERO-402">HERO-402</a>
      * @since 1.0
      */
-    public boolean isEmployeeIdReservedToday(String currentEmployeeId) {
+    public boolean isEmployeeReservedGivenDay(String currentEmployeeId, LocalDate date) {
         Employee employee = findEmployeeById(currentEmployeeId);
-        boolean isReservationDateToday = false;
+        boolean isReserved = false;
         if (employee.getReservation() != null && !employee.getReservation().isEmpty()) {
-            isReservationDateToday =
+            isReserved =
                     employee.getReservation()
                             .stream()
                             .map(EmployeeReservation::getReserved)
                             .map(Reservation::getDate)
-                            .anyMatch(localDate -> localDate.equals(LocalDate.now()));
+                            .anyMatch(localDate -> localDate.equals(date));
         }
-        return isReservationDateToday;
+        return isReserved;
     }
 
     public Boolean enterEmployee(String employeeId) {
@@ -63,10 +63,11 @@ public class ReservationService {
         List<EmployeeReservation> employeeReservations = findEmployeeReservationsByDate(today);
         Capacity capacity = findCapacityByReservationDate(today);
         boolean isOfficeAtLimit = getEmployeesInOffice(employeeReservations).equals(capacity.getLimit());
-        if (!isOfficeAtLimit && employeeReservation.getEnterOffice()) {
+        if (!isOfficeAtLimit && employeeReservation.getPermisssionToOffice()) {
             Employee employee = employeeReservation.getEmployee();
             setEmployeeInOffice(employee, true);
             employeeEntered = true;
+            log.info("Employee by id:\t" + employeeId + " has entered the office");
         }
         return employeeEntered;
     }
@@ -75,7 +76,10 @@ public class ReservationService {
         List<Capacity> capacities = capacityCreationData.stream().map(Capacity::new).collect(Collectors.toList());
         capacityRepository.saveAll(capacities);
 
-        return capacities.stream().map(CapacityData::new).collect(Collectors.toList());
+        return capacities
+                .stream()
+                .map(CapacityData::new)
+                .collect(Collectors.toList());
     }
 
     public EmployeeReservationData handleReservationRequest(ReservationCreationData reservationCreationData) {
@@ -86,11 +90,14 @@ public class ReservationService {
         return new EmployeeReservationData(reservation.getReservationType(), position);
     }
 
-    public Integer findPosition(String currentEmployeeId) {
+    public Integer getStatus(String currentEmployeeId) {
         Employee employee = findEmployeeById(currentEmployeeId);
         LocalDate today = LocalDate.now();
         Reservation reservation = findReservationByDateAndType(today, ReservationType.QUEUED);
-        List<Employee> employees = reservation.getReservedEmployees().stream().map(EmployeeReservation::getEmployee).collect(Collectors.toList());
+        List<Employee> employees = reservation.getReservedEmployees()
+                .stream()
+                .map(EmployeeReservation::getEmployee)
+                .collect(Collectors.toList());
 
         return employees.indexOf(employee) + 1;
     }
@@ -99,8 +106,10 @@ public class ReservationService {
         Employee employee = findEmployeeById(employeeId);
         setEmployeeInOffice(employee, false);
 
-        EmployeeReservation employeeReservation = findEmployeeReservationByIdAndDate(employeeId, LocalDate.now());
+        LocalDate today = LocalDate.now();
+        EmployeeReservation employeeReservation = findEmployeeReservationByIdAndDate(employeeId, today);
         employeeReservationRepository.delete(employeeReservation);
+        log.info("Employee by id:\t" + employeeId + "'s connection to reservation for the day:\t" + today + " was detached");
 
         updateEmployeesCanEnterOffice();
     }
@@ -115,9 +124,10 @@ public class ReservationService {
             Reservation reservation = findReservationByDateAndType(today, ReservationType.QUEUED);
             List<EmployeeReservation> reservedEmployees = reservation.getReservedEmployees();
             for (int i = 0; i < freeSpace && i < reservedEmployees.size(); i++) {
-                reservedEmployees.get(i).setEnterOffice(true);
+                reservedEmployees.get(i).setPermisssionToOffice(true);
             }
             employeeReservationRepository.saveAll(reservedEmployees);
+            log.info("Employees permission to enter was updated based on free spots");
         }
 
     }
@@ -125,6 +135,7 @@ public class ReservationService {
     private void setEmployeeInOffice(Employee employee, boolean inOffice) {
         employee.setInOffice(inOffice);
         employeeRepository.save(employee);
+        log.info("Employee by id:\t" + employee.getId() + " in office changed to:\t" + inOffice);
     }
 
     public EmployeeData findEmployeeDataById(String employeeId) {
@@ -140,9 +151,11 @@ public class ReservationService {
             employeeReservation = new EmployeeReservation(employee, reservation, true);
         }
         employeeReservationRepository.save(employeeReservation);
+        log.info("Employee by id:\t" + employee.getId() + " was saved to reservation for the day:\t" + reservation.getDate());
     }
 
     private Integer getEmployeesInOffice(List<EmployeeReservation> employeeReservations) {
+        log.info("Count current employees in office requested");
         return (int) employeeReservations
                 .stream()
                 .map(EmployeeReservation::getEmployee)
@@ -159,6 +172,7 @@ public class ReservationService {
         Capacity capacity = findCapacityByReservationDate(reservationDate);
         Reservation reservation = new Reservation(reservationDate, capacity, ReservationType.QUEUED);
         reservationRepository.save(reservation);
+        log.info("A new queued reservation was created for the day:\t" + reservationDate);
         return reservation;
     }
 
@@ -170,34 +184,41 @@ public class ReservationService {
             Capacity capacity = findCapacityByReservationDate(reservationDate);
             reservation = new Reservation(reservationDate, capacity, ReservationType.RESERVED);
             reservationRepository.save(reservation);
+            log.info("A new reservation was created for the day:\t" + reservationDate);
         }
         return reservation;
     }
 
     private Employee findEmployeeById(String employeeId) {
-        return employeeRepository.findEmployeeById(employeeId).orElseThrow(() -> new NoSuchElementException("No employee found by given id:\t" + employeeId));
+        Employee employee = employeeRepository.findEmployeeById(employeeId).orElseThrow(() -> new NoSuchElementException("No employee found by given id:\t" + employeeId));
+        log.info("Employee found by given id:\t" + employeeId);
+        return employee;
     }
 
     private Capacity findCapacityByReservationDate(LocalDate reservationDate) {
-        return capacityRepository.findCapacityByReservationDate(reservationDate).orElseThrow(() -> new NoSuchElementException("There is no capacity set for the given date:\t" + reservationDate));
-    }
-
-    private List<Reservation> findReservationsByDate(LocalDate date) {
-        return reservationRepository.findReservationsByDate(date);
+        Capacity capacity = capacityRepository.findCapacityByReservationDate(reservationDate).orElseThrow(() -> new NoSuchElementException("There is no capacity set for the given date:\t" + reservationDate));
+        log.info("Capacity was found for the day:\t" + reservationDate);
+        return capacity;
     }
 
     private Reservation findReservationByDateAndType(LocalDate reservationDate, ReservationType reservationType) {
-        return reservationRepository.findReservationByDateAndType(reservationDate, reservationType)
+        Reservation reservation = reservationRepository.findReservationByDateAndType(reservationDate, reservationType)
                 .orElseThrow(() -> new NoSuchElementException("There are no " + reservationType + " reservations for the given day:\t" + reservationDate));
+        log.info("Reservation was found by given date:\t" + reservationDate + " and type:\t" + reservationType);
+        return reservation;
     }
 
     private EmployeeReservation findEmployeeReservationByIdAndDate(String employeeId, LocalDate date) {
-        return employeeReservationRepository.findEmployeeReservationByEmployeeIdAndReservationDate(employeeId, date)
+        EmployeeReservation employeeReservation = employeeReservationRepository.findEmployeeReservationByEmployeeIdAndReservationDate(employeeId, date)
                 .orElseThrow(() -> new NoSuchElementException("Employee by id: " + employeeId + " has no reservation for the given day: " + date));
+        log.info("Employee reservation was found for employee id:\t" + employeeId + " on day:\t" + date);
+        return employeeReservation;
     }
 
     private List<EmployeeReservation> findEmployeeReservationsByDate(LocalDate date) {
-        return employeeReservationRepository.findEmployeeReservationsByDate(date);
+        List<EmployeeReservation> employeeReservationsByDate = employeeReservationRepository.findEmployeeReservationsByDate(date);
+        log.info("Employee reservations are found for the day:\t" + date);
+        return employeeReservationsByDate;
     }
 
 }

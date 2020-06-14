@@ -2,7 +2,7 @@ package com.callbackcats.reboarding.StepDefinitions;
 
 import com.callbackcats.reboarding.domain.ReservationType;
 import com.callbackcats.reboarding.dto.*;
-import com.callbackcats.reboarding.service.ReservationService;
+import com.callbackcats.reboarding.service.ReboardingService;
 import io.cucumber.java.DataTableType;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class StepDefinitions {
 
     @Autowired
-    private ReservationService reservationService;
+    private ReboardingService reboardingService;
 
     private String currentEmployeeId;
     private boolean isValid;
@@ -52,7 +53,7 @@ public class StepDefinitions {
 
     @When("Service check Employee ID")
     public void service_check_employee_id() {
-        isValid = reservationService.isEmployeeIdReservedToday(currentEmployeeId);
+        isValid = reboardingService.isEmployeeReservedGivenDay(currentEmployeeId, LocalDate.now());
     }
 
     @Then("It should return {string}")
@@ -69,7 +70,7 @@ public class StepDefinitions {
 
     @When("service saved the data")
     public void service_saves_the_data() {
-        this.savedCapacities = reservationService.saveCapacities(this.capacities);
+        this.savedCapacities = reboardingService.saveCapacities(this.capacities);
     }
 
     @Then("return saved capacity data")
@@ -85,7 +86,7 @@ public class StepDefinitions {
 
     @When("service decides where to save the reservation")
     public void service_decides_where_to_save_the_reservations() {
-        employeeReservationData = reservationService.handleReservationRequest(reservationCreationData);
+        employeeReservationData = reboardingService.handleReservationRequest(reservationCreationData);
     }
 
     @Then("saved_reservation_should_have_proper_fields_and_should_be_reserved_type")
@@ -117,7 +118,7 @@ public class StepDefinitions {
 
     @When("service looks for the position")
     public void serviceLooksForThePosition() {
-        this.position = this.reservationService.findPosition(currentEmployeeId);
+        this.position = this.reboardingService.getStatus(currentEmployeeId);
     }
 
     @Then("returns {string}")
@@ -128,23 +129,23 @@ public class StepDefinitions {
 
     @When("service enters the qualified employee")
     public void serviceEntersTheQualifiedEmployee() {
-        reservationService.enterEmployee(this.currentEmployeeId);
+        reboardingService.enterEmployee(this.currentEmployeeId);
     }
 
     @Then("employee should be in office")
     public void employeeShouldBeInOffice() {
-        EmployeeData employee = reservationService.findEmployeeDataById(this.currentEmployeeId);
+        EmployeeData employee = reboardingService.findEmployeeDataById(this.currentEmployeeId);
         assertTrue(employee.getInOffice());
     }
 
     @Then("employee should not be in office")
     public void employeeShouldNotBeInOffice() {
-        EmployeeData employee = reservationService.findEmployeeDataById(this.currentEmployeeId);
+        EmployeeData employee = reboardingService.findEmployeeDataById(this.currentEmployeeId);
         assertFalse(employee.getInOffice());
     }
 
     @When("service signs out an already in office employee")
     public void serviceSignsOutAnAlreadyInOfficeEmployee() {
-        reservationService.handleEmployeeExit(currentEmployeeId);
+        reboardingService.handleEmployeeExit(currentEmployeeId);
     }
 }

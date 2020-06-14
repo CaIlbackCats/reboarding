@@ -28,12 +28,12 @@ public class EmployeeReservation {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
-    @Column(name = "can_enter_office")
-    private Boolean enterOffice;
+    @Column(name = "permission_to_office")
+    private Boolean permisssionToOffice;
 
-    public EmployeeReservation(Employee employee, Reservation reserved, Boolean enterOffice) {
+    public EmployeeReservation(Employee employee, Reservation reserved, Boolean permisssionToOffice) {
         this.employee = employee;
         this.reserved = reserved;
-        this.enterOffice = enterOffice;
+        this.permisssionToOffice = permisssionToOffice;
     }
 }
