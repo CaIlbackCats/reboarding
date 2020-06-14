@@ -33,17 +33,16 @@ public class ReboardingService {
     }
 
     /**
-     * <p>This is a simple description of the method. . .
-     * <a href="http://www.supermanisthegreatest.com">Superman!</a>
+     * <p>Checks whether the given employee has reservation for the given date.
      * </p>
      *
-     * @param currentEmployeeId the amount of incoming damage
-     * @return the amount of health hero has after attack
-     * @see <a href="http://www.link_to_jira/HERO-402">HERO-402</a>
-     * @since 1.0
+     * @param employeeId the id of the employee
+     * @param date the date to look for employeereservations
+     * @return true if there was  reservation,false if there wasn't reservation
+     * @throws NoSuchElementException if the employee doesn't exist
      */
-    public boolean isEmployeeReservedGivenDay(String currentEmployeeId, LocalDate date) {
-        Employee employee = findEmployeeById(currentEmployeeId);
+    public boolean isEmployeeReservedGivenDay(String employeeId, LocalDate date) {
+        Employee employee = findEmployeeById(employeeId);
         boolean isReserved = false;
         if (employee.getReservation() != null && !employee.getReservation().isEmpty()) {
             isReserved =
@@ -56,6 +55,13 @@ public class ReboardingService {
         return isReserved;
     }
 
+    /**
+     * <p>Checks the given employee in if there are enough free spaces in the office and has the permission to enter.
+     * </p>
+     *
+     * @param employeeId the id of the employee
+     * @return whether the employee could enter the office
+     */
     public Boolean enterEmployee(String employeeId) {
         boolean employeeEntered = false;
         LocalDate today = LocalDate.now();
@@ -72,6 +78,13 @@ public class ReboardingService {
         return employeeEntered;
     }
 
+    /**
+     * <p>Saves capacities for the given time intervals.
+     * </p>
+     *
+     * @param capacityCreationData contains the maximum number of employees, the percentage of the allowed employees to the office, and the interval of the dates it connects to
+     * @return the saved capacities
+     */
     public List<CapacityData> saveCapacities(List<CapacityCreationData> capacityCreationData) {
         List<Capacity> capacities = capacityCreationData.stream().map(Capacity::new).collect(Collectors.toList());
         capacityRepository.saveAll(capacities);
@@ -81,7 +94,15 @@ public class ReboardingService {
                 .map(CapacityData::new)
                 .collect(Collectors.toList());
     }
-
+    /**
+     * <p>Saves an employee's reservation to the given day.
+     * Creates reservation if there has been no for that day
+     * </p>
+     *
+     * @param reservationCreationData contains id of the employee and the date of the reservation
+     * @return whether the employee could enter the office or not
+     * @throws NoSuchElementException if the employee doesn't exist
+     */
     public EmployeeReservationData handleReservationRequest(ReservationCreationData reservationCreationData) {
         Employee employee = findEmployeeById(reservationCreationData.getEmployeeId());
         Reservation reservation = findOrCreateReservationByDate(reservationCreationData.getReservedDate());
@@ -90,8 +111,16 @@ public class ReboardingService {
         return new EmployeeReservationData(reservation.getReservationType(), position);
     }
 
-    public Integer getStatus(String currentEmployeeId) {
-        Employee employee = findEmployeeById(currentEmployeeId);
+    /**
+     * <p>Checks the current position in the queue of the employee
+     * </p>
+     *
+     * @param employeeId the id of the employee
+     * @return the current position of the employee in the queue
+     * @throws NoSuchElementException if the employee doesn't exist
+     */
+    public Integer getStatus(String employeeId) {
+        Employee employee = findEmployeeById(employeeId);
         LocalDate today = LocalDate.now();
         Reservation reservation = findReservationByDateAndType(today, ReservationType.QUEUED);
         List<Employee> employees = reservation.getReservedEmployees()
@@ -102,6 +131,13 @@ public class ReboardingService {
         return employees.indexOf(employee) + 1;
     }
 
+    /**
+     * <p>Checks the employee out of the office, and sets the permissions of the waiting employees based on free spaces left
+     * </p>
+     *
+     * @param employeeId the id of the employee
+     * @throws NoSuchElementException if the employee doesn't exist
+     */
     public void handleEmployeeExit(String employeeId) {
         Employee employee = findEmployeeById(employeeId);
         setEmployeeInOffice(employee, false);
