@@ -2,6 +2,7 @@ package com.callbackcats.reboarding.StepDefinitions;
 
 import com.callbackcats.reboarding.domain.ReservationType;
 import com.callbackcats.reboarding.dto.*;
+import com.callbackcats.reboarding.service.CapacityService;
 import com.callbackcats.reboarding.service.ReboardingService;
 import io.cucumber.java.DataTableType;
 import io.cucumber.java.en.Given;
@@ -26,6 +27,9 @@ public class StepDefinitions {
 
     @Autowired
     private ReboardingService reboardingService;
+
+    @Autowired
+    private CapacityService capacityService;
 
     private String currentEmployeeId;
     private boolean isValid;
@@ -70,7 +74,7 @@ public class StepDefinitions {
 
     @When("service saved the data")
     public void service_saves_the_data() {
-        this.savedCapacities = reboardingService.saveCapacities(this.capacities);
+        this.savedCapacities = capacityService.saveCapacities(this.capacities);
     }
 
     @Then("return saved capacity data")
