@@ -13,7 +13,7 @@ This project can serve as a skeleton code for any project which requires the nee
 - Register a place on the waiting list
 - Status update of employees on the waiting list
 
-## API
+# API
 
 ## Architecture
 
@@ -35,7 +35,7 @@ Connection to the database using DTOs
 
 ### Api endpoints
 
-Implemented 4 RESTful endpoints for HTTP requests. They send and recieve messages in JSON format.
+Implemented 5 RESTful endpoints for HTTP requests. They send and recieve messages in JSON format.
 
 
 #### Status:
@@ -50,7 +50,7 @@ Implemented 4 RESTful endpoints for HTTP requests. They send and recieve message
 
 - **Success Response:**
 
-  - **Code:** 200
+  - **Code:** 200 OK
 
 - **Error Response:**
 
@@ -70,7 +70,11 @@ Implemented 4 RESTful endpoints for HTTP requests. They send and recieve message
 
 - **Success Response:**
 
-  - **Code:** 200
+  - **Code:** 202 ACCEPTED
+
+- **Error Response:**
+
+  - **Code:** 401 UNAUTHORIZED
 
     
 
@@ -86,9 +90,13 @@ Implemented 4 RESTful endpoints for HTTP requests. They send and recieve message
 
 - **Success Response:**
 
-  - **Code:** 200
+  - **Code:** 202 ACCEPTED
 
+- **Error Response:**
+
+  - **Code:** 401 UNAUTHORIZED
     
+
 
 #### Register:
 
@@ -102,17 +110,38 @@ Implemented 4 RESTful endpoints for HTTP requests. They send and recieve message
 
 - **Success Response:**
 
-  - **Code:** 200
+  - **Code:** 200 OK
 
     OR
 
-  - **Code:** 201
+  - **Code:** 201 CREATED
 
 - **Error Response:**
 
   - **Code:** 403 FORBIDDEN
-
     
+
+
+#### Delete:
+
+- **URL**
+
+  /api/delete
+
+- **Method:**
+
+  `DELETE`
+
+- **Success Response:**
+
+  - **Code:** 200 OK
+
+- **Error Response:**
+
+  - **Code:** 404 NOT_FOUND
+  
+  
+
 
 # Methodology
 
