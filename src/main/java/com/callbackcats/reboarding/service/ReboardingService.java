@@ -120,13 +120,18 @@ public class ReboardingService {
      * @param employeeId the id of the employee
      * @throws NoSuchElementException if the employee doesn't exist
      */
-    public void handleEmployeeExit(String employeeId) {
+    public Boolean handleEmployeeExit(String employeeId) {
+        Boolean leftEmployee = false;
         Employee employee = employeeService.findEmployeeById(employeeId);
-        employeeService.setEmployeeInOffice(employee, false);
+        if (employee.getInOffice()) {
+            employeeService.setEmployeeInOffice(employee, false);
 
-       // employeeReservationService.removeEmployeeReservationToday(employeeId);
+            // employeeReservationService.removeEmployeeReservationToday(employeeId);
 
-        employeeReservationService.updateEmployeesCanEnterOffice();
+            employeeReservationService.updateEmployeesCanEnterOffice();
+            leftEmployee = true;
+        }
+        return leftEmployee;
     }
 
 

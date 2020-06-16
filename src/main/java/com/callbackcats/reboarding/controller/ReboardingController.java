@@ -65,10 +65,15 @@ public class ReboardingController {
     }
 
     @PostMapping("/exit/{employeeId}")
-    public ResponseEntity<Void> exitFromOffice(@PathVariable String employeeId) {
+    public ResponseEntity<Boolean> exitFromOffice(@PathVariable String employeeId) {
+        ResponseEntity<Boolean> responseEntity = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
         log.info("Employee by id: " + employeeId + " requested to exit from office");
-        reboardingService.handleEmployeeExit(employeeId);
-        log.info("Employee by id: " + employeeId + "left the office");
-        return new ResponseEntity<>(HttpStatus.OK);
+        Boolean leftEmployee = reboardingService.handleEmployeeExit(employeeId);
+        if (leftEmployee) {
+            responseEntity = new ResponseEntity<>(HttpStatus.ACCEPTED);
+            log.info("Employee by id: " + employeeId + "left the office");
+        }
+        return responseEntity;
     }
 }
