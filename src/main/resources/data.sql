@@ -18,14 +18,14 @@ VALUES ('3',false);
 INSERT INTO employee (id,in_office)
 VALUES ('4',false);
 
-INSERT INTO reservation (id,r_date,reservation_type)
-VALUES (0,CURRENT_DATE,'RESERVED');
-INSERT INTO reservation(id,r_date,capacity_id,reservation_type)
-VALUES (1,CURRENT_DATE,1,'QUEUED');
-INSERT INTO reservation (id,r_date)
-VALUES (2,CURRENT_DATE+1);
-INSERT INTO reservation (id,r_date,capacity_id,reservation_type)
-VALUES (3,'2020-06-02',0,'RESERVED');
+INSERT INTO reservation (id,r_date,reservation_type,capacity_id)
+VALUES (0,CURRENT_DATE,'RESERVED',(SELECT id FROM office_capacity WHERE CURRENT_DATE >= start_date AND CURRENT_DATE <=end_date));
+INSERT INTO reservation(id,r_date,reservation_type,capacity_id)
+VALUES (1,CURRENT_DATE,'QUEUED',(SELECT id FROM office_capacity WHERE CURRENT_DATE >= start_date AND CURRENT_DATE <=end_date));
+INSERT INTO reservation (id,r_date,capacity_id)
+VALUES (2,CURRENT_DATE+1,(SELECT id FROM office_capacity WHERE CURRENT_DATE+1 >= start_date AND CURRENT_DATE+1 <=end_date));
+INSERT INTO reservation (id,r_date,reservation_type,capacity_id)
+VALUES (3,'2020-06-02','RESERVED',(SELECT id FROM office_capacity WHERE '2020-06-02' >= start_date AND '2020-06-02' <=end_date));
 
 
 INSERT INTO employee_reservation (reservation_id,employee_id)

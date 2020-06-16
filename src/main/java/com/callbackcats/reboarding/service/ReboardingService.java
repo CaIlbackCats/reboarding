@@ -3,7 +3,6 @@ package com.callbackcats.reboarding.service;
 import com.callbackcats.reboarding.domain.*;
 import com.callbackcats.reboarding.dto.*;
 import com.callbackcats.reboarding.repository.CapacityRepository;
-import com.callbackcats.reboarding.repository.EmployeeRepository;
 import com.callbackcats.reboarding.repository.EmployeeReservationRepository;
 import com.callbackcats.reboarding.repository.ReservationRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -21,14 +20,14 @@ import java.util.stream.Collectors;
 public class ReboardingService {
 
     private ReservationRepository reservationRepository;
-    private EmployeeRepository employeeRepository;
-    private final CapacityRepository capacityRepository;
+    private final EmployeeService employeeService;
+    private final CapacityService capacityService;
     private final EmployeeReservationRepository employeeReservationRepository;
 
-    public ReboardingService(ReservationRepository reservationRepository, EmployeeRepository employeeRepository, CapacityRepository capacityRepository, EmployeeReservationRepository employeeReservationRepository) {
+    public ReboardingService(ReservationRepository reservationRepository, EmployeeService employeeService, CapacityService capacityService, EmployeeReservationRepository employeeReservationRepository) {
         this.reservationRepository = reservationRepository;
-        this.employeeRepository = employeeRepository;
-        this.capacityRepository = capacityRepository;
+        this.employeeService = employeeService;
+        this.capacityService = capacityService;
         this.employeeReservationRepository = employeeReservationRepository;
     }
 
@@ -42,7 +41,7 @@ public class ReboardingService {
      * @throws NoSuchElementException if the employee doesn't exist
      */
     public boolean isEmployeeReservedGivenDay(String employeeId, LocalDate date) {
-        Employee employee = findEmployeeById(employeeId);
+        Employee employee = employeeService.findEmployeeById(employeeId);
         boolean isReserved = false;
         if (employee.getReservation() != null && !employee.getReservation().isEmpty()) {
             isReserved =
@@ -67,11 +66,11 @@ public class ReboardingService {
         LocalDate today = LocalDate.now();
         EmployeeReservation employeeReservation = findEmployeeReservationByIdAndDate(employeeId, today);
         List<EmployeeReservation> employeeReservations = findEmployeeReservationsByDate(today);
-        Capacity capacity = findCapacityByReservationDate(today);
+        Capacity capacity = capacityService.findCapacityByReservationDate(today);
         boolean isOfficeAtLimit = getEmployeesInOffice(employeeReservations).equals(capacity.getLimit());
         if (!isOfficeAtLimit && employeeReservation.getPermisssionToOffice()) {
             Employee employee = employeeReservation.getEmployee();
-            setEmployeeInOffice(employee, true);
+            employeeService.setEmployeeInOffice(employee, true);
             employeeEntered = true;
             log.info("Employee by id:\t" + employeeId + " has entered the office");
         }
@@ -85,15 +84,7 @@ public class ReboardingService {
      * @param capacityCreationData contains the maximum number of employees, the percentage of the allowed employees to the office, and the interval of the dates it connects to
      * @return the saved capacities
      */
-    public List<CapacityData> saveCapacities(List<CapacityCreationData> capacityCreationData) {
-        List<Capacity> capacities = capacityCreationData.stream().map(Capacity::new).collect(Collectors.toList());
-        capacityRepository.saveAll(capacities);
 
-        return capacities
-                .stream()
-                .map(CapacityData::new)
-                .collect(Collectors.toList());
-    }
 
     /**
      * <p>Saves an employee's reservation to the given day.
@@ -105,7 +96,7 @@ public class ReboardingService {
      * @throws NoSuchElementException if the employee doesn't exist
      */
     public EmployeeReservationData handleReservationRequest(ReservationCreationData reservationCreationData) {
-        Employee employee = findEmployeeById(reservationCreationData.getEmployeeId());
+        Employee employee = employeeService.findEmployeeById(reservationCreationData.getEmployeeId());
         Reservation reservation = findOrCreateReservationByDate(reservationCreationData.getReservedDate());
         saveReservationToEmployee(employee, reservation);
         Integer position = reservation.getReservedEmployees().size() + 1;
@@ -121,7 +112,7 @@ public class ReboardingService {
      * @throws NoSuchElementException if the employee doesn't exist
      */
     public Integer getStatus(String employeeId) {
-        Employee employee = findEmployeeById(employeeId);
+        Employee employee = employeeService.findEmployeeById(employeeId);
         LocalDate today = LocalDate.now();
         Reservation reservation = findReservationByDateAndType(today, ReservationType.QUEUED);
         List<Employee> employees = reservation.getReservedEmployees()
@@ -140,8 +131,8 @@ public class ReboardingService {
      * @throws NoSuchElementException if the employee doesn't exist
      */
     public void handleEmployeeExit(String employeeId) {
-        Employee employee = findEmployeeById(employeeId);
-        setEmployeeInOffice(employee, false);
+        Employee employee = employeeService.findEmployeeById(employeeId);
+        employeeService.setEmployeeInOffice(employee, false);
 
         LocalDate today = LocalDate.now();
         EmployeeReservation employeeReservation = findEmployeeReservationByIdAndDate(employeeId, today);
@@ -151,10 +142,15 @@ public class ReboardingService {
         updateEmployeesCanEnterOffice();
     }
 
+    public Boolean isEmployeeInOffice(String employeeId) {
+        Employee employee = employeeService.findEmployeeById(employeeId);
+        return employee.getInOffice();
+    }
+
     private void updateEmployeesCanEnterOffice() {
         LocalDate today = LocalDate.now();
         List<EmployeeReservation> employeeReservations = findEmployeeReservationsByDate(today);
-        Capacity capacity = findCapacityByReservationDate(today);
+        Capacity capacity = capacityService.findCapacityByReservationDate(today);
         Integer employeesInOffice = getEmployeesInOffice(employeeReservations);
         int freeSpace = capacity.getLimit() - employeesInOffice;
         if (freeSpace > 0) {
@@ -169,14 +165,9 @@ public class ReboardingService {
 
     }
 
-    private void setEmployeeInOffice(Employee employee, boolean inOffice) {
-        employee.setInOffice(inOffice);
-        employeeRepository.save(employee);
-        log.info("Employee by id:\t" + employee.getId() + " in office changed to:\t" + inOffice);
-    }
 
     public EmployeeData findEmployeeDataById(String employeeId) {
-        return new EmployeeData(findEmployeeById(employeeId));
+        return new EmployeeData(employeeService.findEmployeeById(employeeId));
     }
 
     private void saveReservationToEmployee(Employee employee, Reservation reservation) {
@@ -205,7 +196,7 @@ public class ReboardingService {
     }
 
     private Reservation createQueuedReservation(LocalDate reservationDate) {
-        Capacity capacity = findCapacityByReservationDate(reservationDate);
+        Capacity capacity = capacityService.findCapacityByReservationDate(reservationDate);
         Reservation reservation = new Reservation(reservationDate, capacity, ReservationType.QUEUED);
         reservationRepository.save(reservation);
         log.info("A new queued reservation was created for the day:\t" + reservationDate);
@@ -217,7 +208,7 @@ public class ReboardingService {
         try {
             reservation = findReservationByDateAndType(reservationDate, ReservationType.RESERVED);
         } catch (NoSuchElementException e) {
-            Capacity capacity = findCapacityByReservationDate(reservationDate);
+            Capacity capacity = capacityService.findCapacityByReservationDate(reservationDate);
             reservation = new Reservation(reservationDate, capacity, ReservationType.RESERVED);
             reservationRepository.save(reservation);
             log.info("A new reservation was created for the day:\t" + reservationDate);
@@ -225,20 +216,9 @@ public class ReboardingService {
         if (isReservationsAtCapacityLimit(reservation)) {
             reservation = createQueuedReservation(reservationDate);
             reservationRepository.save(reservation);
+            log.info("A new queued reservation was created for the day:\t" + reservationDate);
         }
         return reservation;
-    }
-
-    private Employee findEmployeeById(String employeeId) {
-        Employee employee = employeeRepository.findEmployeeById(employeeId).orElseThrow(() -> new NoSuchElementException("No employee found by given id:\t" + employeeId));
-        log.info("Employee found by given id:\t" + employeeId);
-        return employee;
-    }
-
-    private Capacity findCapacityByReservationDate(LocalDate reservationDate) {
-        Capacity capacity = capacityRepository.findCapacityByReservationDate(reservationDate).orElseThrow(() -> new NoSuchElementException("There is no capacity set for the given date:\t" + reservationDate));
-        log.info("Capacity was found for the day:\t" + reservationDate);
-        return capacity;
     }
 
     private Reservation findReservationByDateAndType(LocalDate reservationDate, ReservationType reservationType) {

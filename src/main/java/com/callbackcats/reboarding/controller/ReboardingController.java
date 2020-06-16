@@ -22,7 +22,7 @@ public class ReboardingController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity registerReservation(ReservationCreationData reservation) {
+    public ResponseEntity registerReservation(@RequestBody ReservationCreationData reservation) {
         log.info("Reservation is requested by employee id:\t" + reservation.getEmployeeId());
         ResponseEntity responseEntity;
         if (!reboardingService.isEmployeeReservedGivenDay(reservation.getEmployeeId(), reservation.getReservedDate())) {
@@ -50,11 +50,15 @@ public class ReboardingController {
 
     @PostMapping("/entry/{employeeId}")
     public ResponseEntity<Boolean> enterToOffice(@PathVariable String employeeId) {
-
+        ResponseEntity<Boolean> responseEntity;
         log.info("Employee by id: " + employeeId + " requested to enter to office");
-        Boolean entered = reboardingService.enterEmployee(employeeId);
+        if (!reboardingService.isEmployeeInOffice(employeeId) && reboardingService.enterEmployee(employeeId)) {
+            responseEntity = new ResponseEntity<>(HttpStatus.ACCEPTED);
+        } else {
+            responseEntity = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-        return new ResponseEntity<>(entered, HttpStatus.OK);
+        return responseEntity;
     }
 
     @PostMapping("/exit/{employeeId}")
