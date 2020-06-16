@@ -20,7 +20,7 @@ import java.util.Objects;
 public class Employee {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "id", unique = true)
     @NotNull
     private String id;
 
@@ -29,6 +29,11 @@ public class Employee {
 
     @OneToMany(mappedBy = "employee")
     private List<EmployeeReservation> reservation;
+
+    public Employee(String id, Boolean inOffice) {
+        this.id = id;
+        this.inOffice = inOffice;
+    }
 
     @Override
     public boolean equals(Object o) {
