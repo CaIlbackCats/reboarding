@@ -63,7 +63,8 @@ public class ReboardingService {
         List<EmployeeReservation> employeeReservations = employeeReservationService.findEmployeeReservationsByDate(today);
         boolean canEmployeeEnter = !employeeReservationService.isOfficeAtLimitCurrently(employeeReservations)
                 && employeeReservation.getPermisssionToOffice()
-                && !employeeService.isEmployeeInOffice(employeeId);
+                && !employeeService.isEmployeeInOffice(employeeId)
+                && isEmployeeReservedGivenDay(employeeId, today);
 
         if (!canEmployeeEnter) {
             return false;

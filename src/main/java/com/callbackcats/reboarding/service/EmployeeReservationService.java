@@ -2,7 +2,6 @@ package com.callbackcats.reboarding.service;
 
 import com.callbackcats.reboarding.domain.*;
 import com.callbackcats.reboarding.dto.EmployeeReservationData;
-import com.callbackcats.reboarding.dto.ReservationData;
 import com.callbackcats.reboarding.repository.EmployeeReservationRepository;
 import com.callbackcats.reboarding.repository.ReservationRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -56,9 +55,13 @@ public class EmployeeReservationService {
         log.info("Employee by id:\t" + employee.getId() + " was saved to reservation for the day:\t" + reservation.getDate());
 
 
-        Integer position = findEmployeeReservationsByDate(reservation.getDate()).size();
+        Integer position = (int) findEmployeeReservationsByDate(reservation.getDate())
+                .stream()
+                .map(EmployeeReservation::getReserved)
+                .filter(res -> res.getReservationType().equals(ReservationType.QUEUED))
+                .count();
 
-        return new EmployeeReservationData(reservation.getReservationType(),position);
+        return new EmployeeReservationData(reservation.getReservationType(), position);
     }
 
 
@@ -116,7 +119,7 @@ public class EmployeeReservationService {
             reservationRepository.save(reservation);
             log.info("A new reservation was created for the day:\t" + reservationDate);
         }
-        if (isReservationsAtCapacityLimit(reservation)) {
+        if (!isReservationsWithinCapacityLimit(reservation)) {
             reservation = findOrCreateQueuedReservation(reservationDate);
         }
         return reservation;
@@ -189,9 +192,13 @@ public class EmployeeReservationService {
                 .count();
     }
 
-    private Boolean isReservationsAtCapacityLimit(Reservation reservation) {
+    private Boolean isReservationsWithinCapacityLimit(Reservation reservation) {
         Capacity capacity = reservation.getCapacity();
-        return capacity.getLimit() == reservation.getReservedEmployees().size();
+        Integer reservationCount = (int) findEmployeeReservationsByDate(reservation.getDate())
+                .stream()
+                .map(EmployeeReservation::getReserved).filter(res -> res.getReservationType().equals(ReservationType.RESERVED))
+                .count();
+        return capacity.getLimit() != 0 && capacity.getLimit() >= reservationCount;
     }
 
     private Reservation createQueuedReservation(LocalDate reservationDate) {

@@ -20,8 +20,4 @@ public class EmployeeReservationData {
         this.reservationType = String.valueOf(reservationType);
         this.position = position;
     }
-
-    public EmployeeReservationData(ReservationType reservationType) {
-        this.reservationType = String.valueOf(reservationType);
-    }
 }

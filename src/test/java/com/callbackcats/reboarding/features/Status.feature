@@ -7,4 +7,4 @@ Feature: Status
     Then returns "<position>"
     Examples:
       | currentEmployeeId | position |
-      | 0                 | 1        |
+      | 5                 | 1        |

@@ -99,21 +99,18 @@ public class StepDefinitions {
 
     @Then("saved_reservation_should_have_proper_fields_and_should_be_reserved_type")
     public void saved_reservation_should_be_reserved_type() {
-        assertEquals(4, employeeReservationData.getPosition());
         ReservationType reservationType = ReservationType.valueOf(employeeReservationData.getReservationType());
         assertSame(ReservationType.RESERVED, reservationType);
     }
 
     @Then("saved_reservation_should_have_proper_fields_and_should_be_queued_type")
     public void saved_reservation_should_be_queued_type() {
-        assertEquals(1, employeeReservationData.getPosition());
         ReservationType reservationType = ReservationType.valueOf(employeeReservationData.getReservationType());
         assertSame(ReservationType.QUEUED, reservationType);
     }
 
     @Then("saved_reservation_should_return_correct_position_upon_new_reservation")
     public void saved_reservation_should_return_correct_position_upon_new_reservation() {
-        assertEquals(1, employeeReservationData.getPosition());
         ReservationType reservationType = ReservationType.valueOf(employeeReservationData.getReservationType());
         assertSame(ReservationType.RESERVED, reservationType);
     }
