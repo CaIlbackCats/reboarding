@@ -123,7 +123,7 @@ public class ReboardingService {
      * @throws NoSuchElementException if the employee doesn't exist
      */
     public Boolean handleEmployeeExit(String employeeId) {
-        Boolean leftEmployee = false;
+        boolean leftEmployee = false;
         Employee employee = employeeService.findEmployeeById(employeeId);
         if (employee.getInOffice()) {
             employeeService.setEmployeeInOffice(employee, false);
@@ -141,7 +141,6 @@ public class ReboardingService {
      */
     //TODO javadoc
     public void removeReservation(String employeeId, LocalDate reservedDate) {
-        Employee employee = employeeService.findEmployeeById(employeeId);
         EmployeeReservation employeeReservation = employeeReservationService.findEmployeeReservationByIdAndDate(employeeId, reservedDate);
         employeeReservationService.removeEmployeeReservation(employeeReservation);
     }
