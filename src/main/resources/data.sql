@@ -44,7 +44,6 @@ INSERT INTO employee_reservation(reservation_id,employee_id,permission_to_office
 VALUES (1,3,false);
 
 
-
 --INSERT INTO employee_reservation (reservation_id,employee_id)
 --VALUES ((SELECT id FROM reservation WHERE r_date = CURRENT_DATE+1),'1');
 

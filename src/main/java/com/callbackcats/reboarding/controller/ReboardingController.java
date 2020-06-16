@@ -52,7 +52,7 @@ public class ReboardingController {
     public ResponseEntity<Boolean> enterToOffice(@PathVariable String employeeId) {
         ResponseEntity<Boolean> responseEntity;
         log.info("Employee by id: " + employeeId + " requested to enter to office");
-        if (!reboardingService.isEmployeeInOffice(employeeId) && reboardingService.enterEmployee(employeeId)) {
+        if (reboardingService.enterEmployee(employeeId)) {
             responseEntity = new ResponseEntity<>(HttpStatus.ACCEPTED);
         } else {
             responseEntity = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

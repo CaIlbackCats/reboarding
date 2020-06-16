@@ -24,6 +24,15 @@ public class CapacityService {
         this.capacityRepository = capacityRepository;
     }
 
+
+
+    /**
+     * <p>Saves capacities for the given time intervals.
+     * </p>
+     *
+     * @param capacityCreationData contains the maximum number of employees, the percentage of the allowed employees to the office, and the interval of the dates it connects to
+     * @return the saved capacities
+     */
     public List<CapacityData> saveCapacities(List<CapacityCreationData> capacityCreationData) {
         List<Capacity> capacities = capacityCreationData.stream().map(Capacity::new).collect(Collectors.toList());
         capacityRepository.saveAll(capacities);

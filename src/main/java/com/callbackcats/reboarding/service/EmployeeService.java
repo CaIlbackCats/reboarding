@@ -1,6 +1,7 @@
 package com.callbackcats.reboarding.service;
 
 import com.callbackcats.reboarding.domain.Employee;
+import com.callbackcats.reboarding.dto.EmployeeData;
 import com.callbackcats.reboarding.repository.EmployeeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,21 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
+    public EmployeeData findEmployeeDataById(String employeeId) {
+        return new EmployeeData(findEmployeeById(employeeId));
+    }
 
+    /**
+     * <p>Checks if the employee is currently in the office
+     * </p>
+     * @param employeeId the id of the employee
+     * @return true - if the employee is in the office
+     * false - if the employee is not in the office
+     */
+    Boolean isEmployeeInOffice(String employeeId) {
+        Employee employee = findEmployeeById(employeeId);
+        return employee.getInOffice();
+    }
 
     Employee findEmployeeById(String employeeId) {
         Employee employee = employeeRepository.findEmployeeById(employeeId).orElseThrow(() -> new NoSuchElementException("No employee found by given id:\t" + employeeId));

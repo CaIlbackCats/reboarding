@@ -3,6 +3,7 @@ package com.callbackcats.reboarding.StepDefinitions;
 import com.callbackcats.reboarding.domain.ReservationType;
 import com.callbackcats.reboarding.dto.*;
 import com.callbackcats.reboarding.service.CapacityService;
+import com.callbackcats.reboarding.service.EmployeeService;
 import com.callbackcats.reboarding.service.ReboardingService;
 import io.cucumber.java.DataTableType;
 import io.cucumber.java.en.Given;
@@ -30,6 +31,9 @@ public class StepDefinitions {
 
     @Autowired
     private CapacityService capacityService;
+
+    @Autowired
+    private EmployeeService employeeService;
 
     private String currentEmployeeId;
     private boolean isValid;
@@ -138,13 +142,13 @@ public class StepDefinitions {
 
     @Then("employee should be in office")
     public void employeeShouldBeInOffice() {
-        EmployeeData employee = reboardingService.findEmployeeDataById(this.currentEmployeeId);
+        EmployeeData employee = employeeService.findEmployeeDataById(this.currentEmployeeId);
         assertTrue(employee.getInOffice());
     }
 
     @Then("employee should not be in office")
     public void employeeShouldNotBeInOffice() {
-        EmployeeData employee = reboardingService.findEmployeeDataById(this.currentEmployeeId);
+        EmployeeData employee = employeeService.findEmployeeDataById(this.currentEmployeeId);
         assertFalse(employee.getInOffice());
     }
 
