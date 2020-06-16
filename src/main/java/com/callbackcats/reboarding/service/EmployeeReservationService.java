@@ -48,11 +48,8 @@ public class EmployeeReservationService {
      */
     public void saveReservationToEmployee(Employee employee, Reservation reservation) {
         EmployeeReservation employeeReservation;
-        if (reservation.getReservationType() == ReservationType.QUEUED) {
-            employeeReservation = new EmployeeReservation(employee, reservation, false);
-        } else {
-            employeeReservation = new EmployeeReservation(employee, reservation, true);
-        }
+        boolean permissionToOffice = reservation.getReservationType() != ReservationType.QUEUED;
+        employeeReservation = new EmployeeReservation(employee, reservation, permissionToOffice);
         employeeReservationRepository.save(employeeReservation);
         log.info("Employee by id:\t" + employee.getId() + " was saved to reservation for the day:\t" + reservation.getDate());
     }
