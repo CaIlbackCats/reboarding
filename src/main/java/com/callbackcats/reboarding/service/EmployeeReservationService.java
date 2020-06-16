@@ -20,11 +20,13 @@ public class EmployeeReservationService {
     private final ReservationRepository reservationRepository;
     private final EmployeeReservationRepository employeeReservationRepository;
     private final CapacityService capacityService;
+    private final EmployeeService employeeService;
 
-    public EmployeeReservationService(ReservationRepository reservationRepository, EmployeeReservationRepository employeeReservationRepository, CapacityService capacityService) {
+    public EmployeeReservationService(ReservationRepository reservationRepository, EmployeeReservationRepository employeeReservationRepository, CapacityService capacityService, EmployeeService employeeService) {
         this.reservationRepository = reservationRepository;
         this.employeeReservationRepository = employeeReservationRepository;
         this.capacityService = capacityService;
+        this.employeeService = employeeService;
     }
 
     /**
@@ -69,15 +71,15 @@ public class EmployeeReservationService {
      * <p>Decides whether the limit of office is reached for today
      * </p>
      *
-     * @param employeeReservations the list of employees' reservations
      * @return true - if the number of employees in the office has reached the capacity limit for the day,
      * false- if the number of employee in the office has not reached yet the limit for the day
      */
-    public Boolean isOfficeAtLimitCurrently(List<EmployeeReservation> employeeReservations) {
+    public Boolean isOfficeAtLimitCurrently() {
         LocalDate today = LocalDate.now();
+        Integer employeesInOffice = employeeService.getNumberOfEmployeesInOffice();
         Capacity capacity = capacityService.findCapacityByReservationDate(today);
 
-        return getEmployeesInOffice(employeeReservations).equals(capacity.getLimit());
+        return employeesInOffice.equals(capacity.getLimit());
     }
 
     /**
@@ -88,7 +90,8 @@ public class EmployeeReservationService {
         LocalDate today = LocalDate.now();
         List<EmployeeReservation> employeeReservations = findEmployeeReservationsByDate(today);
         Capacity capacity = capacityService.findCapacityByReservationDate(today);
-        Integer employeesInOffice = getEmployeesInOffice(employeeReservations);
+        Integer employeesInOffice = employeeService.getNumberOfEmployeesInOffice();
+        //  Integer employeesInOffice = getEmployeesInOffice(employeeReservations);
         int freeSpace = capacity.getLimit() - employeesInOffice;
         if (freeSpace > 0) {
             Reservation reservation = findReservationByDateAndType(today, ReservationType.QUEUED);
@@ -184,12 +187,13 @@ public class EmployeeReservationService {
 
 
     private Integer getEmployeesInOffice(List<EmployeeReservation> employeeReservations) {
-        log.info("Count current employees in office requested");
-        return (int) employeeReservations
+        int employeesInOffice = (int) employeeReservations
                 .stream()
                 .map(EmployeeReservation::getEmployee)
                 .filter(Employee::getInOffice)
                 .count();
+        log.info("Employees in office:\t" + employeesInOffice);
+        return employeesInOffice;
     }
 
     private Boolean isReservationsWithinCapacityLimit(Reservation reservation) {
@@ -198,7 +202,7 @@ public class EmployeeReservationService {
                 .stream()
                 .map(EmployeeReservation::getReserved).filter(res -> res.getReservationType().equals(ReservationType.RESERVED))
                 .count();
-        return capacity.getLimit() != 0 && capacity.getLimit() >= reservationCount;
+        return capacity.getLimit() >= reservationCount && capacity.getLimit() != 0;
     }
 
     private Reservation createQueuedReservation(LocalDate reservationDate) {

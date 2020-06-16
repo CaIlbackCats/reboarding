@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -14,4 +15,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
     @Query("SELECT e FROM Employee e WHERE e.id= :id")
     Optional<Employee> findEmployeeById(@Param("id") String employeeId);
+
+    @Query("SELECT e FROM Employee e WHERE e.inOffice= true ")
+    List<Employee> findEmployeesInOffice();
 }
