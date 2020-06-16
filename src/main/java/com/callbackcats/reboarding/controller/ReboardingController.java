@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.NoSuchElementException;
+
 
 @RestController
 @Slf4j
@@ -24,46 +26,46 @@ public class ReboardingController {
     @PostMapping("/register")
     public ResponseEntity registerReservation(@RequestBody ReservationCreationData reservation) {
         log.info("Reservation is requested by employee id:\t" + reservation.getEmployeeId());
-        ResponseEntity responseEntity;
-        if (!reboardingService.isEmployeeReservedGivenDay(reservation.getEmployeeId(), reservation.getReservedDate())) {
-            EmployeeReservationData employeeReservation = reboardingService.handleReservationRequest(reservation);
-            if (ReservationType.valueOf(employeeReservation.getReservationType()).equals(ReservationType.QUEUED)) {
-                responseEntity = new ResponseEntity<>(employeeReservation.getPosition(), HttpStatus.OK);
-            } else {
-                responseEntity = new ResponseEntity<>(HttpStatus.CREATED);
-            }
-        } else {
-            responseEntity = new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+        boolean hasEmployeeAlreadyReservedDay = reboardingService.isEmployeeReservedGivenDay(reservation.getEmployeeId(), reservation.getReservedDate());
+        if (hasEmployeeAlreadyReservedDay) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        return responseEntity;
+        EmployeeReservationData employeeReservation = reboardingService.handleReservationRequest(reservation);
+
+        if (ReservationType.valueOf(employeeReservation.getReservationType()).equals(ReservationType.QUEUED)) {
+            return new ResponseEntity<>(employeeReservation.getPosition(), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/status/{employeeId}")
     public ResponseEntity<Integer> getStatus(@PathVariable String employeeId) {
 
         log.info("Current status is requested by employeeId:\t" + employeeId);
-        Integer currentPosition = reboardingService.getStatus(employeeId);
-
-        return new ResponseEntity<>(currentPosition, HttpStatus.OK);
+        try {
+            Integer currentPosition = reboardingService.getStatus(employeeId);
+            return new ResponseEntity<>(currentPosition, HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping("/entry/{employeeId}")
     public ResponseEntity<Boolean> enterToOffice(@PathVariable String employeeId) {
-        ResponseEntity<Boolean> responseEntity;
         log.info("Employee by id: " + employeeId + " requested to enter to office");
+
         if (reboardingService.enterEmployee(employeeId)) {
-            responseEntity = new ResponseEntity<>(HttpStatus.ACCEPTED);
-        } else {
-            responseEntity = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }
 
-        return responseEntity;
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @PostMapping("/exit/{employeeId}")
     public ResponseEntity<Void> exitFromOffice(@PathVariable String employeeId) {
-
         log.info("Employee by id: " + employeeId + " requested to exit from office");
         reboardingService.handleEmployeeExit(employeeId);
         log.info("Employee by id: " + employeeId + "left the office");
