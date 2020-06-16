@@ -128,8 +128,6 @@ public class ReboardingService {
         if (employee.getInOffice()) {
             employeeService.setEmployeeInOffice(employee, false);
 
-            // employeeReservationService.removeEmployeeReservationToday(employeeId);
-
             employeeReservationService.updateEmployeesCanEnterOffice();
             leftEmployee = true;
         }
@@ -137,9 +135,12 @@ public class ReboardingService {
     }
 
     /**
+     * <p>Finds and Removes the given reservation of the employee
+     * </p>
      *
+     * @param employeeId the id of the employee
+     * @param reservedDate
      */
-    //TODO javadoc
     public void removeReservation(String employeeId, LocalDate reservedDate) {
         EmployeeReservation employeeReservation = employeeReservationService.findEmployeeReservationByIdAndDate(employeeId, reservedDate);
         employeeReservationService.removeEmployeeReservation(employeeReservation);

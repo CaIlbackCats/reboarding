@@ -91,7 +91,6 @@ public class EmployeeReservationService {
         List<EmployeeReservation> employeeReservations = findEmployeeReservationsByDate(today);
         Capacity capacity = capacityService.findCapacityByReservationDate(today);
         Integer employeesInOffice = employeeService.getNumberOfEmployeesInOffice();
-        //  Integer employeesInOffice = getEmployeesInOffice(employeeReservations);
         int freeSpace = capacity.getLimit() - employeesInOffice;
         if (freeSpace > 0) {
             Reservation reservation = findReservationByDateAndType(today, ReservationType.QUEUED);
@@ -174,9 +173,11 @@ public class EmployeeReservationService {
     }
 
     /**
+     * <p>Deletes the connection of the employee and reservation from the database.
+     * </p>
      *
+     * @param employeeReservation the employee's reservation that will be deleted
      */
-    //TODO javadoc
     public void removeEmployeeReservation(EmployeeReservation employeeReservation) {
         log.info("Employee reservations are removed with id:\t" + employeeReservation.getId());
         employeeReservationRepository.delete(employeeReservation);
@@ -191,17 +192,6 @@ public class EmployeeReservationService {
             reservationRepository.save(queuedReservation);
         }
         return queuedReservation;
-    }
-
-
-    private Integer getEmployeesInOffice(List<EmployeeReservation> employeeReservations) {
-        int employeesInOffice = (int) employeeReservations
-                .stream()
-                .map(EmployeeReservation::getEmployee)
-                .filter(Employee::getInOffice)
-                .count();
-        log.info("Employees in office:\t" + employeesInOffice);
-        return employeesInOffice;
     }
 
     private Boolean isReservationsWithinCapacityLimit(Reservation reservation) {

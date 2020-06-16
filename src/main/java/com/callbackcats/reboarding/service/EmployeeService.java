@@ -26,6 +26,7 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
+    //In order to initialize some employees to the db upon application start
     @PostConstruct
     public void init() {
         List<Employee> employees = employeeImporter.importEmployees();
