@@ -37,7 +37,7 @@ public class ReboardingService {
      * </p>
      *
      * @param employeeId the id of the employee
-     * @param date the date to look for employeereservations
+     * @param date       the date to look for employeereservations
      * @return true if there was  reservation,false if there wasn't reservation
      * @throws NoSuchElementException if the employee doesn't exist
      */
@@ -94,6 +94,7 @@ public class ReboardingService {
                 .map(CapacityData::new)
                 .collect(Collectors.toList());
     }
+
     /**
      * <p>Saves an employee's reservation to the given day.
      * Creates reservation if there has been no for that day
@@ -106,7 +107,7 @@ public class ReboardingService {
     public EmployeeReservationData handleReservationRequest(ReservationCreationData reservationCreationData) {
         Employee employee = findEmployeeById(reservationCreationData.getEmployeeId());
         Reservation reservation = findOrCreateReservationByDate(reservationCreationData.getReservedDate());
-        saveReservationToEmployee(reservationCreationData.getReservedDate(), employee, reservation);
+        saveReservationToEmployee(employee, reservation);
         Integer position = reservation.getReservedEmployees().size() + 1;
         return new EmployeeReservationData(reservation.getReservationType(), position);
     }
@@ -178,10 +179,9 @@ public class ReboardingService {
         return new EmployeeData(findEmployeeById(employeeId));
     }
 
-    private void saveReservationToEmployee(LocalDate reservedDate, Employee employee, Reservation reservation) {
+    private void saveReservationToEmployee(Employee employee, Reservation reservation) {
         EmployeeReservation employeeReservation;
-        if (isReservationsAtCapacityLimit(reservation)) {
-            reservation = createQueuedReservation(reservedDate);
+        if (reservation.getReservationType() == ReservationType.QUEUED) {
             employeeReservation = new EmployeeReservation(employee, reservation, false);
         } else {
             employeeReservation = new EmployeeReservation(employee, reservation, true);
@@ -221,6 +221,10 @@ public class ReboardingService {
             reservation = new Reservation(reservationDate, capacity, ReservationType.RESERVED);
             reservationRepository.save(reservation);
             log.info("A new reservation was created for the day:\t" + reservationDate);
+        }
+        if (isReservationsAtCapacityLimit(reservation)) {
+            reservation = createQueuedReservation(reservationDate);
+            reservationRepository.save(reservation);
         }
         return reservation;
     }

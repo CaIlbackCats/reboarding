@@ -4,7 +4,7 @@ Feature: Save Reservation
   Scenario: Employee reservation is saved in reserved
     Given employee id and chosen date
       | id | date       |
-      | 0  | 2020-06-15 |
+      | 0  | 2020-06-02 |
 
     When service decides where to save the reservation
     Then saved_reservation_should_have_proper_fields_and_should_be_reserved_type
@@ -12,7 +12,7 @@ Feature: Save Reservation
   Scenario: Employee reservation is saved in a queue
     Given employee id and chosen date
       | id | date       |
-      | 0  | 2020-07-05 |
+      | 0  | 2020-05-01 |
     When service decides where to save the reservation
     Then saved_reservation_should_have_proper_fields_and_should_be_queued_type
 
