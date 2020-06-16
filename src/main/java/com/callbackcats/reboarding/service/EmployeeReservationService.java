@@ -55,12 +55,10 @@ public class EmployeeReservationService {
         employeeReservationRepository.save(employeeReservation);
         log.info("Employee by id:\t" + employee.getId() + " was saved to reservation for the day:\t" + reservation.getDate());
 
-        if (!permissionToOffice) {
-            Reservation foundReservation = reservationRepository.findReservationByDateAndType(reservation.getDate(), ReservationType.QUEUED).orElseThrow();
-            Integer position = foundReservation.getReservedEmployees().size();
-            return new EmployeeReservationData(foundReservation.getReservationType(), position);
-        }
-        return new EmployeeReservationData(reservation.getReservationType());
+
+        Integer position = findEmployeeReservationsByDate(reservation.getDate()).size();
+
+        return new EmployeeReservationData(reservation.getReservationType(),position);
     }
 
 

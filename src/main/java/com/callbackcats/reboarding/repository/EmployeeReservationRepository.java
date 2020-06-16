@@ -19,4 +19,5 @@ public interface EmployeeReservationRepository extends JpaRepository<EmployeeRes
 
     @Query("select er from EmployeeReservation er where er.reserved.date= :date")
     List<EmployeeReservation> findEmployeeReservationsByDate(@Param("date") LocalDate date);
+
 }
