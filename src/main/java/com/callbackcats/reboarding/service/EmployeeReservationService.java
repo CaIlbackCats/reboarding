@@ -1,6 +1,8 @@
 package com.callbackcats.reboarding.service;
 
 import com.callbackcats.reboarding.domain.*;
+import com.callbackcats.reboarding.dto.EmployeeReservationData;
+import com.callbackcats.reboarding.dto.ReservationData;
 import com.callbackcats.reboarding.repository.EmployeeReservationRepository;
 import com.callbackcats.reboarding.repository.ReservationRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -46,19 +48,27 @@ public class EmployeeReservationService {
      * @param employee    the employee who requested a reservation
      * @param reservation the reservation to connect to employee
      */
-    public void saveReservationToEmployee(Employee employee, Reservation reservation) {
+    EmployeeReservationData saveReservationToEmployee(Employee employee, Reservation reservation) {
         EmployeeReservation employeeReservation;
         boolean permissionToOffice = reservation.getReservationType() != ReservationType.QUEUED;
         employeeReservation = new EmployeeReservation(employee, reservation, permissionToOffice);
         employeeReservationRepository.save(employeeReservation);
         log.info("Employee by id:\t" + employee.getId() + " was saved to reservation for the day:\t" + reservation.getDate());
+
+        if (!permissionToOffice) {
+            Reservation foundReservation = reservationRepository.findReservationByDateAndType(reservation.getDate(), ReservationType.QUEUED).orElseThrow();
+            Integer position = foundReservation.getReservedEmployees().size();
+            return new EmployeeReservationData(foundReservation.getReservationType(), position);
+        }
+        return new EmployeeReservationData(reservation.getReservationType());
     }
+
 
     /**
      * <p>Decides whether the limit of office is reached for today
      * </p>
      *
-     * @param employeeReservations
+     * @param employeeReservations the list of employees' reservations
      * @return true - if the number of employees in the office has reached the capacity limit for the day,
      * false- if the number of employee in the office has not reached yet the limit for the day
      */
@@ -94,6 +104,7 @@ public class EmployeeReservationService {
      * <p>Tries to find an already existing reservation for the given day, or creates a 'Reserved' one if there is none,
      * or a 'Queued' one if the capacity limit has already been reached
      * </p>
+     *
      * @param reservationDate the date to reserve
      * @return a new or an already existing reservation where there's still free room
      */
@@ -108,9 +119,7 @@ public class EmployeeReservationService {
             log.info("A new reservation was created for the day:\t" + reservationDate);
         }
         if (isReservationsAtCapacityLimit(reservation)) {
-            reservation = createQueuedReservation(reservationDate);
-            reservationRepository.save(reservation);
-            log.info("A new queued reservation was created for the day:\t" + reservationDate);
+            reservation = findOrCreateQueuedReservation(reservationDate);
         }
         return reservation;
     }
@@ -118,6 +127,7 @@ public class EmployeeReservationService {
     /**
      * <p>Finds a reservation for the current day by the given reservation type
      * </p>
+     *
      * @param reservationDate the date to reserve
      * @param reservationType the type of reservation to look for
      * @return the found Reservation
@@ -133,7 +143,8 @@ public class EmployeeReservationService {
     /**
      * <p>Finds a the employee's reservation on the given day
      * </p>
-     * @param employeeId the id of the employee
+     *
+     * @param employeeId      the id of the employee
      * @param reservationDate the date of reservation
      * @return the found employee reservation
      * @throws NoSuchElementException if the employee didn't have a reservation for the given day
@@ -148,6 +159,7 @@ public class EmployeeReservationService {
     /**
      * <p>Finds all employee reservations for the given day
      * </p>
+     *
      * @param reservationDate the date of reservation
      * @return the list of found employee reservations
      */
@@ -155,6 +167,18 @@ public class EmployeeReservationService {
         List<EmployeeReservation> employeeReservationsByDate = employeeReservationRepository.findEmployeeReservationsByDate(reservationDate);
         log.info("Employee reservations are found for the day:\t" + reservationDate);
         return employeeReservationsByDate;
+    }
+
+    private Reservation findOrCreateQueuedReservation(LocalDate reservationDate) {
+        Reservation queuedReservation;
+        try {
+            queuedReservation = findReservationByDateAndType(reservationDate, ReservationType.QUEUED);
+
+        } catch (NoSuchElementException e) {
+            queuedReservation = createQueuedReservation(reservationDate);
+            reservationRepository.save(queuedReservation);
+        }
+        return queuedReservation;
     }
 
 

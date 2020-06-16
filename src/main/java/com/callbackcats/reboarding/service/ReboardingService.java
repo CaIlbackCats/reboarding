@@ -44,10 +44,10 @@ public class ReboardingService {
         }
 
         return employee.getReservation()
-            .stream()
-            .map(EmployeeReservation::getReserved)
-            .map(Reservation::getDate)
-            .anyMatch(localDate -> localDate.equals(date));
+                .stream()
+                .map(EmployeeReservation::getReserved)
+                .map(Reservation::getDate)
+                .anyMatch(localDate -> localDate.equals(date));
     }
 
     /**
@@ -88,10 +88,7 @@ public class ReboardingService {
     public EmployeeReservationData handleReservationRequest(ReservationCreationData reservationCreationData) {
         Employee employee = employeeService.findEmployeeById(reservationCreationData.getEmployeeId());
         Reservation reservation = employeeReservationService.findOrCreateReservationByDate(reservationCreationData.getReservedDate());
-        employeeReservationService.saveReservationToEmployee(employee, reservation);
-        Integer position = reservation.getReservedEmployees().size() + 1;
-
-        return new EmployeeReservationData(reservation.getReservationType(), position);
+        return employeeReservationService.saveReservationToEmployee(employee, reservation);
     }
 
     /**

@@ -8,4 +8,3 @@ Feature: Status
     Examples:
       | currentEmployeeId | position |
       | 0                 | 1        |
-      | 3                 | 3        |
