@@ -1,13 +1,15 @@
 package com.callbackcats.reboarding.service;
 
-import com.callbackcats.reboarding.domain.*;
-import com.callbackcats.reboarding.dto.*;
-import employee.EmployeeImporter;
+import com.callbackcats.reboarding.domain.Employee;
+import com.callbackcats.reboarding.domain.EmployeeReservation;
+import com.callbackcats.reboarding.domain.Reservation;
+import com.callbackcats.reboarding.domain.ReservationType;
+import com.callbackcats.reboarding.dto.EmployeeReservationData;
+import com.callbackcats.reboarding.dto.ReservationCreationData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -134,5 +136,13 @@ public class ReboardingService {
         return leftEmployee;
     }
 
-
+    /**
+     *
+     */
+    //TODO javadoc
+    public void removeReservation(String employeeId, LocalDate reservedDate) {
+        Employee employee = employeeService.findEmployeeById(employeeId);
+        EmployeeReservation employeeReservation = employeeReservationService.findEmployeeReservationByIdAndDate(employeeId, reservedDate);
+        employeeReservationService.removeEmployeeReservation(employeeReservation);
+    }
 }

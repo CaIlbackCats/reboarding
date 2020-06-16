@@ -155,7 +155,7 @@ public class EmployeeReservationService {
      */
     EmployeeReservation findEmployeeReservationByIdAndDate(String employeeId, LocalDate reservationDate) {
         EmployeeReservation employeeReservation = employeeReservationRepository.findEmployeeReservationByEmployeeIdAndReservationDate(employeeId, reservationDate)
-                .orElseThrow(() -> new NoSuchElementException("Employee by id: " + employeeId + " has no reservation for the given day: " + reservationDate));
+                .orElseThrow(() -> new NoSuchElementException("Employee by id:\t" + employeeId + " has no reservation for the given day:\t" + reservationDate));
         log.info("Employee reservation was found for employee id:\t" + employeeId + " on day:\t" + reservationDate);
         return employeeReservation;
     }
@@ -173,11 +173,19 @@ public class EmployeeReservationService {
         return employeeReservationsByDate;
     }
 
+    /**
+     *
+     */
+    //TODO javadoc
+    public void removeEmployeeReservation(EmployeeReservation employeeReservation) {
+        log.info("Employee reservations are removed with id:\t" + employeeReservation.getId());
+        employeeReservationRepository.delete(employeeReservation);
+    }
+
     private Reservation findOrCreateQueuedReservation(LocalDate reservationDate) {
         Reservation queuedReservation;
         try {
             queuedReservation = findReservationByDateAndType(reservationDate, ReservationType.QUEUED);
-
         } catch (NoSuchElementException e) {
             queuedReservation = createQueuedReservation(reservationDate);
             reservationRepository.save(queuedReservation);

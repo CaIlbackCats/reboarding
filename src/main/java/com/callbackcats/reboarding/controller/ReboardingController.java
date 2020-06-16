@@ -51,11 +51,12 @@ public class ReboardingController {
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
     }
 
     @PostMapping("/entry/{employeeId}")
     public ResponseEntity<Boolean> enterToOffice(@PathVariable String employeeId) {
-        log.info("Employee by id: " + employeeId + " requested to enter to office");
+        log.info("Employee by id:\t" + employeeId + " requested to enter to office");
 
         if (reboardingService.enterEmployee(employeeId)) {
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
@@ -75,5 +76,17 @@ public class ReboardingController {
             log.info("Employee by id: " + employeeId + "left the office");
         }
         return responseEntity;
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> removeReservation(@RequestBody ReservationCreationData reservation) {
+        log.info("Employee by id:\t" + reservation.getEmployeeId() + " requested to remove reservation for the day:\t" + reservation.getReservedDate());
+        try {
+            reboardingService.removeReservation(reservation.getEmployeeId(), reservation.getReservedDate());
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            log.info("Employee by id:\t" + reservation.getEmployeeId() + " do not have reservation for the day:\t" + reservation.getReservedDate());
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }
