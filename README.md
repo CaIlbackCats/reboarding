@@ -24,8 +24,8 @@ Java Spring, H2 db
 The project is divided into layers:
 
 - Service layer - service package contains service classes with business logic
-- DTO layer - dto package containing dot classes
-- Repository - contains repository 
+- DTO layer - dto package containing dto classes
+- Repository - contains repository classes
 - Entity layers
 - Controller - controller class for endpoints 
 
@@ -35,7 +35,28 @@ Connection to the database using DTOs
 
 ### Api endpoints
 
-Implemented 4 RESTful endpoints for HTTP requests. They send and recieve messages in JSON format
+Implemented 4 RESTful endpoints for HTTP requests. They send and recieve messages in JSON format.
+
+
+#### Status:
+
+- **URL**
+
+  /api/status/:employeeId
+
+- **Method:**
+
+  `GET`
+
+- **Success Response:**
+
+  - **Code:** 200
+
+- **Error Response:**
+
+  - **Code:** 404 NOT_FOUND
+
+    
 
 #### Enter:
 
@@ -62,22 +83,6 @@ Implemented 4 RESTful endpoints for HTTP requests. They send and recieve message
 - **Method:**
 
   `POST`
-
-- **Success Response:**
-
-  - **Code:** 200
-
-    
-
-#### Status:
-
-- **URL**
-
-  /api/status/:id
-
-- **Method:**
-
-  `GET`
 
 - **Success Response:**
 
