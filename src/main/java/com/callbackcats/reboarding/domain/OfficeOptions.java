@@ -41,10 +41,6 @@ public class OfficeOptions {
     @Column(name = "employee_min_distance")
     private Integer minDistance;
 
-
-
-
-
     public OfficeOptions(OfficeOptionsCreationData officeOptionsCreationData) {
         this.max = officeOptionsCreationData.getMax();
         this.limit = (max * officeOptionsCreationData.getCapacityValue()) / 100;

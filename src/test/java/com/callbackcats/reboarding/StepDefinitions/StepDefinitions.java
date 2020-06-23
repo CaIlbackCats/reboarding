@@ -5,10 +5,14 @@ import com.callbackcats.reboarding.dto.*;
 import com.callbackcats.reboarding.service.OfficeOptionsService;
 import com.callbackcats.reboarding.service.EmployeeService;
 import com.callbackcats.reboarding.service.ReboardingService;
+import com.callbackcats.reboarding.service.WorkStationService;
+import com.callbackcats.reboarding.util.InvalidLayoutException;
 import io.cucumber.java.DataTableType;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
@@ -35,6 +39,9 @@ public class StepDefinitions {
     @Autowired
     private EmployeeService employeeService;
 
+    @Autowired
+    private WorkStationService workStationService;
+
     private String currentEmployeeId;
     private boolean isValid;
     private List<OfficeOptionsCreationData> capacities = new ArrayList<>();
@@ -42,6 +49,8 @@ public class StepDefinitions {
     private ReservationCreationData reservationCreationData;
     private EmployeeReservationData employeeReservationData;
     private Integer position;
+    private List<PointData> disabledWorkstations;
+    private OfficeLayoutData officeLayoutData;
 
     @DataTableType
     public OfficeOptionsCreationData createCapacity(Map<String, String> dataTable) {
@@ -51,6 +60,11 @@ public class StepDefinitions {
     @DataTableType
     public ReservationCreationData createReservation(Map<String, String> dataTable) {
         return new ReservationCreationData(dataTable);
+    }
+
+    @DataTableType
+    public PointData createPointData(Map<String, String> dataTable) {
+        return new PointData(dataTable);
     }
 
 
@@ -152,5 +166,25 @@ public class StepDefinitions {
     @When("service signs out an already in office employee")
     public void serviceSignsOutAnAlreadyInOfficeEmployee() {
         reboardingService.handleEmployeeExit(currentEmployeeId);
+    }
+
+
+    @Given("list of disabled workstations:")
+    public void listOfDisabledWorkstations(List<PointData> disabledWorkstations) {
+        this.disabledWorkstations = disabledWorkstations;
+    }
+
+    @When("service creates the map")
+    public void serviceCreatesTheMap() {
+        LocalDate date = LocalDate.of(2020, 5, 17);
+        this.officeLayoutData = workStationService.generateLayoutWithRange(this.disabledWorkstations, date);
+
+    }
+
+
+    @Then("return saved map")
+    public void returnSavedMap() {
+        assertNotNull(officeLayoutData);
+        assertEquals(50, officeLayoutData.getWorkstations().size());
     }
 }

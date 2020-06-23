@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "work_day_office_layout")
 @Entity
-public class WorkDayOfficeLayout {
+public class OfficeLayout {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,5 +27,10 @@ public class WorkDayOfficeLayout {
 
     @OneToMany(mappedBy = "officeLayout")
     private List<WorkStation> workStations;
+
+    public OfficeLayout(LocalDate date, List<WorkStation> workStations) {
+        this.date = date;
+        this.workStations = workStations;
+    }
 
 }

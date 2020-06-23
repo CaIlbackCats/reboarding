@@ -35,7 +35,7 @@ public class WorkStation {
 
     @ManyToOne
     @JoinColumn(name = "office_layout_id")
-    private WorkDayOfficeLayout officeLayout;
+    private OfficeLayout officeLayout;
 
     public WorkStation(Point point) {
         this.xPosition = point.x;

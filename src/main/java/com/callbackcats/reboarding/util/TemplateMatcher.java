@@ -1,5 +1,7 @@
 package com.callbackcats.reboarding.util;
 
+import com.callbackcats.reboarding.domain.WorkStation;
+import com.callbackcats.reboarding.dto.WorkstationData;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -26,12 +28,22 @@ public class TemplateMatcher {
             signTemplate(templatePath, img);
         }
         Imgcodecs.imwrite("modified_office_layout.jpg", dst);//save image
-        System.out.println(templates.size() + " chairs found.");
-        System.out.println(templates);
 
         PointComparator pointComparator = new PointComparator();
         templates.sort(pointComparator);
         return templates;
+    }
+
+    public static void drawMap(List<Point> points) {
+        Mat source = Imgcodecs.imread("office_layout.jpg");
+
+        for (int i = 0; i < points.size(); i++) {
+            Point currentPoint = points.get(i);
+            Imgproc.circle(source, currentPoint, 50, new Scalar(0, 0, 255), 1);
+            Imgproc.circle(source, currentPoint, 3, new Scalar(0, 255, 0), 3);
+            Imgproc.putText(source, String.valueOf(i), currentPoint, 2, 1, new Scalar(0, 0, 0), 2);
+        }
+        Imgcodecs.imwrite("daily_layout.jpg", source);
     }
 
 

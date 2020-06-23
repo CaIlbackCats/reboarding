@@ -1,11 +1,14 @@
-INSERT INTO office_capacity(id,capacity_limit,start_date,end_date)
-VALUES (0,0,'2020-05-01','2020-05-31');
+INSERT INTO office_capacity(id,capacity_limit,start_date,end_date,employee_min_distance)
+VALUES (0,0,'2020-05-01','2020-05-15',50);
 
-INSERT INTO office_capacity(id,capacity_limit,start_date,end_date)
-VALUES (1,3,'2020-06-01','2020-06-30');
+INSERT INTO office_capacity(id,capacity_limit,start_date,end_date,employee_min_distance)
+VALUES (3,50,'2020-05-16','2020-05-31',50);
 
-INSERT INTO office_capacity(id,capacity_limit,start_date,end_date)
-VALUES (2,0,'2020-07-01','2020-07-31');
+INSERT INTO office_capacity(id,capacity_limit,start_date,end_date,employee_min_distance)
+VALUES (1,3,'2020-06-01','2020-06-30',10);
+
+INSERT INTO office_capacity(id,capacity_limit,start_date,end_date,employee_min_distance)
+VALUES (2,0,'2020-07-01','2020-07-31',50);
 
 INSERT INTO reservation (id,r_date,reservation_type,office_options_id)
 VALUES (0,CURRENT_DATE,'RESERVED',(SELECT id FROM office_capacity WHERE CURRENT_DATE >= start_date AND CURRENT_DATE <=end_date));
