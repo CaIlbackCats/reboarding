@@ -1,18 +1,16 @@
 package com.callbackcats.reboarding.service;
 
-import com.callbackcats.reboarding.domain.OfficeOptions;
 import com.callbackcats.reboarding.domain.WorkStation;
 import com.callbackcats.reboarding.dto.PointData;
 import com.callbackcats.reboarding.repository.WorkStationRepository;
 import com.callbackcats.reboarding.util.InvalidLayoutException;
-import com.callbackcats.reboarding.util.TemplateMatcher;
+import com.callbackcats.reboarding.util.LayoutHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.opencv.core.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +30,7 @@ public class WorkStationService {
 
     @PostConstruct
     public void init() {
-        List<Point> workstationPositions = TemplateMatcher.getWorkstationPosition();
+        List<Point> workstationPositions = LayoutHandler.getWorkstationPosition();
         List<WorkStation> workStations = workstationPositions
                 .stream()
                 .map(WorkStation::new)
@@ -52,7 +50,7 @@ public class WorkStationService {
         if (availableWorkstations.isEmpty()) {
             throw new InvalidLayoutException("Invalid range and place combination");
         }
-        TemplateMatcher.drawMap(layout);
+       // LayoutHandler.drawMap(layout);
         return layout;
     }
 

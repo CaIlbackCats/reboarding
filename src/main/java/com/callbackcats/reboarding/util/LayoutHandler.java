@@ -1,7 +1,6 @@
 package com.callbackcats.reboarding.util;
 
 import com.callbackcats.reboarding.domain.WorkStation;
-import com.callbackcats.reboarding.dto.WorkstationData;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -9,7 +8,7 @@ import org.opencv.imgproc.Imgproc;
 import java.util.*;
 
 
-public class TemplateMatcher {
+public class LayoutHandler {
     private static Mat dst;
     private static List<Point> templates = new ArrayList<>();
 
