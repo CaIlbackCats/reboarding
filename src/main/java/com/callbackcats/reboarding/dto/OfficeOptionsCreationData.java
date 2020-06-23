@@ -23,6 +23,8 @@ public class OfficeOptionsCreationData {
 
     private List<PointData> closedWorkstations;
 
+    private Integer minDistance;
+
     public OfficeOptionsCreationData(Map<String, String> dataTable) {
         this.max = Integer.parseInt(dataTable.get("max").trim());
         this.capacityValue = Integer.parseInt(dataTable.get("capacityValue").trim());

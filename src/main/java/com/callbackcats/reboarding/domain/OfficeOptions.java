@@ -41,10 +41,14 @@ public class OfficeOptions {
     @Column(name = "employee_min_distance")
     private Integer minDistance;
 
+    @OneToMany(mappedBy = "officeOptions")
+    private List<WorkStation> workStations;
+
     public OfficeOptions(OfficeOptionsCreationData officeOptionsCreationData) {
         this.max = officeOptionsCreationData.getMax();
         this.limit = (max * officeOptionsCreationData.getCapacityValue()) / 100;
         this.startDate = officeOptionsCreationData.getStartDate();
         this.endDate = officeOptionsCreationData.getEndDate();
+        this.minDistance=officeOptionsCreationData.getMinDistance();
     }
 }

@@ -1,11 +1,8 @@
 package com.callbackcats.reboarding.service;
 
-import com.callbackcats.reboarding.domain.OfficeLayout;
 import com.callbackcats.reboarding.domain.OfficeOptions;
 import com.callbackcats.reboarding.domain.WorkStation;
-import com.callbackcats.reboarding.dto.OfficeLayoutData;
 import com.callbackcats.reboarding.dto.PointData;
-import com.callbackcats.reboarding.repository.OfficeLayoutRepository;
 import com.callbackcats.reboarding.repository.WorkStationRepository;
 import com.callbackcats.reboarding.util.InvalidLayoutException;
 import com.callbackcats.reboarding.util.TemplateMatcher;
@@ -28,12 +25,10 @@ public class WorkStationService {
     private static final Point ORIGO = new Point(0, 0);
 
     private final WorkStationRepository workStationRepository;
-    private final OfficeLayoutRepository officeLayoutRepository;
     private final OfficeOptionsService officeOptionsService;
 
-    public WorkStationService(WorkStationRepository workStationRepository, OfficeLayoutRepository officeLayoutRepository, OfficeOptionsService officeOptionsService) {
+    public WorkStationService(WorkStationRepository workStationRepository, OfficeOptionsService officeOptionsService) {
         this.workStationRepository = workStationRepository;
-        this.officeLayoutRepository = officeLayoutRepository;
         this.officeOptionsService = officeOptionsService;
     }
 
@@ -47,7 +42,7 @@ public class WorkStationService {
         workStationRepository.saveAll(workStations);
     }
 
-    public OfficeLayoutData generateLayoutWithRange(List<PointData> disabledWorkstations, LocalDate date) {
+    public List<WorkStation> generateLayoutWithRange(List<PointData> disabledWorkstations, LocalDate date) {
         OfficeOptions officeOptions = officeOptionsService.findOfficeOptionsByReservationDate(date);
         List<WorkStation> availableWorkstations = getAvailableWorkstations(disabledWorkstations);
         int range = officeOptions.getMinDistance();
@@ -62,10 +57,8 @@ public class WorkStationService {
         if (availableWorkstations.isEmpty()) {
             throw new InvalidLayoutException("Invalid range and place combination");
         }
-        OfficeLayout officeLayout = new OfficeLayout(date, layout);
-        officeLayoutRepository.save(officeLayout);
         TemplateMatcher.drawMap(layout);
-        return new OfficeLayoutData(officeLayout);
+        return layout;
     }
 
     private List<WorkStation> getAvailableWorkstations(List<PointData> closedWorkstations) {

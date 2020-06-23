@@ -1,6 +1,7 @@
 package com.callbackcats.reboarding.StepDefinitions;
 
 import com.callbackcats.reboarding.domain.ReservationType;
+import com.callbackcats.reboarding.domain.WorkStation;
 import com.callbackcats.reboarding.dto.*;
 import com.callbackcats.reboarding.service.OfficeOptionsService;
 import com.callbackcats.reboarding.service.EmployeeService;
@@ -50,7 +51,7 @@ public class StepDefinitions {
     private EmployeeReservationData employeeReservationData;
     private Integer position;
     private List<PointData> disabledWorkstations;
-    private OfficeLayoutData officeLayoutData;
+    private List<WorkStation> workStations;
 
     @DataTableType
     public OfficeOptionsCreationData createCapacity(Map<String, String> dataTable) {
@@ -177,14 +178,14 @@ public class StepDefinitions {
     @When("service creates the map")
     public void serviceCreatesTheMap() {
         LocalDate date = LocalDate.of(2020, 5, 17);
-        this.officeLayoutData = workStationService.generateLayoutWithRange(this.disabledWorkstations, date);
+        this.workStations = workStationService.generateLayoutWithRange(this.disabledWorkstations, date);
 
     }
 
 
     @Then("return saved map")
     public void returnSavedMap() {
-        assertNotNull(officeLayoutData);
-        assertEquals(50, officeLayoutData.getWorkstations().size());
+        assertNotNull(workStations);
+        assertEquals(50, workStations.size());
     }
 }
