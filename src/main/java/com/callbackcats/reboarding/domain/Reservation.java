@@ -34,7 +34,7 @@ public class Reservation {
     private List<EmployeeReservation> reservedEmployees = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "capacity_id")
+    @JoinColumn(name = "office_options_id")
     private OfficeOptions officeOptions;
 
     public Reservation(LocalDate reservationDate, OfficeOptions officeOptions, ReservationType reservationType) {

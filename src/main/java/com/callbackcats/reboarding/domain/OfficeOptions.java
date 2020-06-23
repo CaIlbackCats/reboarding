@@ -35,7 +35,7 @@ public class OfficeOptions {
     @Column(name = "end_date")
     private LocalDate endDate;
 
-    @OneToMany(mappedBy = "capacity")
+    @OneToMany(mappedBy = "officeOptions")
     private List<Reservation> reservation;
 
     @Column(name = "employee_min_distance")

@@ -7,13 +7,13 @@ VALUES (1,3,'2020-06-01','2020-06-30');
 INSERT INTO office_capacity(id,capacity_limit,start_date,end_date)
 VALUES (2,0,'2020-07-01','2020-07-31');
 
-INSERT INTO reservation (id,r_date,reservation_type,capacity_id)
+INSERT INTO reservation (id,r_date,reservation_type,office_options_id)
 VALUES (0,CURRENT_DATE,'RESERVED',(SELECT id FROM office_capacity WHERE CURRENT_DATE >= start_date AND CURRENT_DATE <=end_date));
-INSERT INTO reservation(id,r_date,reservation_type,capacity_id)
+INSERT INTO reservation(id,r_date,reservation_type,office_options_id)
 VALUES (1,CURRENT_DATE,'QUEUED',(SELECT id FROM office_capacity WHERE CURRENT_DATE >= start_date AND CURRENT_DATE <=end_date));
-INSERT INTO reservation (id,r_date,capacity_id)
+INSERT INTO reservation (id,r_date,office_options_id)
 VALUES (2,CURRENT_DATE+1,(SELECT id FROM office_capacity WHERE CURRENT_DATE+1 >= start_date AND CURRENT_DATE+1 <=end_date));
-INSERT INTO reservation (id,r_date,reservation_type,capacity_id)
+INSERT INTO reservation (id,r_date,reservation_type,office_options_id)
 VALUES (3,'2020-06-02','RESERVED',(SELECT id FROM office_capacity WHERE '2020-06-02' >= start_date AND '2020-06-02' <=end_date));
 
 
