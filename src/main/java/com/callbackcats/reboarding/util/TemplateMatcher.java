@@ -4,10 +4,7 @@ import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 public class TemplateMatcher {
@@ -32,6 +29,8 @@ public class TemplateMatcher {
         System.out.println(templates.size() + " chairs found.");
         System.out.println(templates);
 
+        PointComparator pointComparator = new PointComparator();
+        templates.sort(pointComparator);
         return templates;
     }
 

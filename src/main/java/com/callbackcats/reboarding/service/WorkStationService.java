@@ -31,6 +31,7 @@ public class WorkStationService {
     @PostConstruct
     public void init() {
         List<Point> workstationPositions = TemplateMatcher.getWorkstationPosition();
+        workstationPositions.forEach(point -> log.info(point.toString()));
         List<WorkStation> workStations = workstationPositions
                 .stream()
                 .map(WorkStation::new)

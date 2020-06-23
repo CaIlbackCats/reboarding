@@ -25,7 +25,7 @@ public class WorkDayOfficeLayout {
     @Column(name = "date")
     private LocalDate date;
 
-    @OneToMany(mappedBy = "workStation")
+    @OneToMany(mappedBy = "officeLayout")
     private List<WorkStation> workStations;
 
 }
