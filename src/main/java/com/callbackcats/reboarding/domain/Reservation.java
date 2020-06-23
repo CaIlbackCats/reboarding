@@ -35,11 +35,11 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name = "capacity_id")
-    private Capacity capacity;
+    private OfficeOptions officeOptions;
 
-    public Reservation(LocalDate reservationDate, Capacity capacity, ReservationType reservationType) {
+    public Reservation(LocalDate reservationDate, OfficeOptions officeOptions, ReservationType reservationType) {
         this.date = reservationDate;
-        this.capacity = capacity;
+        this.officeOptions = officeOptions;
         this.reservationType = reservationType;
     }
 }

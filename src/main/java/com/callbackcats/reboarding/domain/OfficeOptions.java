@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class Capacity {
+public class OfficeOptions {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,7 +38,10 @@ public class Capacity {
     @OneToMany(mappedBy = "capacity")
     private List<Reservation> reservation;
 
-    public Capacity(CapacityCreationData capacityCreationData) {
+    @Column(name = "employee_min_distance")
+    private Integer minDistance;
+
+    public OfficeOptions(CapacityCreationData capacityCreationData) {
         this.max = capacityCreationData.getMax();
         this.limit = (max * capacityCreationData.getCapacityValue()) / 100;
         this.startDate = capacityCreationData.getStartDate();

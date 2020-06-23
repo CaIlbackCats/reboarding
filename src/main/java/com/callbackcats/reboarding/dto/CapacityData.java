@@ -1,6 +1,6 @@
 package com.callbackcats.reboarding.dto;
 
-import com.callbackcats.reboarding.domain.Capacity;
+import com.callbackcats.reboarding.domain.OfficeOptions;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,11 +22,11 @@ public class CapacityData {
 
     private LocalDate endDate;
 
-    public CapacityData(Capacity capacity) {
-        this.id = capacity.getId();
-        this.max = capacity.getMax();
-        this.limit = capacity.getLimit();
-        this.startDate = capacity.getStartDate();
-        this.endDate = capacity.getEndDate();
+    public CapacityData(OfficeOptions officeOptions) {
+        this.id = officeOptions.getId();
+        this.max = officeOptions.getMax();
+        this.limit = officeOptions.getLimit();
+        this.startDate = officeOptions.getStartDate();
+        this.endDate = officeOptions.getEndDate();
     }
 }

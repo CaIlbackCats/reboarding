@@ -1,6 +1,6 @@
 package com.callbackcats.reboarding.service;
 
-import com.callbackcats.reboarding.domain.Capacity;
+import com.callbackcats.reboarding.domain.OfficeOptions;
 import com.callbackcats.reboarding.dto.CapacityCreationData;
 import com.callbackcats.reboarding.dto.CapacityData;
 import com.callbackcats.reboarding.repository.CapacityRepository;
@@ -34,7 +34,7 @@ public class CapacityService {
      * @return the saved capacities
      */
     public List<CapacityData> saveCapacities(List<CapacityCreationData> capacityCreationData) {
-        List<Capacity> capacities = capacityCreationData.stream().map(Capacity::new).collect(Collectors.toList());
+        List<OfficeOptions> capacities = capacityCreationData.stream().map(OfficeOptions::new).collect(Collectors.toList());
         capacityRepository.saveAll(capacities);
 
         return capacities
@@ -43,9 +43,9 @@ public class CapacityService {
                 .collect(Collectors.toList());
     }
 
-    Capacity findCapacityByReservationDate(LocalDate reservationDate) {
-        Capacity capacity = capacityRepository.findCapacityByReservationDate(reservationDate).orElseThrow(() -> new NoSuchElementException("There is no capacity set for the given date:\t" + reservationDate));
+    OfficeOptions findCapacityByReservationDate(LocalDate reservationDate) {
+        OfficeOptions officeOptions = capacityRepository.findCapacityByReservationDate(reservationDate).orElseThrow(() -> new NoSuchElementException("There is no capacity set for the given date:\t" + reservationDate));
         log.info("Capacity was found for the day:\t" + reservationDate);
-        return capacity;
+        return officeOptions;
     }
 }

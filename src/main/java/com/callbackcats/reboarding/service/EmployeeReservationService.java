@@ -77,9 +77,9 @@ public class EmployeeReservationService {
     public Boolean isOfficeAtLimitCurrently() {
         LocalDate today = LocalDate.now();
         Integer employeesInOffice = employeeService.getNumberOfEmployeesInOffice();
-        Capacity capacity = capacityService.findCapacityByReservationDate(today);
+        OfficeOptions officeOptions = capacityService.findCapacityByReservationDate(today);
 
-        return employeesInOffice.equals(capacity.getLimit());
+        return employeesInOffice.equals(officeOptions.getLimit());
     }
 
     /**
@@ -89,9 +89,9 @@ public class EmployeeReservationService {
     public void updateEmployeesCanEnterOffice() {
         LocalDate today = LocalDate.now();
         List<EmployeeReservation> employeeReservations = findEmployeeReservationsByDate(today);
-        Capacity capacity = capacityService.findCapacityByReservationDate(today);
+        OfficeOptions officeOptions = capacityService.findCapacityByReservationDate(today);
         Integer employeesInOffice = employeeService.getNumberOfEmployeesInOffice();
-        int freeSpace = capacity.getLimit() - employeesInOffice;
+        int freeSpace = officeOptions.getLimit() - employeesInOffice;
         if (freeSpace > 0) {
             Reservation reservation = findReservationByDateAndType(today, ReservationType.QUEUED);
             List<EmployeeReservation> reservedEmployees = reservation.getReservedEmployees();
@@ -116,8 +116,8 @@ public class EmployeeReservationService {
         try {
             reservation = findReservationByDateAndType(reservationDate, ReservationType.RESERVED);
         } catch (NoSuchElementException e) {
-            Capacity capacity = capacityService.findCapacityByReservationDate(reservationDate);
-            reservation = new Reservation(reservationDate, capacity, ReservationType.RESERVED);
+            OfficeOptions officeOptions = capacityService.findCapacityByReservationDate(reservationDate);
+            reservation = new Reservation(reservationDate, officeOptions, ReservationType.RESERVED);
             reservationRepository.save(reservation);
             log.info("A new reservation was created for the day:\t" + reservationDate);
         }
@@ -195,17 +195,17 @@ public class EmployeeReservationService {
     }
 
     private Boolean isReservationsWithinCapacityLimit(Reservation reservation) {
-        Capacity capacity = reservation.getCapacity();
+        OfficeOptions officeOptions = reservation.getOfficeOptions();
         Integer reservationCount = (int) findEmployeeReservationsByDate(reservation.getDate())
                 .stream()
                 .map(EmployeeReservation::getReserved).filter(res -> res.getReservationType().equals(ReservationType.RESERVED))
                 .count();
-        return capacity.getLimit() >= reservationCount && capacity.getLimit() != 0;
+        return officeOptions.getLimit() >= reservationCount && officeOptions.getLimit() != 0;
     }
 
     private Reservation createQueuedReservation(LocalDate reservationDate) {
-        Capacity capacity = capacityService.findCapacityByReservationDate(reservationDate);
-        Reservation reservation = new Reservation(reservationDate, capacity, ReservationType.QUEUED);
+        OfficeOptions officeOptions = capacityService.findCapacityByReservationDate(reservationDate);
+        Reservation reservation = new Reservation(reservationDate, officeOptions, ReservationType.QUEUED);
         reservationRepository.save(reservation);
         log.info("A new queued reservation was created for the day:\t" + reservationDate);
         return reservation;
