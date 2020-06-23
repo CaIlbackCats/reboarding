@@ -25,11 +25,9 @@ public class WorkStationService {
     private static final Point ORIGO = new Point(0, 0);
 
     private final WorkStationRepository workStationRepository;
-    private final OfficeOptionsService officeOptionsService;
 
-    public WorkStationService(WorkStationRepository workStationRepository, OfficeOptionsService officeOptionsService) {
+    public WorkStationService(WorkStationRepository workStationRepository) {
         this.workStationRepository = workStationRepository;
-        this.officeOptionsService = officeOptionsService;
     }
 
     @PostConstruct
@@ -42,14 +40,11 @@ public class WorkStationService {
         workStationRepository.saveAll(workStations);
     }
 
-    public List<WorkStation> generateLayoutWithRange(List<PointData> disabledWorkstations, LocalDate date) {
-        OfficeOptions officeOptions = officeOptionsService.findOfficeOptionsByReservationDate(date);
+    public List<WorkStation> generateLayoutWithRange(List<PointData> disabledWorkstations, Integer range, Integer limit) {
         List<WorkStation> availableWorkstations = getAvailableWorkstations(disabledWorkstations);
-        int range = officeOptions.getMinDistance();
         List<WorkStation> layout = new ArrayList<>();
-        Integer size = officeOptions.getLimit();
 
-        while (layout.size() < size && !availableWorkstations.isEmpty()) {
+        while (layout.size() < limit && !availableWorkstations.isEmpty()) {
             WorkStation closestWorkstation = findClosestWorkstation(availableWorkstations);
             layout.add(closestWorkstation);
             availableWorkstations = removeCoordsInRange(closestWorkstation, availableWorkstations, range);

@@ -49,6 +49,6 @@ public class OfficeOptions {
         this.limit = (max * officeOptionsCreationData.getCapacityValue()) / 100;
         this.startDate = officeOptionsCreationData.getStartDate();
         this.endDate = officeOptionsCreationData.getEndDate();
-        this.minDistance=officeOptionsCreationData.getMinDistance();
+        this.minDistance = officeOptionsCreationData.getMinDistance() * 10;
     }
 }

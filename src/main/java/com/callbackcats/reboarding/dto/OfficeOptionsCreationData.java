@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,5 +31,7 @@ public class OfficeOptionsCreationData {
         this.capacityValue = Integer.parseInt(dataTable.get("capacityValue").trim());
         this.startDate = LocalDate.parse(dataTable.get("startDate"));
         this.endDate = LocalDate.parse(dataTable.get("endDate"));
+        this.closedWorkstations = new ArrayList<>();
+        this.minDistance = Integer.parseInt(dataTable.get("minDistance"));
     }
 }

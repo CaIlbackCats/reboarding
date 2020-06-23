@@ -3,6 +3,7 @@ package com.callbackcats.reboarding.service;
 import com.callbackcats.reboarding.domain.OfficeOptions;
 import com.callbackcats.reboarding.dto.OfficeOptionsCreationData;
 import com.callbackcats.reboarding.dto.CapacityData;
+import com.callbackcats.reboarding.dto.PointData;
 import com.callbackcats.reboarding.repository.OfficeOptionsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,11 +20,12 @@ import java.util.stream.Collectors;
 public class OfficeOptionsService {
 
     private final OfficeOptionsRepository officeOptionsRepository;
+    private final WorkStationService workStationService;
 
-    public OfficeOptionsService(OfficeOptionsRepository officeOptionsRepository) {
+    public OfficeOptionsService(OfficeOptionsRepository officeOptionsRepository, WorkStationService workStationService) {
         this.officeOptionsRepository = officeOptionsRepository;
+        this.workStationService = workStationService;
     }
-
 
 
     /**
@@ -34,13 +36,25 @@ public class OfficeOptionsService {
      * @return the saved capacities
      */
     public List<CapacityData> saveCapacities(List<OfficeOptionsCreationData> officeOptionsCreationData) {
-        List<OfficeOptions> capacities = officeOptionsCreationData.stream().map(OfficeOptions::new).collect(Collectors.toList());
+        List<OfficeOptions> capacities = officeOptionsCreationData
+                .stream()
+                .map(this::getOfficeOptions)
+                .collect(Collectors.toList());
         officeOptionsRepository.saveAll(capacities);
 
         return capacities
                 .stream()
                 .map(CapacityData::new)
                 .collect(Collectors.toList());
+    }
+
+    private OfficeOptions getOfficeOptions(OfficeOptionsCreationData officeOption) {
+        OfficeOptions officeOptions = new OfficeOptions(officeOption);
+        List<PointData> closedWorkstations = officeOption.getClosedWorkstations();
+        Integer limit = officeOptions.getLimit();
+        Integer minDistance = officeOptions.getMinDistance();
+        officeOptions.setWorkStations(workStationService.generateLayoutWithRange(closedWorkstations, minDistance, limit));
+        return officeOptions;
     }
 
     OfficeOptions findOfficeOptionsByReservationDate(LocalDate reservationDate) {

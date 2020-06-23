@@ -178,7 +178,7 @@ public class StepDefinitions {
     @When("service creates the map")
     public void serviceCreatesTheMap() {
         LocalDate date = LocalDate.of(2020, 5, 17);
-        this.workStations = workStationService.generateLayoutWithRange(this.disabledWorkstations, date);
+        this.workStations = workStationService.generateLayoutWithRange(this.disabledWorkstations,50,50);
 
     }
 
