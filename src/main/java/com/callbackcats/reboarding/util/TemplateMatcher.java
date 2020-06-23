@@ -46,11 +46,13 @@ public class TemplateMatcher {
             maxval = maxr.maxVal;
             dst = img.clone();
             if (maxval >= threshold) {
-                Imgproc.rectangle(img, maxp, new Point(maxp.x + tpl.cols(),
-                        maxp.y + tpl.rows()), new Scalar(0, 0, 255), 5);
+                if (!isAlreadyInTemplateSet(maxp)) {
+                    Imgproc.rectangle(img, maxp, new Point(maxp.x + tpl.cols(),
+                            maxp.y + tpl.rows()), new Scalar(0, 0, 255), 1);
+                    templates.add(maxp);
+                }
                 Imgproc.rectangle(result, maxp, new Point(maxp.x + tpl.cols(),
                         maxp.y + tpl.rows()), new Scalar(0, 0, 255), -1);
-                templates.add(maxp);
             } else {
                 break;
             }
