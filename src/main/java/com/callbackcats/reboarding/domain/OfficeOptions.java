@@ -1,6 +1,6 @@
 package com.callbackcats.reboarding.domain;
 
-import com.callbackcats.reboarding.dto.CapacityCreationData;
+import com.callbackcats.reboarding.dto.OfficeOptionsCreationData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,10 +41,14 @@ public class OfficeOptions {
     @Column(name = "employee_min_distance")
     private Integer minDistance;
 
-    public OfficeOptions(CapacityCreationData capacityCreationData) {
-        this.max = capacityCreationData.getMax();
-        this.limit = (max * capacityCreationData.getCapacityValue()) / 100;
-        this.startDate = capacityCreationData.getStartDate();
-        this.endDate = capacityCreationData.getEndDate();
+
+
+
+
+    public OfficeOptions(OfficeOptionsCreationData officeOptionsCreationData) {
+        this.max = officeOptionsCreationData.getMax();
+        this.limit = (max * officeOptionsCreationData.getCapacityValue()) / 100;
+        this.startDate = officeOptionsCreationData.getStartDate();
+        this.endDate = officeOptionsCreationData.getEndDate();
     }
 }

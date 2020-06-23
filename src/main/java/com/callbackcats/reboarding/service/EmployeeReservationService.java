@@ -19,13 +19,13 @@ public class EmployeeReservationService {
 
     private final ReservationRepository reservationRepository;
     private final EmployeeReservationRepository employeeReservationRepository;
-    private final CapacityService capacityService;
+    private final OfficeOptionsService officeOptionsService;
     private final EmployeeService employeeService;
 
-    public EmployeeReservationService(ReservationRepository reservationRepository, EmployeeReservationRepository employeeReservationRepository, CapacityService capacityService, EmployeeService employeeService) {
+    public EmployeeReservationService(ReservationRepository reservationRepository, EmployeeReservationRepository employeeReservationRepository, OfficeOptionsService officeOptionsService, EmployeeService employeeService) {
         this.reservationRepository = reservationRepository;
         this.employeeReservationRepository = employeeReservationRepository;
-        this.capacityService = capacityService;
+        this.officeOptionsService = officeOptionsService;
         this.employeeService = employeeService;
     }
 
@@ -77,7 +77,7 @@ public class EmployeeReservationService {
     public Boolean isOfficeAtLimitCurrently() {
         LocalDate today = LocalDate.now();
         Integer employeesInOffice = employeeService.getNumberOfEmployeesInOffice();
-        OfficeOptions officeOptions = capacityService.findCapacityByReservationDate(today);
+        OfficeOptions officeOptions = officeOptionsService.findOfficeOptionsByReservationDate(today);
 
         return employeesInOffice.equals(officeOptions.getLimit());
     }
@@ -89,7 +89,7 @@ public class EmployeeReservationService {
     public void updateEmployeesCanEnterOffice() {
         LocalDate today = LocalDate.now();
         List<EmployeeReservation> employeeReservations = findEmployeeReservationsByDate(today);
-        OfficeOptions officeOptions = capacityService.findCapacityByReservationDate(today);
+        OfficeOptions officeOptions = officeOptionsService.findOfficeOptionsByReservationDate(today);
         Integer employeesInOffice = employeeService.getNumberOfEmployeesInOffice();
         int freeSpace = officeOptions.getLimit() - employeesInOffice;
         if (freeSpace > 0) {
@@ -116,7 +116,7 @@ public class EmployeeReservationService {
         try {
             reservation = findReservationByDateAndType(reservationDate, ReservationType.RESERVED);
         } catch (NoSuchElementException e) {
-            OfficeOptions officeOptions = capacityService.findCapacityByReservationDate(reservationDate);
+            OfficeOptions officeOptions = officeOptionsService.findOfficeOptionsByReservationDate(reservationDate);
             reservation = new Reservation(reservationDate, officeOptions, ReservationType.RESERVED);
             reservationRepository.save(reservation);
             log.info("A new reservation was created for the day:\t" + reservationDate);
@@ -204,7 +204,7 @@ public class EmployeeReservationService {
     }
 
     private Reservation createQueuedReservation(LocalDate reservationDate) {
-        OfficeOptions officeOptions = capacityService.findCapacityByReservationDate(reservationDate);
+        OfficeOptions officeOptions = officeOptionsService.findOfficeOptionsByReservationDate(reservationDate);
         Reservation reservation = new Reservation(reservationDate, officeOptions, ReservationType.QUEUED);
         reservationRepository.save(reservation);
         log.info("A new queued reservation was created for the day:\t" + reservationDate);

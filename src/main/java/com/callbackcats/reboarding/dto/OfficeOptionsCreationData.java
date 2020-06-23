@@ -5,12 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CapacityCreationData {
+public class OfficeOptionsCreationData {
 
     private Integer max;
 
@@ -20,7 +21,9 @@ public class CapacityCreationData {
 
     private LocalDate endDate;
 
-    public CapacityCreationData(Map<String, String> dataTable) {
+    private List<PointData> closedWorkstations;
+
+    public OfficeOptionsCreationData(Map<String, String> dataTable) {
         this.max = Integer.parseInt(dataTable.get("max").trim());
         this.capacityValue = Integer.parseInt(dataTable.get("capacityValue").trim());
         this.startDate = LocalDate.parse(dataTable.get("startDate"));

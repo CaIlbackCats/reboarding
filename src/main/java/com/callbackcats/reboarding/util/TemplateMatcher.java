@@ -4,20 +4,21 @@ import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 
 public class TemplateMatcher {
     private static Mat dst;
-    private static Set<Point> templates = new HashSet<>();
+    private static List<Point> templates = new ArrayList<>();
 
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
-    public static void main(String[] args) {
+    public static List<Point> getWorkstationPosition() {
 
         Mat img = Imgcodecs.imread("office_layout.jpg");
         dst = img.clone();
@@ -30,6 +31,8 @@ public class TemplateMatcher {
         Imgcodecs.imwrite("modified_office_layout.jpg", dst);//save image
         System.out.println(templates.size() + " chairs found.");
         System.out.println(templates);
+
+        return templates;
     }
 
 
@@ -59,7 +62,6 @@ public class TemplateMatcher {
         }
     }
 
-    //TODO
     private static boolean isAlreadyInTemplateSet(Point maxp) {
         Optional<Point> maybePoint = templates.stream().filter(p -> Math.abs(maxp.x - p.x) < 3 && Math.abs(maxp.y - p.y) < 3).findFirst();
         return maybePoint.isPresent();

@@ -2,7 +2,7 @@ package com.callbackcats.reboarding.StepDefinitions;
 
 import com.callbackcats.reboarding.domain.ReservationType;
 import com.callbackcats.reboarding.dto.*;
-import com.callbackcats.reboarding.service.CapacityService;
+import com.callbackcats.reboarding.service.OfficeOptionsService;
 import com.callbackcats.reboarding.service.EmployeeService;
 import com.callbackcats.reboarding.service.ReboardingService;
 import io.cucumber.java.DataTableType;
@@ -30,22 +30,22 @@ public class StepDefinitions {
     private ReboardingService reboardingService;
 
     @Autowired
-    private CapacityService capacityService;
+    private OfficeOptionsService officeOptionsService;
 
     @Autowired
     private EmployeeService employeeService;
 
     private String currentEmployeeId;
     private boolean isValid;
-    private List<CapacityCreationData> capacities = new ArrayList<>();
+    private List<OfficeOptionsCreationData> capacities = new ArrayList<>();
     private List<CapacityData> savedCapacities = new ArrayList<>();
     private ReservationCreationData reservationCreationData;
     private EmployeeReservationData employeeReservationData;
     private Integer position;
 
     @DataTableType
-    public CapacityCreationData createCapacity(Map<String, String> dataTable) {
-        return new CapacityCreationData(dataTable);
+    public OfficeOptionsCreationData createCapacity(Map<String, String> dataTable) {
+        return new OfficeOptionsCreationData(dataTable);
     }
 
     @DataTableType
@@ -72,13 +72,13 @@ public class StepDefinitions {
 
 
     @Given("^capacity with the following details:$")
-    public void capacity_with_the_following_details(List<CapacityCreationData> capacityCreationData) {
-        this.capacities = capacityCreationData;
+    public void capacity_with_the_following_details(List<OfficeOptionsCreationData> officeOptionsCreationData) {
+        this.capacities = officeOptionsCreationData;
     }
 
     @When("service saved the data")
     public void service_saves_the_data() {
-        this.savedCapacities = capacityService.saveCapacities(this.capacities);
+        this.savedCapacities = officeOptionsService.saveCapacities(this.capacities);
     }
 
     @Then("return saved capacity data")

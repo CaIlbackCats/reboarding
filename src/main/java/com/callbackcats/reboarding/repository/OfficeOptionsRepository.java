@@ -10,8 +10,8 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
-public interface CapacityRepository extends JpaRepository<OfficeOptions, Long> {
+public interface OfficeOptionsRepository extends JpaRepository<OfficeOptions, Long> {
 
-    @Query("select c from OfficeOptions c where c.startDate<= :reservationDate and c.endDate>= :reservationDate")
-    Optional<OfficeOptions> findCapacityByReservationDate(@Param("reservationDate") LocalDate date);
+    @Query("select c from OfficeOptions c where c.startDate<= :date and c.endDate>= :date")
+    Optional<OfficeOptions> findOfficeOptionsByDate(@Param("date") LocalDate date);
 }
