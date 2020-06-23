@@ -1,7 +1,7 @@
 package com.callbackcats.reboarding.service;
 
-import com.callbackcats.reboarding.domain.OfficeOptions;
 import com.callbackcats.reboarding.domain.OfficeLayout;
+import com.callbackcats.reboarding.domain.OfficeOptions;
 import com.callbackcats.reboarding.domain.WorkStation;
 import com.callbackcats.reboarding.dto.OfficeLayoutData;
 import com.callbackcats.reboarding.dto.PointData;
@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 @Transactional
 public class WorkStationService {
 
+    private static final Point ORIGO = new Point(0, 0);
+
     private final WorkStationRepository workStationRepository;
     private final OfficeLayoutRepository officeLayoutRepository;
     private final OfficeOptionsService officeOptionsService;
@@ -45,74 +47,25 @@ public class WorkStationService {
         workStationRepository.saveAll(workStations);
     }
 
-//    public OfficeLayoutData createDailyLayout(List<PointData> closedWorkstations, LocalDate date) {
-//        OfficeOptions officeOptions = officeOptionsService.findOfficeOptionsByReservationDate(date);
-//        List<WorkStation> availableWorkstations = getAvailableWorkstations(closedWorkstations);
-//        List<WorkStation> dailyWorkstations = new ArrayList<>();
-//        int i = 0;
-//        while (dailyWorkstations.size() < officeOptions.getLimit() && i < availableWorkstations.size()) {
-//
-//            if (dailyWorkstations.isEmpty()) {
-//                dailyWorkstations.add(availableWorkstations.get(i));
-//                availableWorkstations.remove(availableWorkstations.get(i));
-//            } else {
-//                WorkStation workstationToAdd = getRangeCheckedWorkstation(availableWorkstations, availableWorkstations.get(i), officeOptions.getMinDistance());
-//                dailyWorkstations.add(workstationToAdd);
-//                availableWorkstations.remove(workstationToAdd);
-//            }
-//            i++;
-//        }
-//        OfficeLayout officeLayout = new OfficeLayout(date, dailyWorkstations);
-//        officeLayoutRepository.save(officeLayout);
-//        officeLayout.getWorkStations().forEach(workStation -> log.info(workStation.getXPosition() + "\t" + workStation.getYPosition()));
-//        TemplateMatcher.drawMap(officeLayout.getWorkStations());
-//        return new OfficeLayoutData(officeLayout);
-//    }
-//
-//    private WorkStation getRangeCheckedWorkstation(List<WorkStation> availableWorkstation, WorkStation currentWorkstation, Integer distanceLimit) {
-//        int i = 0;
-//        while (i < availableWorkstation.size() && distance(currentWorkstation, availableWorkstation.get(i)) <= distanceLimit) {
-//            i++;
-//        }
-//        return availableWorkstation.get(i);
-//    }
-//
-//    private Double distance(WorkStation currentWorkstation, WorkStation comparingWorkstation) {
-//        double xDistance = comparingWorkstation.getXPosition() - currentWorkstation.getXPosition();
-//        double yDistance = comparingWorkstation.getYPosition() - currentWorkstation.getYPosition();
-//        return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
-//    }
-//
-//    private List<WorkStation> getAvailableWorkstations(List<PointData> closedWorkstations) {
-//        List<WorkStation> workstations = workStationRepository.findAll();
-//        List<WorkStation> closedWorkstationList = closedWorkstations.stream().map(WorkStation::new).collect(Collectors.toList());
-//        return workstations
-//                .stream()
-//                .filter(workStation -> !closedWorkstationList.contains(workStation))
-//                .collect(Collectors.toList());
-//    }
-
-
     public OfficeLayoutData generateLayoutWithRange(List<PointData> disabledWorkstations, LocalDate date) {
         OfficeOptions officeOptions = officeOptionsService.findOfficeOptionsByReservationDate(date);
         List<WorkStation> availableWorkstations = getAvailableWorkstations(disabledWorkstations);
-        List<Point> coords = availableWorkstations.stream().map(workStation -> new Point(workStation.getXPosition(), workStation.getYPosition())).collect(Collectors.toList());
         int range = officeOptions.getMinDistance();
-        List<Point> layout = new ArrayList<>();
+        List<WorkStation> layout = new ArrayList<>();
         Integer size = officeOptions.getLimit();
 
-        Point target = new Point(0, 0);
-        while (layout.size() < size && !coords.isEmpty()) {
-            Point closestCoord = getClosestCoord(target, coords);
-            layout.add(closestCoord);
-            coords = removeCoordsInRange(closestCoord, coords, range);
-            target = layout.get(layout.size() - 1);
+        while (layout.size() < size && !availableWorkstations.isEmpty()) {
+            WorkStation closestWorkstation = findClosestWorkstation(availableWorkstations);
+            layout.add(closestWorkstation);
+            availableWorkstations = removeCoordsInRange(closestWorkstation, availableWorkstations, range);
         }
-        if (coords.isEmpty()) {
+        if (availableWorkstations.isEmpty()) {
             throw new InvalidLayoutException("Invalid range and place combination");
         }
+        OfficeLayout officeLayout = new OfficeLayout(date, layout);
+        officeLayoutRepository.save(officeLayout);
         TemplateMatcher.drawMap(layout);
-        return new OfficeLayoutData(layout, date);
+        return new OfficeLayoutData(officeLayout);
     }
 
     private List<WorkStation> getAvailableWorkstations(List<PointData> closedWorkstations) {
@@ -124,31 +77,36 @@ public class WorkStationService {
                 .collect(Collectors.toList());
     }
 
-    private List<Point> removeCoordsInRange(Point target, List<Point> coords, int range) {
-        return coords.stream().filter(coord -> isOutOfTargetRange(target, coord, range)).collect(Collectors.toList());
+    private List<WorkStation> removeCoordsInRange(WorkStation closestWorkstation, List<WorkStation> availableWorkstations, int range) {
+        return availableWorkstations.stream().filter(workStation -> isWorkstationOutOfRange(closestWorkstation, workStation, range)).collect(Collectors.toList());
     }
 
-    private boolean isOutOfTargetRange(Point target, Point coord, int range) {
-        return calculateDistance(target, coord) > range;
+    private boolean isWorkstationOutOfRange(WorkStation closestWorkstation, WorkStation currentWorkstation, int range) {
+        Point closestPoint = new Point(closestWorkstation.getXPosition(), closestWorkstation.getYPosition());
+        return calculateDistance(closestPoint, currentWorkstation) > range;
     }
 
 
-    private Point getClosestCoord(Point target, List<Point> coords) {
-        List<Integer> ranges = coords.stream()
-                .map(coord -> calculateDistance(target, coord))
+    private WorkStation findClosestWorkstation(List<WorkStation> availableWorkstations) {
+
+        List<Integer> workstationDistances = availableWorkstations
+                .stream()
+                .map(workStation -> calculateDistance(ORIGO, workStation))
                 .collect(Collectors.toList());
-        int min = 1000;
+        int minDistance = Integer.MAX_VALUE;
         int minIndex = 0;
-        for (int i = 0; i < ranges.size(); i++) {
-            if (ranges.get(i) != 0 && ranges.get(i) < min) {
-                min = ranges.get(i);
+        for (int i = 0; i < workstationDistances.size(); i++) {
+            if (workstationDistances.get(i) != 0 && workstationDistances.get(i) < minDistance) {
+                minDistance = workstationDistances.get(i);
                 minIndex = i;
             }
         }
-        return coords.get(minIndex);
+        return availableWorkstations.get(minIndex);
     }
 
-    private int calculateDistance(Point target, Point coord) {
-        return (int) Math.sqrt(Math.pow(coord.x - target.x, 2) + Math.pow(coord.y - target.y, 2));
+    private int calculateDistance(Point target, WorkStation currentWorkstation) {
+        double xDistance = currentWorkstation.getXPosition() - target.x;
+        double yDistance = currentWorkstation.getYPosition() - target.y;
+        return (int) Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
     }
 }

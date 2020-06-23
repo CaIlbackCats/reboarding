@@ -34,11 +34,13 @@ public class TemplateMatcher {
         return templates;
     }
 
-    public static void drawMap(List<Point> points) {
+    public static void drawMap(List<WorkStation> workStations) {
         Mat source = Imgcodecs.imread("office_layout.jpg");
 
-        for (int i = 0; i < points.size(); i++) {
-            Point currentPoint = points.get(i);
+        for (int i = 0; i < workStations.size(); i++) {
+            Double xPosition = workStations.get(i).getXPosition();
+            Double yPosition = workStations.get(i).getYPosition();
+            Point currentPoint = new Point(xPosition, yPosition);
             Imgproc.circle(source, currentPoint, 50, new Scalar(0, 0, 255), 1);
             Imgproc.circle(source, currentPoint, 3, new Scalar(0, 255, 0), 3);
             Imgproc.putText(source, String.valueOf(i), currentPoint, 2, 1, new Scalar(0, 0, 0), 2);
