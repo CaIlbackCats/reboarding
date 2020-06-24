@@ -7,6 +7,11 @@ import com.callbackcats.reboarding.util.InvalidLayoutException;
 import com.callbackcats.reboarding.util.LayoutHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.opencv.core.Point;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.ContextStartedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,17 +31,6 @@ public class WorkStationService {
 
     public WorkStationService(WorkStationRepository workStationRepository) {
         this.workStationRepository = workStationRepository;
-    }
-
-    @PostConstruct
-    public void init() {
-        List<Point> workstationPositions = LayoutHandler.getWorkstationPosition();
-        List<WorkStation> workStations = workstationPositions
-                .stream()
-                .map(WorkStation::new)
-                .collect(Collectors.toList());
-        workStationRepository.saveAll(workStations);
-        log.info("Workstations initialized");
     }
 
     public List<WorkStation> generateLayoutWithRange(List<PointData> disabledWorkstations, Integer range, Integer limit) {
@@ -97,4 +91,5 @@ public class WorkStationService {
         double yDistance = currentWorkstation.getYPosition() - target.y;
         return (int) Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
     }
+
 }
