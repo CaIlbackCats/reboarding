@@ -1,6 +1,7 @@
 package com.callbackcats.reboarding.service;
 
 import com.callbackcats.reboarding.domain.OfficeOptions;
+import com.callbackcats.reboarding.domain.WorkStation;
 import com.callbackcats.reboarding.dto.OfficeOptionsCreationData;
 import com.callbackcats.reboarding.dto.CapacityData;
 import com.callbackcats.reboarding.dto.PointData;
@@ -53,9 +54,11 @@ public class OfficeOptionsService {
                 .collect(Collectors.toList());
     }
 
+
     OfficeOptions findOfficeOptionsByReservationDate(LocalDate reservationDate) {
         OfficeOptions officeOptions = officeOptionsRepository.findOfficeOptionsByDate(reservationDate).orElseThrow(() -> new NoSuchElementException("There is no capacity set for the given date:\t" + reservationDate));
         log.info("Capacity was found for the day:\t" + reservationDate);
         return officeOptions;
     }
+
 }

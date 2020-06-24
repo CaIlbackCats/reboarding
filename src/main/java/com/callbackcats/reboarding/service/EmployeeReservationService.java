@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -52,7 +53,12 @@ public class EmployeeReservationService {
     EmployeeReservationData saveReservationToEmployee(Employee employee, Reservation reservation) {
         EmployeeReservation employeeReservation;
         boolean permissionToOffice = reservation.getReservationType() != ReservationType.QUEUED;
-        employeeReservation = new EmployeeReservation(employee, reservation, permissionToOffice);
+        if (permissionToOffice) {
+            WorkStation freeWorkstation = findUsableWorkstation();
+            employeeReservation = new EmployeeReservation(employee, reservation, true, freeWorkstation);
+        } else {
+            employeeReservation = new EmployeeReservation(employee, reservation, false);
+        }
         employeeReservationRepository.save(employeeReservation);
         log.info("Employee by id:\t" + employee.getId() + " was saved to reservation for the day:\t" + reservation.getDate());
 
@@ -180,6 +186,43 @@ public class EmployeeReservationService {
     public void removeEmployeeReservation(EmployeeReservation employeeReservation) {
         log.info("Employee reservations are removed with id:\t" + employeeReservation.getId());
         employeeReservationRepository.delete(employeeReservation);
+    }
+
+    public void setQueuedEmployeeWorkstation(EmployeeReservation employeeReservation) {
+        EmployeeReservation changedEmployeeReservation = setEmployeeReservationType(employeeReservation);
+        employeeReservationRepository.save(changedEmployeeReservation);
+        employeeReservationRepository.delete(employeeReservation);
+        log.info("Workstation attached to employee reservation id:\t" + employeeReservation.getId());
+    }
+
+    private EmployeeReservation setEmployeeReservationType(EmployeeReservation employeeReservation) {
+        Employee employee = employeeReservation.getEmployee();
+        Reservation reservation = findReservationByDateAndType(LocalDate.now(), ReservationType.RESERVED);
+        WorkStation usableWorkstation = findUsableWorkstation();
+        EmployeeReservation newReservation = new EmployeeReservation(employee, reservation, true, usableWorkstation);
+
+        log.info("Queued reservation is unset for id:\t" + reservation.getId());
+        return newReservation;
+    }
+
+    private WorkStation findUsableWorkstation() {
+        LocalDate today = LocalDate.now();
+        OfficeOptions officeOption = officeOptionsService.findOfficeOptionsByReservationDate(today);
+        List<EmployeeReservation> employeeReservations = findEmployeeReservationsByDate(today);
+        List<WorkStation> reservedWorkstations = employeeReservations
+                .stream()
+                .map(EmployeeReservation::getWorkStation)
+                .collect(Collectors.toList());
+        List<WorkStation> officeWorkstations = officeOption.getOfficeWorkstations()
+                .stream()
+                .map(OfficeWorkstation::getWorkstation)
+                .collect(Collectors.toList());
+        WorkStation usableWorkstation = officeWorkstations
+                .stream()
+                .filter(officeWorkstation -> !reservedWorkstations.contains(officeWorkstation))
+                .findFirst().orElseThrow(NoSuchElementException::new);
+        log.info("Usable workstation is found");
+        return usableWorkstation;
     }
 
 

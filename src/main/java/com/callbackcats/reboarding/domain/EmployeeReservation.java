@@ -40,4 +40,9 @@ public class EmployeeReservation {
         this.reserved = reserved;
         this.permissionToOffice = permissionToOffice;
     }
+
+    public EmployeeReservation(Employee employee, Reservation reservation, Boolean permissionToOffice, WorkStation workStation) {
+        this(employee, reservation, permissionToOffice);
+        this.workStation = workStation;
+    }
 }

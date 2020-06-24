@@ -73,9 +73,13 @@ public class ReboardingService {
 
         if (canEmployeeEnter) {
             Employee employee = employeeReservation.getEmployee();
+            Reservation reservation = employeeReservation.getReserved();
+            if (reservation.getReservationType().equals(ReservationType.QUEUED)) {
+                employeeReservationService.setQueuedEmployeeWorkstation(employeeReservation);
+            }
             employeeService.setEmployeeInOffice(employee, true);
             employeeEntered = true;
-            employeeReservationService.removeEmployeeReservationToday(employeeId);
+            //   employeeReservationService.removeEmployeeReservationToday(employeeId);
             log.info("Employee by id:\t" + employeeId + " has entered the office");
         }
 
@@ -129,6 +133,7 @@ public class ReboardingService {
         boolean leftEmployee = false;
         Employee employee = employeeService.findEmployeeById(employeeId);
         if (employee.getInOffice()) {
+            employeeReservationService.removeEmployeeReservationToday(employeeId);
             employeeService.setEmployeeInOffice(employee, false);
 
             employeeReservationService.updateEmployeesCanEnterOffice();

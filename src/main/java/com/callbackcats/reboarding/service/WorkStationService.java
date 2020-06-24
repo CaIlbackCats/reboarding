@@ -4,18 +4,11 @@ import com.callbackcats.reboarding.domain.WorkStation;
 import com.callbackcats.reboarding.dto.PointData;
 import com.callbackcats.reboarding.repository.WorkStationRepository;
 import com.callbackcats.reboarding.util.InvalidLayoutException;
-import com.callbackcats.reboarding.util.LayoutHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.opencv.core.Point;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.ContextStartedEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -67,7 +60,6 @@ public class WorkStationService {
         Point closestPoint = new Point(closestWorkstation.getXPosition(), closestWorkstation.getYPosition());
         return calculateDistance(closestPoint, currentWorkstation) > range;
     }
-
 
     private WorkStation findClosestWorkstation(List<WorkStation> availableWorkstations) {
 

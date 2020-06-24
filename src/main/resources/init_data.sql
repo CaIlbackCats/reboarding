@@ -25,17 +25,13 @@ INSERT INTO office_workstation(id,office_options_id,workstation_id)
 VALUES(1,1,2);
 INSERT INTO office_workstation(id,office_options_id,workstation_id)
 VALUES(2,1,3);
-INSERT INTO office_workstation(id,office_options_id,workstation_id)
-VALUES(3,1,4);
-INSERT INTO office_workstation(id,office_options_id,workstation_id)
-VALUES(4,1,5);
 
 INSERT INTO employee_reservation (reservation_id,employee_id,permission_to_office,work_station_id)
-VALUES ((SELECT id FROM reservation WHERE r_date = CURRENT_DATE AND reservation_type = 'RESERVED'),0,false,1);
+VALUES ((SELECT id FROM reservation WHERE r_date = CURRENT_DATE AND reservation_type = 'RESERVED'),0,true,2);
+INSERT INTO employee_reservation(reservation_id,employee_id,permission_to_office)
+VALUES (1,4,false);
 INSERT INTO employee_reservation(reservation_id,employee_id,permission_to_office,work_station_id)
-VALUES (1,4,false,2);
-INSERT INTO employee_reservation(reservation_id,employee_id,permission_to_office,work_station_id)
-VALUES (0,2,true,3);
-INSERT INTO employee_reservation(reservation_id,employee_id,permission_to_office,work_station_id)
-VALUES (1,3,false,4);
+VALUES (0,2,true,1);
+INSERT INTO employee_reservation(reservation_id,employee_id,permission_to_office)
+VALUES (1,3,false);
 
