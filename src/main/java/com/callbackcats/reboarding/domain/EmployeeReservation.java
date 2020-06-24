@@ -29,7 +29,7 @@ public class EmployeeReservation {
     private Employee employee;
 
     @Column(name = "permission_to_office")
-    private Boolean permisssionToOffice;
+    private Boolean permissionToOffice;
 
     @ManyToOne
     @JoinColumn(name = "work_station_id")
@@ -38,6 +38,6 @@ public class EmployeeReservation {
     public EmployeeReservation(Employee employee, Reservation reserved, Boolean permissionToOffice) {
         this.employee = employee;
         this.reserved = reserved;
-        this.permisssionToOffice = permissionToOffice;
+        this.permissionToOffice = permissionToOffice;
     }
 }

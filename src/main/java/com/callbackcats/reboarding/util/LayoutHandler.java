@@ -1,13 +1,18 @@
 package com.callbackcats.reboarding.util;
 
+import com.callbackcats.reboarding.domain.EmployeeReservation;
+import com.callbackcats.reboarding.domain.OfficeWorkstation;
+import com.callbackcats.reboarding.domain.ReservationType;
 import com.callbackcats.reboarding.domain.WorkStation;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-
+@Component
 public class LayoutHandler {
     private static Mat dst;
     private static List<Point> templates = new ArrayList<>();
@@ -34,17 +39,59 @@ public class LayoutHandler {
     }
 
     public static void drawMap(List<WorkStation> workStations) {
-        Mat source = Imgcodecs.imread("office_layout.jpg");
+        Mat sourceImage = Imgcodecs.imread("office_layout.jpg");
 
         for (int i = 0; i < workStations.size(); i++) {
             Double xPosition = workStations.get(i).getXPosition();
             Double yPosition = workStations.get(i).getYPosition();
             Point currentPoint = new Point(xPosition, yPosition);
-            Imgproc.circle(source, currentPoint, 50, new Scalar(0, 0, 255), 1);
-            Imgproc.circle(source, currentPoint, 3, new Scalar(0, 255, 0), 3);
-            Imgproc.putText(source, String.valueOf(i), currentPoint, 2, 1, new Scalar(0, 0, 0), 2);
+            Imgproc.circle(sourceImage, currentPoint, 50, new Scalar(0, 0, 255), 1);
+            Imgproc.circle(sourceImage, currentPoint, 3, new Scalar(0, 255, 0), 3);
+            Imgproc.putText(sourceImage, String.valueOf(i), currentPoint, 2, 1, new Scalar(0, 0, 0), 2);
         }
-        Imgcodecs.imwrite("daily_layout.jpg", source);
+        Imgcodecs.imwrite("daily_layout.jpg", sourceImage);
+    }
+
+    public void createCurrentLayout(List<EmployeeReservation> employeeReservations, List<OfficeWorkstation> dailyLayout) {
+        Mat sourceImage = Imgcodecs.imread("office_layout.jpg");
+        Mat currentLayout = sourceImage.clone();
+        Map<WorkStation, Boolean> takenWorkstations = getTakenWorkstations(employeeReservations);
+        takenWorkstations.forEach((key, value) -> drawCircle(key, value, currentLayout));
+
+        List<WorkStation> notReservedWorkstations = dailyLayout
+                .stream()
+                .map(OfficeWorkstation::getWorkstation)
+                .filter(workStation -> !takenWorkstations.containsKey(workStation))
+                .collect(Collectors.toList());
+        notReservedWorkstations.forEach(workStation -> drawCircle(workStation, currentLayout));
+        Imgcodecs.imwrite("daily_layout.jpg", currentLayout);
+    }
+
+    private Map<WorkStation, Boolean> getTakenWorkstations(List<EmployeeReservation> employeeReservations) {
+        Map<WorkStation, Boolean> workstationTaken = new HashMap<>();
+
+        for (EmployeeReservation employeeReservation : employeeReservations) {
+            if (employeeReservation.getReserved().getReservationType().equals(ReservationType.RESERVED)) {
+                WorkStation workStation = employeeReservation.getWorkStation();
+                Boolean inOffice = employeeReservation.getEmployee().getInOffice();
+                workstationTaken.put(workStation, inOffice);
+            }
+        }
+        return workstationTaken;
+    }
+
+    private void drawCircle(WorkStation workStation, Boolean inOffice, Mat sourceImage) {
+        Point currentPoint = new Point(workStation.getXPosition(), workStation.getYPosition());
+        if (inOffice) {
+            Imgproc.circle(sourceImage, currentPoint, 3, new Scalar(0, 0, 255), -1);
+        } else {
+            Imgproc.circle(sourceImage, currentPoint, 3, new Scalar(0, 255, 255), -1);
+        }
+    }
+
+    private void drawCircle(WorkStation workStation, Mat sourceImage) {
+        Point currentPoint = new Point(workStation.getXPosition(), workStation.getYPosition());
+        Imgproc.circle(sourceImage, currentPoint, 3, new Scalar(0, 255, 0), -1);
     }
 
 

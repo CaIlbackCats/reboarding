@@ -19,17 +19,23 @@ VALUES (2,CURRENT_DATE+1,(SELECT id FROM office_capacity WHERE CURRENT_DATE+1 >=
 INSERT INTO reservation (id,r_date,reservation_type,office_options_id)
 VALUES (3,'2020-06-02','RESERVED',(SELECT id FROM office_capacity WHERE '2020-06-02' >= start_date AND '2020-06-02' <=end_date));
 
+INSERT INTO office_workstation(id,office_options_id,workstation_id)
+VALUES(0,1,1);
+INSERT INTO office_workstation(id,office_options_id,workstation_id)
+VALUES(1,1,2);
+INSERT INTO office_workstation(id,office_options_id,workstation_id)
+VALUES(2,1,3);
+INSERT INTO office_workstation(id,office_options_id,workstation_id)
+VALUES(3,1,4);
+INSERT INTO office_workstation(id,office_options_id,workstation_id)
+VALUES(4,1,5);
 
-INSERT INTO employee_reservation (reservation_id,employee_id)
-VALUES ((SELECT id FROM reservation WHERE r_date = CURRENT_DATE AND reservation_type = 'RESERVED'),0);
-INSERT INTO employee_reservation(reservation_id,employee_id,permission_to_office)
-VALUES (1,4,false);
-INSERT INTO employee_reservation(reservation_id,employee_id,permission_to_office)
-VALUES (0,2,true);
-INSERT INTO employee_reservation(reservation_id,employee_id,permission_to_office)
-VALUES (1,3,false);
-
-
-
-
+INSERT INTO employee_reservation (reservation_id,employee_id,permission_to_office,work_station_id)
+VALUES ((SELECT id FROM reservation WHERE r_date = CURRENT_DATE AND reservation_type = 'RESERVED'),0,false,1);
+INSERT INTO employee_reservation(reservation_id,employee_id,permission_to_office,work_station_id)
+VALUES (1,4,false,2);
+INSERT INTO employee_reservation(reservation_id,employee_id,permission_to_office,work_station_id)
+VALUES (0,2,true,3);
+INSERT INTO employee_reservation(reservation_id,employee_id,permission_to_office,work_station_id)
+VALUES (1,3,false,4);
 

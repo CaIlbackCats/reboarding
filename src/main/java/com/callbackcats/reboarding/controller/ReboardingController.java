@@ -89,4 +89,13 @@ public class ReboardingController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/layout")
+    public ResponseEntity<Void> getDailyLayout(){
+        log.info("Daily layout is requested");
+
+        reboardingService.getCurrentOfficeLayout();
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

@@ -88,7 +88,6 @@ public class EmployeeReservationService {
      */
     public void updateEmployeesCanEnterOffice() {
         LocalDate today = LocalDate.now();
-        List<EmployeeReservation> employeeReservations = findEmployeeReservationsByDate(today);
         OfficeOptions officeOptions = officeOptionsService.findOfficeOptionsByReservationDate(today);
         Integer employeesInOffice = employeeService.getNumberOfEmployeesInOffice();
         int freeSpace = officeOptions.getLimit() - employeesInOffice;
@@ -96,7 +95,7 @@ public class EmployeeReservationService {
             Reservation reservation = findReservationByDateAndType(today, ReservationType.QUEUED);
             List<EmployeeReservation> reservedEmployees = reservation.getReservedEmployees();
             for (int i = 0; i < freeSpace && i < reservedEmployees.size(); i++) {
-                reservedEmployees.get(i).setPermisssionToOffice(true);
+                reservedEmployees.get(i).setPermissionToOffice(true);
             }
             employeeReservationRepository.saveAll(reservedEmployees);
             log.info("Employees permission to enter was updated based on free spots");
@@ -182,6 +181,7 @@ public class EmployeeReservationService {
         log.info("Employee reservations are removed with id:\t" + employeeReservation.getId());
         employeeReservationRepository.delete(employeeReservation);
     }
+
 
     private Reservation findOrCreateQueuedReservation(LocalDate reservationDate) {
         Reservation queuedReservation;

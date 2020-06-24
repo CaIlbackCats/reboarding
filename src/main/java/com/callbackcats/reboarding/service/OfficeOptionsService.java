@@ -20,11 +20,9 @@ import java.util.stream.Collectors;
 public class OfficeOptionsService {
 
     private final OfficeOptionsRepository officeOptionsRepository;
-    private final WorkStationService workStationService;
 
-    public OfficeOptionsService(OfficeOptionsRepository officeOptionsRepository, WorkStationService workStationService) {
+    public OfficeOptionsService(OfficeOptionsRepository officeOptionsRepository) {
         this.officeOptionsRepository = officeOptionsRepository;
-        this.workStationService = workStationService;
     }
 
 
@@ -35,26 +33,24 @@ public class OfficeOptionsService {
      * @param officeOptionsCreationData contains the maximum number of employees, the percentage of the allowed employees to the office, and the interval of the dates it connects to
      * @return the saved capacities
      */
-    public List<CapacityData> saveCapacities(List<OfficeOptionsCreationData> officeOptionsCreationData) {
-        List<OfficeOptions> capacities = officeOptionsCreationData
-                .stream()
-                .map(this::getOfficeOptions)
-                .collect(Collectors.toList());
-        officeOptionsRepository.saveAll(capacities);
+    public OfficeOptions saveOfficeOption(OfficeOptionsCreationData officeOptionsCreationData) {
 
-        return capacities
+        OfficeOptions officeOptions = new OfficeOptions(officeOptionsCreationData);
+        officeOptionsRepository.save(officeOptions);
+
+        log.info("Office options saved");
+        return officeOptions;
+    }
+
+    public List<CapacityData> saveOfficeOptions(List<OfficeOptionsCreationData> officeOptionsCreationData) {
+        List<OfficeOptions> officeOptions = officeOptionsCreationData.stream().map(OfficeOptions::new).collect(Collectors.toList());
+
+        officeOptionsRepository.saveAll(officeOptions);
+
+        return officeOptions
                 .stream()
                 .map(CapacityData::new)
                 .collect(Collectors.toList());
-    }
-
-    private OfficeOptions getOfficeOptions(OfficeOptionsCreationData officeOption) {
-        OfficeOptions officeOptions = new OfficeOptions(officeOption);
-        List<PointData> closedWorkstations = officeOption.getClosedWorkstations();
-        Integer limit = officeOptions.getLimit();
-        Integer minDistance = officeOptions.getMinDistance();
-        officeOptions.setWorkStations(workStationService.generateLayoutWithRange(closedWorkstations, minDistance, limit));
-        return officeOptions;
     }
 
     OfficeOptions findOfficeOptionsByReservationDate(LocalDate reservationDate) {

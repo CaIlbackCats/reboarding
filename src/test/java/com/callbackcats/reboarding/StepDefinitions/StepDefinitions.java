@@ -1,5 +1,6 @@
 package com.callbackcats.reboarding.StepDefinitions;
 
+import com.callbackcats.reboarding.domain.OfficeOptions;
 import com.callbackcats.reboarding.domain.ReservationType;
 import com.callbackcats.reboarding.domain.WorkStation;
 import com.callbackcats.reboarding.dto.*;
@@ -7,13 +8,10 @@ import com.callbackcats.reboarding.service.OfficeOptionsService;
 import com.callbackcats.reboarding.service.EmployeeService;
 import com.callbackcats.reboarding.service.ReboardingService;
 import com.callbackcats.reboarding.service.WorkStationService;
-import com.callbackcats.reboarding.util.InvalidLayoutException;
 import io.cucumber.java.DataTableType;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
@@ -93,7 +91,7 @@ public class StepDefinitions {
 
     @When("service saved the data")
     public void service_saves_the_data() {
-        this.savedCapacities = officeOptionsService.saveCapacities(this.capacities);
+        this.savedCapacities = officeOptionsService.saveOfficeOptions(this.capacities);
     }
 
     @Then("return saved capacity data")

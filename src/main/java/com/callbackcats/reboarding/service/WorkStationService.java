@@ -36,6 +36,7 @@ public class WorkStationService {
                 .map(WorkStation::new)
                 .collect(Collectors.toList());
         workStationRepository.saveAll(workStations);
+        log.info("Workstations initialized");
     }
 
     public List<WorkStation> generateLayoutWithRange(List<PointData> disabledWorkstations, Integer range, Integer limit) {
@@ -50,7 +51,8 @@ public class WorkStationService {
         if (availableWorkstations.isEmpty()) {
             throw new InvalidLayoutException("Invalid range and place combination");
         }
-       // LayoutHandler.drawMap(layout);
+        log.info("Daily layout created");
+        // LayoutHandler.drawMap(layout);
         return layout;
     }
 

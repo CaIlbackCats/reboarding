@@ -42,7 +42,7 @@ public class OfficeOptions {
     private Integer minDistance;
 
     @OneToMany(mappedBy = "officeOptions")
-    private List<WorkStation> workStations;
+    private List<OfficeWorkstation> officeWorkstations;
 
     public OfficeOptions(OfficeOptionsCreationData officeOptionsCreationData) {
         this.max = officeOptionsCreationData.getMax();

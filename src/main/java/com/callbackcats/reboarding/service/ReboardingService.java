@@ -1,11 +1,9 @@
 package com.callbackcats.reboarding.service;
 
-import com.callbackcats.reboarding.domain.Employee;
-import com.callbackcats.reboarding.domain.EmployeeReservation;
-import com.callbackcats.reboarding.domain.Reservation;
-import com.callbackcats.reboarding.domain.ReservationType;
+import com.callbackcats.reboarding.domain.*;
 import com.callbackcats.reboarding.dto.EmployeeReservationData;
 import com.callbackcats.reboarding.dto.ReservationCreationData;
+import com.callbackcats.reboarding.util.LayoutHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +20,14 @@ public class ReboardingService {
 
     private final EmployeeService employeeService;
     private final EmployeeReservationService employeeReservationService;
+    private final OfficeOptionsService officeOptionsService;
+    private final LayoutHandler layoutHandler;
 
-    public ReboardingService(EmployeeService employeeService, EmployeeReservationService employeeReservationService) {
+    public ReboardingService(EmployeeService employeeService, EmployeeReservationService employeeReservationService, OfficeOptionsService officeOptionsService, LayoutHandler layoutHandler) {
         this.employeeReservationService = employeeReservationService;
         this.employeeService = employeeService;
+        this.officeOptionsService = officeOptionsService;
+        this.layoutHandler = layoutHandler;
     }
 
 
@@ -64,7 +66,7 @@ public class ReboardingService {
         LocalDate today = LocalDate.now();
         EmployeeReservation employeeReservation = employeeReservationService.findEmployeeReservationByIdAndDate(employeeId, today);
         boolean canEmployeeEnter = !employeeReservationService.isOfficeAtLimitCurrently()
-                && employeeReservation.getPermisssionToOffice()
+                && employeeReservation.getPermissionToOffice()
                 && !employeeService.isEmployeeInOffice(employeeId)
                 && isEmployeeReservedGivenDay(employeeId, today);
 
@@ -138,11 +140,19 @@ public class ReboardingService {
      * <p>Finds and Removes the given reservation of the employee
      * </p>
      *
-     * @param employeeId the id of the employee
-     * @param reservedDate
+     * @param employeeId   the id of the employee
+     * @param reservedDate reservation date
      */
     public void removeReservation(String employeeId, LocalDate reservedDate) {
         EmployeeReservation employeeReservation = employeeReservationService.findEmployeeReservationByIdAndDate(employeeId, reservedDate);
         employeeReservationService.removeEmployeeReservation(employeeReservation);
+    }
+
+    public void getCurrentOfficeLayout() {
+        LocalDate today = LocalDate.now();
+        List<EmployeeReservation> employeeReservations = employeeReservationService.findEmployeeReservationsByDate(today);
+        OfficeOptions officeOptions = officeOptionsService.findOfficeOptionsByReservationDate(today);
+        List<OfficeWorkstation> dailyLayout = officeOptions.getOfficeWorkstations();
+        layoutHandler.createCurrentLayout(employeeReservations, dailyLayout);
     }
 }

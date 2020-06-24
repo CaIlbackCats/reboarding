@@ -16,7 +16,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "work_station")
+@Table(name = "work_station", uniqueConstraints = {@UniqueConstraint(columnNames = {"x_Position", "y_Position"})})
 public class WorkStation {
 
     @Id
@@ -33,9 +33,8 @@ public class WorkStation {
     @OneToMany(mappedBy = "workStation")
     private List<EmployeeReservation> employeeReservations;
 
-    @ManyToOne
-    @JoinColumn(name = "office_options_id")
-    private OfficeOptions officeOptions;
+    @OneToMany(mappedBy = "workstation")
+    private List<OfficeWorkstation> officeWorkstations;
 
     public WorkStation(Point point) {
         this.xPosition = point.x;
