@@ -240,7 +240,7 @@ public class EmployeeReservationService {
         Integer employeeNumber = officeOption.getNotifiableEmployeeNumber();
         if (employeeNumber <= employeeReservations.size() - 1) {
             Employee notifyingEmployee = employeeReservations.get(employeeNumber).getEmployee();
-            //   kafkaMessageHandler.sendNotification(notifyingEmployee.getId(), employeeNumber);
+               kafkaMessageHandler.sendNotification(notifyingEmployee.getId(), employeeNumber);
         }
     }
 

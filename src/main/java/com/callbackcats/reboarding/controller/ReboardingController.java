@@ -74,7 +74,7 @@ public class ReboardingController {
         Boolean leftEmployee = reboardingService.handleEmployeeExit(employeeId);
         if (leftEmployee) {
             responseEntity = new ResponseEntity<>(HttpStatus.ACCEPTED);
-            log.info("Employee by id: " + employeeId + "left the office");
+            log.info("Employee by id: " + employeeId + " left the office");
         }
         return responseEntity;
     }

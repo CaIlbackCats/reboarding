@@ -1,6 +1,7 @@
 package com.callbackcats.reboarding.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -9,8 +10,12 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class KafkaMessageHandler {
 
+    @Value("${notifications.kafka.public-topic}")
+    private String publicTopic;
 
-    private final String MESSAGE = "You position in queue is: ";
+    @Value("${notifications.kafka.message}")
+    private String message;
+
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
@@ -20,13 +25,13 @@ public class KafkaMessageHandler {
 
     public void sendNotification(String employeeId, Integer position) {
         log.info("Message send requested");
-        String sendableMessage = MESSAGE + position;
-        kafkaTemplate.send(employeeId, sendableMessage);
+        String sendableMessage = message + position;
+        kafkaTemplate.send(publicTopic, sendableMessage);
     }
 
-//    @KafkaListener(topics = "users", groupId = "group_id")
-//    public void consumeMessage(String message) {
-//        log.info("Message recieved:\t" + message);
-//    }
+    @KafkaListener(topics = "employees", groupId = "group_id")
+    public void consumeMessage(String message) {
+        log.info("Message received:\t" + message);
+    }
 
 }

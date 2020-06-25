@@ -21,3 +21,8 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 employee-path: localhost:8080/api/employees/
+
+notifications:
+  kafka:
+    public-topic: employees
+    message: Yout position ins queue is
