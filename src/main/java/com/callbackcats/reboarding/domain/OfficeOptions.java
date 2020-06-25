@@ -44,6 +44,9 @@ public class OfficeOptions {
     @OneToMany(mappedBy = "officeOptions")
     private List<OfficeWorkstation> officeWorkstations;
 
+    @Column(name = "notifiable_employee_number")
+    private Integer notifiableEmployeeNumber;
+
     public OfficeOptions(OfficeOptionsCreationData officeOptionsCreationData) {
         this.max = officeOptionsCreationData.getMax();
         this.limit = (max * officeOptionsCreationData.getCapacityValue()) / 100;

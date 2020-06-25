@@ -2,7 +2,6 @@ package com.callbackcats.reboarding.service;
 
 import com.callbackcats.reboarding.domain.*;
 import com.callbackcats.reboarding.dto.EmployeeReservationData;
-import com.callbackcats.reboarding.dto.EmployeeReservationLayoutData;
 import com.callbackcats.reboarding.dto.ReservationCreationData;
 import com.callbackcats.reboarding.util.LayoutHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -173,6 +172,8 @@ public class ReboardingService {
             employeeService.setEmployeeInOffice(employee, true);
             if (reservation.getReservationType().equals(ReservationType.QUEUED)) {
                 employeeReservation = employeeReservationService.setQueuedEmployeeWorkstation(employeeReservation);
+                employeeReservationService.notifyEmployeeStatus();
+
             }
             byte[] personalLayout = layoutHandler.createPersonalLayout(employeeReservation.getWorkStation(), employee);
             employeeReservationService.saveEmployeeReservationLayout(employeeReservation, personalLayout);

@@ -8,5 +8,16 @@ spring:
         format_sql: false
         dialect: org.hibernate.dialect.H2Dialect
     generate-ddl: true
+  kafka:
+    consumer:
+      bootstrap-servers: 127.0.0.1:9092
+      group-id: group_id
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      bootstrap-servers: 127.0.0.1:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 employee-path: localhost:8080/api/employees/

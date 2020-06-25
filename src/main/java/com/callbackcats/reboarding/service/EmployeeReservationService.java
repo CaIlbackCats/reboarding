@@ -24,13 +24,15 @@ public class EmployeeReservationService {
     private final OfficeOptionsService officeOptionsService;
     private final EmployeeService employeeService;
     private final PersonalLayoutRepository personalLayoutRepository;
+    private final KafkaMessageHandler kafkaMessageHandler;
 
-    public EmployeeReservationService(ReservationRepository reservationRepository, EmployeeReservationRepository employeeReservationRepository, OfficeOptionsService officeOptionsService, EmployeeService employeeService, PersonalLayoutRepository personalLayoutRepository) {
+    public EmployeeReservationService(ReservationRepository reservationRepository, EmployeeReservationRepository employeeReservationRepository, OfficeOptionsService officeOptionsService, EmployeeService employeeService, PersonalLayoutRepository personalLayoutRepository, KafkaMessageHandler kafkaMessageHandler) {
         this.reservationRepository = reservationRepository;
         this.employeeReservationRepository = employeeReservationRepository;
         this.officeOptionsService = officeOptionsService;
         this.employeeService = employeeService;
         this.personalLayoutRepository = personalLayoutRepository;
+        this.kafkaMessageHandler = kafkaMessageHandler;
     }
 
     /**
@@ -226,6 +228,15 @@ public class EmployeeReservationService {
         log.info("Workstation attached to employee reservation id:\t" + employeeReservation.getId());
 
         return changedEmployeeReservation;
+    }
+
+    public void notifyEmployeeStatus() {
+        LocalDate today = LocalDate.now();
+        List<EmployeeReservation> employeeReservations = findEmployeeReservationsByDate(today);
+        OfficeOptions officeOption = officeOptionsService.findOfficeOptionsByReservationDate(today);
+        Integer employeeNumber = officeOption.getNotifiableEmployeeNumber();
+        Employee notifyingEmployee = employeeReservations.get(employeeNumber).getEmployee();
+        kafkaMessageHandler.sendNotification(notifyingEmployee.getId(), employeeNumber);
     }
 
     private EmployeeReservation setEmployeeReservationType(EmployeeReservation employeeReservation) {
