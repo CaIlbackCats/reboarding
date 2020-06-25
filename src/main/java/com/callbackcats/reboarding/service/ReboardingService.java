@@ -89,8 +89,10 @@ public class ReboardingService {
         Employee employee = employeeService.findEmployeeById(reservationCreationData.getEmployeeId());
         Reservation reservation = employeeReservationService.findOrCreateReservationByDate(reservationCreationData.getReservedDate());
         EmployeeReservation employeeReservation = employeeReservationService.saveReservationToEmployee(employee, reservation);
-        byte[] personalLayout = layoutHandler.createPersonalLayout(employeeReservation.getWorkStation());
-        employeeReservationService.saveEmployeeReservationLayout(employeeReservation, personalLayout);
+        if (reservation.getReservationType().equals(ReservationType.RESERVED)) {
+            byte[] personalLayout = layoutHandler.createPersonalLayout(employeeReservation.getWorkStation());
+            employeeReservationService.saveEmployeeReservationLayout(employeeReservation, personalLayout);
+        }
         return employeeReservationService.getEmployeeResevationData(employeeReservation.getReserved());
     }
 
