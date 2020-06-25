@@ -90,7 +90,7 @@ public class ReboardingService {
         Reservation reservation = employeeReservationService.findOrCreateReservationByDate(reservationCreationData.getReservedDate());
         EmployeeReservation employeeReservation = employeeReservationService.saveReservationToEmployee(employee, reservation);
         if (reservation.getReservationType().equals(ReservationType.RESERVED)) {
-            byte[] personalLayout = layoutHandler.createPersonalLayout(employeeReservation.getWorkStation());
+            byte[] personalLayout = layoutHandler.createPersonalLayout(employeeReservation.getWorkStation(), employee);
             employeeReservationService.saveEmployeeReservationLayout(employeeReservation, personalLayout);
         }
         return employeeReservationService.getEmployeeResevationData(employeeReservation.getReserved());
@@ -170,11 +170,13 @@ public class ReboardingService {
                 && isEmployeeReservedGivenDay(employee, today));
         if (canEmployeeEnter) {
             Reservation reservation = employeeReservation.getReserved();
-            if (reservation.getReservationType().equals(ReservationType.QUEUED)) {
-                employeeReservationService.setQueuedEmployeeWorkstation(employeeReservation);
-            }
-
             employeeService.setEmployeeInOffice(employee, true);
+            if (reservation.getReservationType().equals(ReservationType.QUEUED)) {
+                employeeReservation = employeeReservationService.setQueuedEmployeeWorkstation(employeeReservation);
+            }
+            byte[] personalLayout = layoutHandler.createPersonalLayout(employeeReservation.getWorkStation(), employee);
+            employeeReservationService.saveEmployeeReservationLayout(employeeReservation, personalLayout);
+
             employeeEntered = true;
             //   employeeReservationService.removeEmployeeReservationToday(employeeId);
             log.info("Employee by id:\t" + employee.getId() + " has entered the office");

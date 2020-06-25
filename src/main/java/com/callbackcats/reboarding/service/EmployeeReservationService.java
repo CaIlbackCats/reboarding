@@ -2,7 +2,6 @@ package com.callbackcats.reboarding.service;
 
 import com.callbackcats.reboarding.domain.*;
 import com.callbackcats.reboarding.dto.EmployeeReservationData;
-import com.callbackcats.reboarding.dto.EmployeeReservationLayoutData;
 import com.callbackcats.reboarding.repository.EmployeeReservationRepository;
 import com.callbackcats.reboarding.repository.PersonalLayoutRepository;
 import com.callbackcats.reboarding.repository.ReservationRepository;
@@ -80,14 +79,20 @@ public class EmployeeReservationService {
     }
 
     public void saveEmployeeReservationLayout(EmployeeReservation employeeReservation, byte[] layout) {
-        PersonalLayout personalLayout = new PersonalLayout(layout, employeeReservation);
+        PersonalLayout personalLayout;
+        if (employeeReservation.getPersonalLayout() != null) {
+            Employee employee = employeeReservation.getEmployee();
+            Reservation reservation = employeeReservation.getReserved();
+            personalLayout = findPersonalLayoutByEmployeeIdAndDate(employee.getId(), reservation.getDate());
+            personalLayoutRepository.delete(personalLayout);
+        }
+        personalLayout = new PersonalLayout(layout, employeeReservation);
         personalLayoutRepository.save(personalLayout);
         log.info("Personal layout saved to employee reservation id:\t" + employeeReservation.getId());
     }
 
     public String getEmployeeReservationLayoutPath(String employeeId, LocalDate reservationDate) {
-        PersonalLayout personalLayout = personalLayoutRepository.findPersonalLayoutByEmployeeIdAndDate(employeeId, reservationDate)
-                .orElseThrow(() -> new NoSuchElementException("Employee by id:\t" + employeeId + " has no reservation for the given day:\t" + reservationDate));
+        PersonalLayout personalLayout = findPersonalLayoutByEmployeeIdAndDate(employeeId, reservationDate);
 
         log.info("Personal layout found for employee by id:\t" + employeeId + " on\t" + reservationDate);
         return personalLayout.getImagePath();
@@ -214,11 +219,13 @@ public class EmployeeReservationService {
         employeeReservationRepository.delete(employeeReservation);
     }
 
-    public void setQueuedEmployeeWorkstation(EmployeeReservation employeeReservation) {
+    public EmployeeReservation setQueuedEmployeeWorkstation(EmployeeReservation employeeReservation) {
         EmployeeReservation changedEmployeeReservation = setEmployeeReservationType(employeeReservation);
         employeeReservationRepository.save(changedEmployeeReservation);
         employeeReservationRepository.delete(employeeReservation);
         log.info("Workstation attached to employee reservation id:\t" + employeeReservation.getId());
+
+        return changedEmployeeReservation;
     }
 
     private EmployeeReservation setEmployeeReservationType(EmployeeReservation employeeReservation) {
@@ -251,7 +258,6 @@ public class EmployeeReservationService {
         return usableWorkstation;
     }
 
-
     private Reservation findOrCreateQueuedReservation(LocalDate reservationDate) {
         Reservation queuedReservation;
         try {
@@ -278,5 +284,10 @@ public class EmployeeReservationService {
         reservationRepository.save(reservation);
         log.info("A new queued reservation was created for the day:\t" + reservationDate);
         return reservation;
+    }
+
+    private PersonalLayout findPersonalLayoutByEmployeeIdAndDate(String employeeId, LocalDate reservationDate) {
+        return personalLayoutRepository.findPersonalLayoutByEmployeeIdAndDate(employeeId, reservationDate)
+                .orElseThrow(() -> new NoSuchElementException("Employee by id:\t" + employeeId + " has no reservation for the given day:\t" + reservationDate));
     }
 }

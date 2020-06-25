@@ -1,9 +1,6 @@
 package com.callbackcats.reboarding.util;
 
-import com.callbackcats.reboarding.domain.EmployeeReservation;
-import com.callbackcats.reboarding.domain.OfficeWorkstation;
-import com.callbackcats.reboarding.domain.ReservationType;
-import com.callbackcats.reboarding.domain.WorkStation;
+import com.callbackcats.reboarding.domain.*;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -69,12 +66,13 @@ public class LayoutHandler {
         return convertMatToByteArray(currentLayout);
     }
 
-    public byte[] createPersonalLayout(WorkStation workStation) {
+    public byte[] createPersonalLayout(WorkStation workStation, Employee employee) {
         Mat sourceImage = Imgcodecs.imread("office_layout.jpg");
         Mat currentLayout = sourceImage.clone();
 
         Point currentPoint = new Point(workStation.getXPosition(), workStation.getYPosition());
-        Imgproc.circle(currentLayout, currentPoint, 3, new Scalar(0, 255, 255), -1);
+        drawCircle(workStation,employee.getInOffice(),currentLayout);
+       // Imgproc.circle(currentLayout, currentPoint, 3, new Scalar(0, 255, 255), -1);
 
 
         return convertMatToByteArray(currentLayout);
