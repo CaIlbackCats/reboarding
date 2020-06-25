@@ -8,3 +8,5 @@ spring:
         format_sql: false
         dialect: org.hibernate.dialect.H2Dialect
     generate-ddl: true
+
+employee-path: localhost:8080/api/employees/

@@ -2,13 +2,13 @@ package com.callbackcats.reboarding.service;
 
 import com.callbackcats.reboarding.domain.*;
 import com.callbackcats.reboarding.dto.EmployeeReservationData;
+import com.callbackcats.reboarding.dto.EmployeeReservationLayoutData;
 import com.callbackcats.reboarding.dto.ReservationCreationData;
 import com.callbackcats.reboarding.util.LayoutHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -76,30 +76,6 @@ public class ReboardingService {
         return employeeEntered;
     }
 
-    private boolean enterNonVipEmployee(Employee employee) {
-        LocalDate today = LocalDate.now();
-
-        boolean employeeEntered = false;
-        EmployeeReservation employeeReservation = employeeReservationService.findEmployeeReservationByIdAndDate(employee.getId(), today);
-        boolean canEmployeeEnter = employee.getVip() || (!employeeReservationService.isOfficeAtLimitCurrently()
-                && employeeReservation.getPermissionToOffice()
-                && !employee.getInOffice()
-                && isEmployeeReservedGivenDay(employee, today));
-        if (canEmployeeEnter) {
-            Reservation reservation = employeeReservation.getReserved();
-            if (reservation.getReservationType().equals(ReservationType.QUEUED)) {
-                employeeReservationService.setQueuedEmployeeWorkstation(employeeReservation);
-            }
-
-            employeeService.setEmployeeInOffice(employee, true);
-            employeeEntered = true;
-            //   employeeReservationService.removeEmployeeReservationToday(employeeId);
-            log.info("Employee by id:\t" + employee.getId() + " has entered the office");
-        }
-        return employeeEntered;
-    }
-
-
     /**
      * <p>Saves an employee's reservation to the given day.
      * Creates reservation if there has been no for that day
@@ -112,7 +88,10 @@ public class ReboardingService {
     public EmployeeReservationData handleReservationRequest(ReservationCreationData reservationCreationData) {
         Employee employee = employeeService.findEmployeeById(reservationCreationData.getEmployeeId());
         Reservation reservation = employeeReservationService.findOrCreateReservationByDate(reservationCreationData.getReservedDate());
-        return employeeReservationService.saveReservationToEmployee(employee, reservation);
+        EmployeeReservation employeeReservation = employeeReservationService.saveReservationToEmployee(employee, reservation);
+        byte[] personalLayout = layoutHandler.createPersonalLayout(employeeReservation.getWorkStation());
+        employeeReservationService.saveEmployeeReservationLayout(employeeReservation, personalLayout);
+        return employeeReservationService.getEmployeeResevationData(employeeReservation.getReserved());
     }
 
     /**
@@ -170,14 +149,36 @@ public class ReboardingService {
         employeeReservationService.removeEmployeeReservation(employeeReservation);
     }
 
-    public void getCurrentOfficeLayout() {
+    public byte[] getCurrentOfficeLayout() {
         LocalDate today = LocalDate.now();
         List<EmployeeReservation> employeeReservations = employeeReservationService.findEmployeeReservationsByDate(today);
         OfficeOptions officeOptions = officeOptionsService.findOfficeOptionsByReservationDate(today);
         List<OfficeWorkstation> dailyLayout = officeOptions.getOfficeWorkstations();
-        layoutHandler.createCurrentLayout(employeeReservations, dailyLayout);
+        return layoutHandler.createCurrentLayout(employeeReservations, dailyLayout);
     }
 
+    private boolean enterNonVipEmployee(Employee employee) {
+        LocalDate today = LocalDate.now();
+
+        boolean employeeEntered = false;
+        EmployeeReservation employeeReservation = employeeReservationService.findEmployeeReservationByIdAndDate(employee.getId(), today);
+        boolean canEmployeeEnter = employee.getVip() || (!employeeReservationService.isOfficeAtLimitCurrently()
+                && employeeReservation.getPermissionToOffice()
+                && !employee.getInOffice()
+                && isEmployeeReservedGivenDay(employee, today));
+        if (canEmployeeEnter) {
+            Reservation reservation = employeeReservation.getReserved();
+            if (reservation.getReservationType().equals(ReservationType.QUEUED)) {
+                employeeReservationService.setQueuedEmployeeWorkstation(employeeReservation);
+            }
+
+            employeeService.setEmployeeInOffice(employee, true);
+            employeeEntered = true;
+            //   employeeReservationService.removeEmployeeReservationToday(employeeId);
+            log.info("Employee by id:\t" + employee.getId() + " has entered the office");
+        }
+        return employeeEntered;
+    }
 
     private boolean isEmployeeReservedGivenDay(Employee employee, LocalDate date) {
         boolean isReserved = false;

@@ -6,6 +6,7 @@ import com.callbackcats.reboarding.dto.ReservationCreationData;
 import com.callbackcats.reboarding.service.ReboardingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -90,12 +91,13 @@ public class ReboardingController {
         }
     }
 
-    @GetMapping("/layout")
-    public ResponseEntity<Void> getDailyLayout(){
+    @GetMapping(value = "/layout", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getDailyLayout() {
         log.info("Daily layout is requested");
 
-        reboardingService.getCurrentOfficeLayout();
+        byte[] layout = reboardingService.getCurrentOfficeLayout();
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(layout, HttpStatus.OK);
     }
+
 }

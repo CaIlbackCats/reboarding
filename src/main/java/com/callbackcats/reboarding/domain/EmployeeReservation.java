@@ -35,6 +35,10 @@ public class EmployeeReservation {
     @JoinColumn(name = "work_station_id")
     private WorkStation workStation;
 
+    @OneToOne(mappedBy = "employeeReservation")
+    private PersonalLayout personalLayout;
+
+
     public EmployeeReservation(Employee employee, Reservation reserved, Boolean permissionToOffice) {
         this.employee = employee;
         this.reserved = reserved;

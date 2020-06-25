@@ -9,6 +9,8 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.springframework.stereotype.Component;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,7 +54,7 @@ public class LayoutHandler {
         Imgcodecs.imwrite("daily_layout.jpg", sourceImage);
     }
 
-    public void createCurrentLayout(List<EmployeeReservation> employeeReservations, List<OfficeWorkstation> dailyLayout) {
+    public byte[] createCurrentLayout(List<EmployeeReservation> employeeReservations, List<OfficeWorkstation> dailyLayout) {
         Mat sourceImage = Imgcodecs.imread("office_layout.jpg");
         Mat currentLayout = sourceImage.clone();
         Map<WorkStation, Boolean> takenWorkstations = getTakenWorkstations(employeeReservations);
@@ -64,7 +66,27 @@ public class LayoutHandler {
                 .filter(workStation -> !takenWorkstations.containsKey(workStation))
                 .collect(Collectors.toList());
         notReservedWorkstations.forEach(workStation -> drawCircle(workStation, currentLayout));
-        Imgcodecs.imwrite("daily_layout.jpg", currentLayout);
+        //    Imgcodecs.imwrite("daily_layout.jpg", currentLayout);
+
+        return convertMatToByteArray(currentLayout);
+    }
+
+    public byte[] createPersonalLayout(WorkStation workStation) {
+        Mat sourceImage = Imgcodecs.imread("office_layout.jpg");
+        Mat currentLayout = sourceImage.clone();
+
+        Point currentPoint = new Point(workStation.getXPosition(), workStation.getYPosition());
+        Imgproc.circle(currentLayout, currentPoint, 3, new Scalar(0, 255, 255), -1);
+
+
+        return convertMatToByteArray(currentLayout);
+    }
+
+    private byte[] convertMatToByteArray(Mat layout) {
+        MatOfByte buffer = new MatOfByte();
+        Imgcodecs.imencode(".jpg", layout, buffer);
+
+        return buffer.toArray();
     }
 
     private Map<WorkStation, Boolean> getTakenWorkstations(List<EmployeeReservation> employeeReservations) {

@@ -2,7 +2,9 @@ package com.callbackcats.reboarding.service;
 
 import com.callbackcats.reboarding.domain.*;
 import com.callbackcats.reboarding.dto.EmployeeReservationData;
+import com.callbackcats.reboarding.dto.EmployeeReservationLayoutData;
 import com.callbackcats.reboarding.repository.EmployeeReservationRepository;
+import com.callbackcats.reboarding.repository.PersonalLayoutRepository;
 import com.callbackcats.reboarding.repository.ReservationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,12 +24,14 @@ public class EmployeeReservationService {
     private final EmployeeReservationRepository employeeReservationRepository;
     private final OfficeOptionsService officeOptionsService;
     private final EmployeeService employeeService;
+    private final PersonalLayoutRepository personalLayoutRepository;
 
-    public EmployeeReservationService(ReservationRepository reservationRepository, EmployeeReservationRepository employeeReservationRepository, OfficeOptionsService officeOptionsService, EmployeeService employeeService) {
+    public EmployeeReservationService(ReservationRepository reservationRepository, EmployeeReservationRepository employeeReservationRepository, OfficeOptionsService officeOptionsService, EmployeeService employeeService, PersonalLayoutRepository personalLayoutRepository) {
         this.reservationRepository = reservationRepository;
         this.employeeReservationRepository = employeeReservationRepository;
         this.officeOptionsService = officeOptionsService;
         this.employeeService = employeeService;
+        this.personalLayoutRepository = personalLayoutRepository;
     }
 
     /**
@@ -50,7 +54,7 @@ public class EmployeeReservationService {
      * @param employee    the employee who requested a reservation
      * @param reservation the reservation to connect to employee
      */
-    EmployeeReservationData saveReservationToEmployee(Employee employee, Reservation reservation) {
+    EmployeeReservation saveReservationToEmployee(Employee employee, Reservation reservation) {
         EmployeeReservation employeeReservation;
         boolean permissionToOffice = reservation.getReservationType() != ReservationType.QUEUED;
         if (permissionToOffice) {
@@ -63,15 +67,37 @@ public class EmployeeReservationService {
         log.info("Employee by id:\t" + employee.getId() + " was saved to reservation for the day:\t" + reservation.getDate());
 
 
+        return employeeReservation;
+    }
+
+    public EmployeeReservationData getEmployeeResevationData(Reservation reservation) {
         Integer position = (int) findEmployeeReservationsByDate(reservation.getDate())
                 .stream()
                 .map(EmployeeReservation::getReserved)
                 .filter(res -> res.getReservationType().equals(ReservationType.QUEUED))
                 .count();
-
         return new EmployeeReservationData(reservation.getReservationType(), position);
     }
 
+    public void saveEmployeeReservationLayout(EmployeeReservation employeeReservation, byte[] layout) {
+        PersonalLayout personalLayout = new PersonalLayout(layout, employeeReservation);
+        personalLayoutRepository.save(personalLayout);
+        log.info("Personal layout saved to employee reservation id:\t" + employeeReservation.getId());
+    }
+
+    public String getEmployeeReservationLayoutPath(String employeeId, LocalDate reservationDate) {
+        PersonalLayout personalLayout = personalLayoutRepository.findPersonalLayoutByEmployeeIdAndDate(employeeId, reservationDate)
+                .orElseThrow(() -> new NoSuchElementException("Employee by id:\t" + employeeId + " has no reservation for the given day:\t" + reservationDate));
+
+        log.info("Personal layout found for employee by id:\t" + employeeId + " on\t" + reservationDate);
+        return personalLayout.getImagePath();
+    }
+
+    public byte[] getEmployeeReservationLayout(String path) {
+        PersonalLayout personalLayout = personalLayoutRepository.findPersonalLayoutByPath(path).orElseThrow(() -> new NoSuchElementException("There is no such layout for path:\t" + path));
+        log.info("Personal layout is found by path:\t" + path);
+        return personalLayout.getPersonalLayout();
+    }
 
     /**
      * <p>Decides whether the limit of office is reached for today
