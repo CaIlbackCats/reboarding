@@ -16,3 +16,11 @@ Feature: Entry
     Examples:
       | employeeId |
       | 3          |
+
+  Scenario Outline: VIP employee can enter the office
+    Given employee ID "<employeeId>"
+    When service enters the qualified employee
+    Then employee should be in office
+    Examples:
+      | employeeId |
+      | 250        |

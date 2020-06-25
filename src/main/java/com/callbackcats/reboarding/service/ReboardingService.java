@@ -63,26 +63,39 @@ public class ReboardingService {
      * @return whether the employee could enter the office
      */
     public Boolean enterEmployee(String employeeId) {
-        boolean employeeEntered = false;
-        LocalDate today = LocalDate.now();
-        EmployeeReservation employeeReservation = employeeReservationService.findEmployeeReservationByIdAndDate(employeeId, today);
-        boolean canEmployeeEnter = !employeeReservationService.isOfficeAtLimitCurrently()
-                && employeeReservation.getPermissionToOffice()
-                && !employeeService.isEmployeeInOffice(employeeId)
-                && isEmployeeReservedGivenDay(employeeId, today);
+        boolean employeeEntered;
+        Employee employee = employeeService.findEmployeeById(employeeId);
+        if (employee.getVip()) {
+            employeeEntered = true;
+            employeeService.setEmployeeInOffice(employee, true);
+        } else {
+            employeeEntered = enterNonVipEmployee(employee);
+        }
 
+
+        return employeeEntered;
+    }
+
+    private boolean enterNonVipEmployee(Employee employee) {
+        LocalDate today = LocalDate.now();
+
+        boolean employeeEntered = false;
+        EmployeeReservation employeeReservation = employeeReservationService.findEmployeeReservationByIdAndDate(employee.getId(), today);
+        boolean canEmployeeEnter = employee.getVip() || (!employeeReservationService.isOfficeAtLimitCurrently()
+                && employeeReservation.getPermissionToOffice()
+                && !employee.getInOffice()
+                && isEmployeeReservedGivenDay(employee, today));
         if (canEmployeeEnter) {
-            Employee employee = employeeReservation.getEmployee();
             Reservation reservation = employeeReservation.getReserved();
             if (reservation.getReservationType().equals(ReservationType.QUEUED)) {
                 employeeReservationService.setQueuedEmployeeWorkstation(employeeReservation);
             }
+
             employeeService.setEmployeeInOffice(employee, true);
             employeeEntered = true;
             //   employeeReservationService.removeEmployeeReservationToday(employeeId);
-            log.info("Employee by id:\t" + employeeId + " has entered the office");
+            log.info("Employee by id:\t" + employee.getId() + " has entered the office");
         }
-
         return employeeEntered;
     }
 
@@ -132,7 +145,10 @@ public class ReboardingService {
     public Boolean handleEmployeeExit(String employeeId) {
         boolean leftEmployee = false;
         Employee employee = employeeService.findEmployeeById(employeeId);
-        if (employee.getInOffice()) {
+        if (employee.getVip() && employee.getInOffice()) {
+            employeeService.setEmployeeInOffice(employee, false);
+            leftEmployee = true;
+        } else if (employee.getInOffice()) {
             employeeReservationService.removeEmployeeReservationToday(employeeId);
             employeeService.setEmployeeInOffice(employee, false);
 
@@ -160,5 +176,19 @@ public class ReboardingService {
         OfficeOptions officeOptions = officeOptionsService.findOfficeOptionsByReservationDate(today);
         List<OfficeWorkstation> dailyLayout = officeOptions.getOfficeWorkstations();
         layoutHandler.createCurrentLayout(employeeReservations, dailyLayout);
+    }
+
+
+    private boolean isEmployeeReservedGivenDay(Employee employee, LocalDate date) {
+        boolean isReserved = false;
+        if (employee.getReservation() != null && !employee.getReservation().isEmpty()) {
+            isReserved =
+                    employee.getReservation()
+                            .stream()
+                            .map(EmployeeReservation::getReserved)
+                            .map(Reservation::getDate)
+                            .anyMatch(localDate -> localDate.equals(date));
+        }
+        return isReserved;
     }
 }

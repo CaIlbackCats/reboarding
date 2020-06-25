@@ -1,3 +1,6 @@
+INSERT INTO employee(id,in_office,vip)
+VALUES (250,false,true);
+
 INSERT INTO office_capacity(id,capacity_limit,start_date,end_date,employee_min_distance)
 VALUES (0,0,'2020-05-01','2020-05-15',50);
 

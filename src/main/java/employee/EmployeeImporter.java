@@ -21,9 +21,9 @@ public class EmployeeImporter {
         List<Employee> employees = new ArrayList<>();
         try {
             List<String> lines = Files.readAllLines(Paths.get(PATH_TO_EMPLOYEE_LIST));
-            for (int i = 0; i < lines.size(); i++) {
-                String[] oneLine = lines.get(i).split(";");
-                employees.add(new Employee(oneLine[0], Boolean.valueOf(oneLine[1])));
+            for (String line : lines) {
+                String[] oneLine = line.split(";");
+                employees.add(new Employee(oneLine[0], Boolean.valueOf(oneLine[1]), Boolean.valueOf(oneLine[2])));
             }
             log.info("Employees imported");
 

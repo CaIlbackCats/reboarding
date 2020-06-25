@@ -30,9 +30,13 @@ public class Employee {
     @OneToMany(mappedBy = "employee")
     private List<EmployeeReservation> reservation;
 
-    public Employee(String id, Boolean inOffice) {
+    @Column(name = "vip")
+    private Boolean vip;
+
+    public Employee(String id, Boolean inOffice, Boolean vip) {
         this.id = id;
         this.inOffice = inOffice;
+        this.vip = vip;
     }
 
     @Override
