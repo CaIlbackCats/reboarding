@@ -24,9 +24,9 @@ public class KafkaMessageHandler {
         kafkaTemplate.send(employeeId, sendableMessage);
     }
 
-    @KafkaListener(topics = "users", groupId = "group_id")
-    public void consumeMessage(String message) {
-        log.info("Message recieved:\t" + message);
-    }
+//    @KafkaListener(topics = "users", groupId = "group_id")
+//    public void consumeMessage(String message) {
+//        log.info("Message recieved:\t" + message);
+//    }
 
 }

@@ -44,6 +44,9 @@ public class EmployeeReservationService {
     public void removeEmployeeReservationToday(String employeeId) {
         LocalDate today = LocalDate.now();
         EmployeeReservation employeeReservation = findEmployeeReservationByIdAndDate(employeeId, today);
+        employeeReservation.setWorkStation(null);
+        PersonalLayout personalLayout = findPersonalLayoutByEmployeeIdAndDate(employeeId, today);
+        personalLayoutRepository.delete(personalLayout);
         employeeReservationRepository.delete(employeeReservation);
         log.info("Employee by id:\t" + employeeId + "'s connection to reservation for the day:\t" + today + " was detached");
     }
@@ -232,11 +235,13 @@ public class EmployeeReservationService {
 
     public void notifyEmployeeStatus() {
         LocalDate today = LocalDate.now();
-        List<EmployeeReservation> employeeReservations = findEmployeeReservationsByDate(today);
+        List<EmployeeReservation> employeeReservations = employeeReservationRepository.findEmployeeReservationsByDateAndType(today, ReservationType.QUEUED);
         OfficeOptions officeOption = officeOptionsService.findOfficeOptionsByReservationDate(today);
         Integer employeeNumber = officeOption.getNotifiableEmployeeNumber();
-        Employee notifyingEmployee = employeeReservations.get(employeeNumber).getEmployee();
-        kafkaMessageHandler.sendNotification(notifyingEmployee.getId(), employeeNumber);
+        if (employeeNumber <= employeeReservations.size() - 1) {
+            Employee notifyingEmployee = employeeReservations.get(employeeNumber).getEmployee();
+            //   kafkaMessageHandler.sendNotification(notifyingEmployee.getId(), employeeNumber);
+        }
     }
 
     private EmployeeReservation setEmployeeReservationType(EmployeeReservation employeeReservation) {
@@ -286,7 +291,7 @@ public class EmployeeReservationService {
                 .stream()
                 .map(EmployeeReservation::getReserved).filter(res -> res.getReservationType().equals(ReservationType.RESERVED))
                 .count();
-        return officeOptions.getLimit() >= reservationCount && officeOptions.getLimit() != 0;
+        return officeOptions.getLimit() > reservationCount && officeOptions.getLimit() != 0;
     }
 
     private Reservation createQueuedReservation(LocalDate reservationDate) {

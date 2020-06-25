@@ -2,6 +2,7 @@ package com.callbackcats.reboarding.repository;
 
 import com.callbackcats.reboarding.domain.Employee;
 import com.callbackcats.reboarding.domain.EmployeeReservation;
+import com.callbackcats.reboarding.domain.ReservationType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,4 +21,7 @@ public interface EmployeeReservationRepository extends JpaRepository<EmployeeRes
 
     @Query("select er from EmployeeReservation er where er.reserved.date= :date")
     List<EmployeeReservation> findEmployeeReservationsByDate(@Param("date") LocalDate date);
+
+    @Query("select er from EmployeeReservation er where er.reserved.date= :date and er.reserved.reservationType= :type")
+    List<EmployeeReservation> findEmployeeReservationsByDateAndType(@Param("date") LocalDate date, @Param("type")ReservationType type);
 }
