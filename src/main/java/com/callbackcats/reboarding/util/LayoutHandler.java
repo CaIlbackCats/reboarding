@@ -1,16 +1,36 @@
 package com.callbackcats.reboarding.util;
 
 import com.callbackcats.reboarding.domain.*;
+import lombok.extern.slf4j.Slf4j;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class LayoutHandler {
+
+    @Value("${office.layout-path}")
+    private String officeLayoutPath;
+
+    @Value("${office.chair-path}")
+    private String officeChairTemplatePath;
+
+    @Value("${office.picture-extension}")
+    private String pictureExtension;
+
+    private static final Scalar redScalar = new Scalar(0, 0, 255);
+    private static final Scalar yellowScalar = new Scalar(0, 255, 255);
+    private static final Scalar greenScalar = new Scalar(0, 255, 0);
 
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -18,22 +38,27 @@ public class LayoutHandler {
 
     public List<Point> getWorkstationPosition() {
         List<Point> workstationPositions = new ArrayList<>();
-        Mat officeLayout = Imgcodecs.imread("office_layout.jpg");
+        Mat officeLayout = Imgcodecs.imread(officeLayoutPath);
         Mat clonedOfficeLayout = officeLayout.clone();
         Imgproc.GaussianBlur(officeLayout, clonedOfficeLayout, new Size(0, 0), 10);
         Core.addWeighted(officeLayout, 1.5, clonedOfficeLayout, -0.5, 0, clonedOfficeLayout);
-        for (int i = 0; i < 12; i++) {
-            String workstationTemplatePath = "src/main/resources/img_templates/chair_" + i + ".jpg";
-            signTemplate(workstationTemplatePath, clonedOfficeLayout, workstationPositions);
+        try {
+            Path officeChairTemplate = Paths.get(officeChairTemplatePath);
+            long numberOfTemplates = Files.find(officeChairTemplate, Integer.MAX_VALUE, (path, attribute) -> attribute.isRegularFile()).count();
+            for (int i = 0; i < numberOfTemplates; i++) {
+                String workstationTemplatePath = officeChairTemplatePath + "/chair_" + i + pictureExtension;
+                signTemplate(workstationTemplatePath, clonedOfficeLayout, workstationPositions);
+            }
+        } catch (IOException e) {
+            log.warn(e.getMessage());
         }
-
         PointComparator pointComparator = new PointComparator();
         workstationPositions.sort(pointComparator);
         return workstationPositions;
     }
 
     public byte[] createCurrentLayout(List<EmployeeReservation> employeeReservations, List<OfficeWorkstation> dailyLayout) {
-        Mat sourceImage = Imgcodecs.imread("office_layout.jpg");
+        Mat sourceImage = Imgcodecs.imread(officeLayoutPath);
         Mat currentLayout = sourceImage.clone();
 
         Imgproc.cvtColor(currentLayout, currentLayout, Imgproc.COLOR_RGB2GRAY);
@@ -53,7 +78,7 @@ public class LayoutHandler {
     }
 
     public byte[] createPersonalLayout(WorkStation workStation, Employee employee) {
-        Mat sourceImage = Imgcodecs.imread("office_layout.jpg");
+        Mat sourceImage = Imgcodecs.imread(officeLayoutPath);
         Mat currentLayout = sourceImage.clone();
 
         Imgproc.cvtColor(currentLayout, currentLayout, Imgproc.COLOR_RGB2GRAY);
@@ -66,7 +91,7 @@ public class LayoutHandler {
 
     private byte[] convertMatToByteArray(Mat layout) {
         MatOfByte buffer = new MatOfByte();
-        Imgcodecs.imencode(".jpg", layout, buffer);
+        Imgcodecs.imencode(pictureExtension, layout, buffer);
 
         return buffer.toArray();
     }
@@ -87,16 +112,16 @@ public class LayoutHandler {
     private void drawCircle(WorkStation workStation, Boolean inOffice, Mat sourceImage) {
         Point currentPoint = new Point(workStation.getXPosition(), workStation.getYPosition());
         if (inOffice) {
-            Imgproc.circle(sourceImage, currentPoint, 5, new Scalar(0, 0, 255), -1);
+            Imgproc.circle(sourceImage, currentPoint, 5, redScalar, -1);
         } else {
-            Imgproc.circle(sourceImage, currentPoint, 5, new Scalar(0, 255, 255), -1);
+            Imgproc.circle(sourceImage, currentPoint, 5, yellowScalar, -1);
         }
         Imgproc.circle(sourceImage, currentPoint, 5, new Scalar(0, 0, 0), 1);
     }
 
     private void drawCircle(WorkStation workStation, Mat sourceImage) {
         Point currentPoint = new Point(workStation.getXPosition(), workStation.getYPosition());
-        Imgproc.circle(sourceImage, currentPoint, 5, new Scalar(0, 255, 0), -1);
+        Imgproc.circle(sourceImage, currentPoint, 5, greenScalar, -1);
         Imgproc.circle(sourceImage, currentPoint, 5, new Scalar(0, 0, 0), 1);
 
     }

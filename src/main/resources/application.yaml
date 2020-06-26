@@ -18,7 +18,8 @@ notifications:
     message: Yout position in queue is
 office:
   layout-path: office_layout.jpg
-  chair-path: src/main/resources/img_templates/
+  chair-path: src/main/resources/img_templates
+  picture-extension: .jpg
 
 data-initialize:
   path:
