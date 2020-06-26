@@ -28,9 +28,10 @@ public class LayoutHandler {
     @Value("${office.picture-extension}")
     private String pictureExtension;
 
-    private static final Scalar redScalar = new Scalar(0, 0, 255);
-    private static final Scalar yellowScalar = new Scalar(0, 255, 255);
-    private static final Scalar greenScalar = new Scalar(0, 255, 0);
+    private static final Scalar RED_SCALAR = new Scalar(0, 0, 255);
+    private static final Scalar YELLOW_SCALAR = new Scalar(0, 255, 255);
+    private static final Scalar GREEN_SCALAR = new Scalar(0, 255, 0);
+    private static final Scalar BLACK_SCALAR = new Scalar(0, 0, 0);
 
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -112,17 +113,17 @@ public class LayoutHandler {
     private void drawCircle(WorkStation workStation, Boolean inOffice, Mat sourceImage) {
         Point currentPoint = new Point(workStation.getXPosition(), workStation.getYPosition());
         if (inOffice) {
-            Imgproc.circle(sourceImage, currentPoint, 5, redScalar, -1);
+            Imgproc.circle(sourceImage, currentPoint, 5, RED_SCALAR, -1);
         } else {
-            Imgproc.circle(sourceImage, currentPoint, 5, yellowScalar, -1);
+            Imgproc.circle(sourceImage, currentPoint, 5, YELLOW_SCALAR, -1);
         }
-        Imgproc.circle(sourceImage, currentPoint, 5, new Scalar(0, 0, 0), 1);
+        Imgproc.circle(sourceImage, currentPoint, 5, BLACK_SCALAR, 1);
     }
 
     private void drawCircle(WorkStation workStation, Mat sourceImage) {
         Point currentPoint = new Point(workStation.getXPosition(), workStation.getYPosition());
-        Imgproc.circle(sourceImage, currentPoint, 5, greenScalar, -1);
-        Imgproc.circle(sourceImage, currentPoint, 5, new Scalar(0, 0, 0), 1);
+        Imgproc.circle(sourceImage, currentPoint, 5, GREEN_SCALAR, -1);
+        Imgproc.circle(sourceImage, currentPoint, 5, BLACK_SCALAR, 1);
 
     }
 
@@ -141,12 +142,10 @@ public class LayoutHandler {
             maxval = maxr.maxVal;
             if (maxval >= threshold) {
                 if (!isAlreadyInWorkstationPositionList(maxp, workstationPositions)) {
-                    Imgproc.rectangle(officeLayout, maxp, new Point(maxp.x + workstationTemplate.cols(),
-                            maxp.y + workstationTemplate.rows()), new Scalar(0, 0, 255), 1);
                     workstationPositions.add(maxp);
                 }
                 Imgproc.rectangle(result, maxp, new Point(maxp.x + workstationTemplate.cols(),
-                        maxp.y + workstationTemplate.rows()), new Scalar(0, 0, 255), -1);
+                        maxp.y + workstationTemplate.rows()), RED_SCALAR, -1);
             } else {
                 withinThreshold = false;
             }
