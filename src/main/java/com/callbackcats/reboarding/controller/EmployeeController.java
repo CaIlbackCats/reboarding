@@ -30,7 +30,7 @@ public class EmployeeController {
 
         log.info("Employee reservation layout path is requested");
         String path = employeeReservationService.getEmployeeReservationLayoutPath(employeeId, date);
-        String url = employeePath + "/layout" + path;
+        String url = employeePath + "layout/" + path;
         return new ResponseEntity<>(url, HttpStatus.OK);
     }
 
