@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -30,16 +31,21 @@ public class EmployeeController {
 
         log.info("Employee reservation layout path is requested");
         String path = employeeReservationService.getEmployeeReservationLayoutPath(employeeId, date);
-        String url = employeePath + "/layout" + path;
+        String url = employeePath + "layout/" + path;
         return new ResponseEntity<>(url, HttpStatus.OK);
     }
 
     @GetMapping(value = "/layout/{layoutPath}", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getEmployeeLayout(@PathVariable String layoutPath) {
         log.info("Employee reservation layout  is requested");
-
-        byte[] layout = employeeReservationService.getEmployeeReservationLayout(layoutPath);
-
-        return new ResponseEntity<>(layout, HttpStatus.OK);
+        byte[] layout;
+        ResponseEntity<byte[]> responseEntity;
+        try {
+            layout = employeeReservationService.getEmployeeReservationLayout(layoutPath);
+            responseEntity = new ResponseEntity<>(layout, HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            responseEntity = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        return responseEntity;
     }
 }

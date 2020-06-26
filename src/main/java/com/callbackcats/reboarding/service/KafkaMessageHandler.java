@@ -2,7 +2,6 @@ package com.callbackcats.reboarding.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -29,9 +28,9 @@ public class KafkaMessageHandler {
         kafkaTemplate.send(publicTopic, sendableMessage);
     }
 
-    @KafkaListener(topics = "employees", groupId = "group_id")
+/*    @KafkaListener(topics = "employees", groupId = "group_id")
     public void consumeMessage(String message) {
         log.info("Message received:\t" + message);
-    }
+    }*/
 
 }
