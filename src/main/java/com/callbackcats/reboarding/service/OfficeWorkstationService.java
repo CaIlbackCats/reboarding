@@ -4,11 +4,14 @@ import com.callbackcats.reboarding.domain.OfficeOptions;
 import com.callbackcats.reboarding.domain.OfficeWorkstation;
 import com.callbackcats.reboarding.domain.WorkStation;
 import com.callbackcats.reboarding.dto.OfficeOptionsCreationData;
+import com.callbackcats.reboarding.dto.PointData;
 import com.callbackcats.reboarding.repository.OfficeWorkstationRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.opencv.core.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,6 +50,17 @@ public class OfficeWorkstationService {
                 .collect(Collectors.toList());
         officeWorkstationRepository.saveAll(officeWorkstations);
         return officeWorkstations;
+    }
+
+    public void saveOfficeWorkstation(List<Point> closedPoints, LocalDate date) {
+        List<PointData> closedPointData = closedPoints.stream().map(PointData::new).collect(Collectors.toList());
+        OfficeOptions officeOptions = officeOptionsService.findOfficeOptionsByReservationDate(date);
+        List<WorkStation> workStations = workStationService.generateLayoutWithRange(closedPointData, officeOptions.getMinDistance(), officeOptions.getLimit());
+        List<OfficeWorkstation> officeWorkstations = workStations
+                .stream()
+                .map(workStation -> new OfficeWorkstation(officeOptions, workStation))
+                .collect(Collectors.toList());
+        officeWorkstationRepository.saveAll(officeWorkstations);
     }
 
 

@@ -11,42 +11,25 @@ import java.util.stream.Collectors;
 
 @Component
 public class LayoutHandler {
-    private static Mat dst;
-    private static List<Point> templates = new ArrayList<>();
 
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
-    public static List<Point> getWorkstationPosition() {
-
-        Mat img = Imgcodecs.imread("office_layout.jpg");
-        dst = img.clone();
-        Imgproc.GaussianBlur(img, dst, new Size(0, 0), 10);
-        Core.addWeighted(img, 1.5, dst, -0.5, 0, dst);
+    public List<Point> getWorkstationPosition() {
+        List<Point> workstationPositions = new ArrayList<>();
+        Mat officeLayout = Imgcodecs.imread("office_layout.jpg");
+        Mat clonedOfficeLayout = officeLayout.clone();
+        Imgproc.GaussianBlur(officeLayout, clonedOfficeLayout, new Size(0, 0), 10);
+        Core.addWeighted(officeLayout, 1.5, clonedOfficeLayout, -0.5, 0, clonedOfficeLayout);
         for (int i = 0; i < 12; i++) {
-            String templatePath = "src/main/resources/img_templates/chair_" + i + ".jpg";
-            signTemplate(templatePath, img);
+            String workstationTemplatePath = "src/main/resources/img_templates/chair_" + i + ".jpg";
+            signTemplate(workstationTemplatePath, clonedOfficeLayout, workstationPositions);
         }
-        Imgcodecs.imwrite("modified_office_layout.jpg", dst);//save image
 
         PointComparator pointComparator = new PointComparator();
-        templates.sort(pointComparator);
-        return templates;
-    }
-
-    public static void drawMap(List<WorkStation> workStations) {
-        Mat sourceImage = Imgcodecs.imread("office_layout.jpg");
-
-        for (int i = 0; i < workStations.size(); i++) {
-            Double xPosition = workStations.get(i).getXPosition();
-            Double yPosition = workStations.get(i).getYPosition();
-            Point currentPoint = new Point(xPosition, yPosition);
-            Imgproc.circle(sourceImage, currentPoint, 50, new Scalar(0, 0, 255), 1);
-            Imgproc.circle(sourceImage, currentPoint, 3, new Scalar(0, 255, 0), 3);
-            Imgproc.putText(sourceImage, String.valueOf(i), currentPoint, 2, 1, new Scalar(0, 0, 0), 2);
-        }
-        Imgcodecs.imwrite("daily_layout.jpg", sourceImage);
+        workstationPositions.sort(pointComparator);
+        return workstationPositions;
     }
 
     public byte[] createCurrentLayout(List<EmployeeReservation> employeeReservations, List<OfficeWorkstation> dailyLayout) {
@@ -61,7 +44,6 @@ public class LayoutHandler {
                 .filter(workStation -> !takenWorkstations.containsKey(workStation))
                 .collect(Collectors.toList());
         notReservedWorkstations.forEach(workStation -> drawCircle(workStation, currentLayout));
-        //    Imgcodecs.imwrite("daily_layout.jpg", currentLayout);
 
         return convertMatToByteArray(currentLayout);
     }
@@ -70,9 +52,7 @@ public class LayoutHandler {
         Mat sourceImage = Imgcodecs.imread("office_layout.jpg");
         Mat currentLayout = sourceImage.clone();
 
-        Point currentPoint = new Point(workStation.getXPosition(), workStation.getYPosition());
-        drawCircle(workStation,employee.getInOffice(),currentLayout);
-       // Imgproc.circle(currentLayout, currentPoint, 3, new Scalar(0, 255, 255), -1);
+        drawCircle(workStation, employee.getInOffice(), currentLayout);
 
 
         return convertMatToByteArray(currentLayout);
@@ -113,34 +93,34 @@ public class LayoutHandler {
     }
 
 
-    private static void signTemplate(String templatePath, Mat img) {
-        Mat tpl = Imgcodecs.imread(templatePath);
+    private void signTemplate(String workStationTemplatePath, Mat officeLayout, List<Point> workstationPositions) {
+        Mat workstationTemplate = Imgcodecs.imread(workStationTemplatePath);
         Mat result = new Mat();
-        Imgproc.matchTemplate(img, tpl, result, Imgproc.TM_CCOEFF_NORMED);
+        Imgproc.matchTemplate(officeLayout, workstationTemplate, result, Imgproc.TM_CCOEFF_NORMED);
         Imgproc.threshold(result, result, 0.1, 1, Imgproc.THRESH_TOZERO);
         double threshold = 0.57;
         double maxval;
-        while (true) {
+        boolean withinThreshold = true;
+        while (withinThreshold) {
             Core.MinMaxLocResult maxr = Core.minMaxLoc(result);
             Point maxp = maxr.maxLoc;
             maxval = maxr.maxVal;
-            dst = img.clone();
             if (maxval >= threshold) {
-                if (!isAlreadyInTemplateSet(maxp)) {
-                    Imgproc.rectangle(img, maxp, new Point(maxp.x + tpl.cols(),
-                            maxp.y + tpl.rows()), new Scalar(0, 0, 255), 1);
-                    templates.add(maxp);
+                if (!isAlreadyInWorkstationPositionList(maxp, workstationPositions)) {
+                    Imgproc.rectangle(officeLayout, maxp, new Point(maxp.x + workstationTemplate.cols(),
+                            maxp.y + workstationTemplate.rows()), new Scalar(0, 0, 255), 1);
+                    workstationPositions.add(maxp);
                 }
-                Imgproc.rectangle(result, maxp, new Point(maxp.x + tpl.cols(),
-                        maxp.y + tpl.rows()), new Scalar(0, 0, 255), -1);
+                Imgproc.rectangle(result, maxp, new Point(maxp.x + workstationTemplate.cols(),
+                        maxp.y + workstationTemplate.rows()), new Scalar(0, 0, 255), -1);
             } else {
-                break;
+                withinThreshold = false;
             }
         }
     }
 
-    private static boolean isAlreadyInTemplateSet(Point maxp) {
-        Optional<Point> maybePoint = templates.stream().filter(p -> Math.abs(maxp.x - p.x) < 3 && Math.abs(maxp.y - p.y) < 3).findFirst();
+    private boolean isAlreadyInWorkstationPositionList(Point maxp, List<Point> workstationPositions) {
+        Optional<Point> maybePoint = workstationPositions.stream().filter(p -> Math.abs(maxp.x - p.x) < 3 && Math.abs(maxp.y - p.y) < 3).findFirst();
         return maybePoint.isPresent();
     }
 }

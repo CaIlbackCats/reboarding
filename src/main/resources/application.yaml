@@ -25,4 +25,21 @@ employee-path: localhost:8080/api/employees/
 notifications:
   kafka:
     public-topic: employees
-    message: Yout position ins queue is
+    message: Yout position in queue is
+office:
+  layout-path: office_layout.jpg
+  chair-path: src/main/resources/img_templates/
+
+data-initialize:
+  path:
+    office-options: init_office_options.sql
+    reservations: init_reservation.sql
+  closed-positions:
+    min-position:
+      x: 720
+      y: 640
+    max-position:
+      x: 1270
+
+
+

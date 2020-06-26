@@ -25,7 +25,7 @@ public class KafkaMessageHandler {
 
     public void sendNotification(String employeeId, Integer position) {
         log.info("Message send requested");
-        String sendableMessage = message + position;
+        String sendableMessage = message + "\t" + position;
         kafkaTemplate.send(publicTopic, sendableMessage);
     }
 
