@@ -23,17 +23,19 @@ RUN cd opencv-4.3.0 && mkdir build && cd build && \
 
 RUN cd opencv-4.3.0/build && make -j2
 RUN cd opencv-4.3.0/build && make install
+RUN mv /opencv-4.3.0/build/bin/opencv-430.jar /usr/lib
+RUN mv /opencv-4.3.0/build/lib/libopencv_java430.so /usr/lib
+
+# TODO: fix java build + entrypoint
 
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
+COPY office_layout.jpg office_layout.jpg
 
 RUN ./mvnw install -DskipTests
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
-
-RUN mv /opencv-4.3.0/build/bin/opencv-430.jar /usr/lib
-RUN mv /opencv-4.3.0/build/lib/libopencv_java430.so /usr/lib
 
 
 CMD bin/sh
