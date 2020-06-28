@@ -1,17 +1,17 @@
 {
-  "id": "fa8a1851-e97a-42bd-92b8-ec999dc40673",
+  "id": "73dd8490-0920-46bd-b09e-d484fc8b755b",
   "name": "ReboardingTests",
-  "timestamp": "2020-06-28T18:06:48.874Z",
+  "timestamp": "2020-06-28T18:15:45.791Z",
   "collection_id": "1c3eb137-572a-4d5b-a75a-920b0c56cfc1",
   "folder_id": 0,
   "environment_id": "0",
-  "totalPass": 9,
+  "totalPass": 14,
   "totalFail": 0,
   "results": [
     {
       "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
       "name": "registerEmployees",
-      "time": 23,
+      "time": 32,
       "responseCode": {
         "code": 200,
         "name": "OK"
@@ -19,32 +19,32 @@
       "tests": {},
       "testPassFailCounts": {},
       "times": [
-        284,
-        97,
-        96,
+        293,
+        101,
         93,
-        94,
-        97,
         95,
-        108,
-        106,
         99,
+        101,
+        97,
         109,
-        135,
+        107,
+        100,
+        107,
+        141,
+        109,
+        101,
+        120,
+        105,
+        101,
         103,
-        102,
-        114,
-        116,
-        96,
-        117,
-        33,
+        34,
+        26,
+        30,
+        44,
+        29,
         25,
         24,
-        36,
-        37,
-        28,
-        26,
-        23
+        32
       ],
       "allTests": [
         {},
@@ -106,7 +106,7 @@
       "id": "13bde4e9-91e7-47a8-bc5d-94743fd02991",
       "name": "getEmployeeLayoutPath - ID126",
       "url": "http://localhost:8080/api/employees/126?date=2020-06-28",
-      "time": 9,
+      "time": 6,
       "responseCode": {
         "code": 400,
         "name": "Bad Request"
@@ -121,7 +121,7 @@
         }
       },
       "times": [
-        9
+        6
       ],
       "allTests": [
         {
@@ -132,8 +132,8 @@
     {
       "id": "35a5f676-8d30-4021-b4b7-d4826b0f522f",
       "name": "getEmployeeLayout - ID101",
-      "url": "http://localhost:8080/api/employees/layout/4d7941a8-177a-4509-9f16-cfb089724df5",
-      "time": 16,
+      "url": "http://localhost:8080/api/employees/layout/e99fc7f9-6820-4329-a102-52813c59f444",
+      "time": 15,
       "responseCode": {
         "code": 200,
         "name": "OK"
@@ -148,7 +148,7 @@
         }
       },
       "times": [
-        16
+        15
       ],
       "allTests": [
         {
@@ -160,7 +160,7 @@
       "id": "4b41442f-1059-4ded-8d42-0d98c8c50f4b",
       "name": "getDailyLayout",
       "url": "http://localhost:8080/api/layout",
-      "time": 93,
+      "time": 100,
       "responseCode": {
         "code": 200,
         "name": "OK"
@@ -175,7 +175,7 @@
         }
       },
       "times": [
-        93
+        100
       ],
       "allTests": [
         {
@@ -187,7 +187,7 @@
       "id": "02353ec3-f6c1-496d-be4a-d46452767329",
       "name": "enterToOffice - ID101",
       "url": "http://localhost:8080/api/entry/101",
-      "time": 107,
+      "time": 110,
       "responseCode": {
         "code": 202,
         "name": "Accepted"
@@ -202,7 +202,7 @@
         }
       },
       "times": [
-        107
+        110
       ],
       "allTests": [
         {
@@ -214,7 +214,7 @@
       "id": "0c0423cf-519c-4d78-9f7d-8064572a0513",
       "name": "enterToOffice - ID120",
       "url": "http://localhost:8080/api/entry/120",
-      "time": 11,
+      "time": 9,
       "responseCode": {
         "code": 401,
         "name": "Unauthorized"
@@ -229,7 +229,7 @@
         }
       },
       "times": [
-        11
+        9
       ],
       "allTests": [
         {
@@ -241,7 +241,7 @@
       "id": "cfe6526d-31b9-47af-95a1-b86f13b0e3ef",
       "name": "getStatus - ID120",
       "url": "http://localhost:8080/api/status/120",
-      "time": 9,
+      "time": 12,
       "responseCode": {
         "code": 200,
         "name": "OK"
@@ -256,7 +256,7 @@
         }
       },
       "times": [
-        9
+        12
       ],
       "allTests": [
         {
@@ -268,7 +268,7 @@
       "id": "81e17989-8565-4308-ba97-3c2c2cbf9f97",
       "name": "exitFromOffice - ID101",
       "url": "http://localhost:8080/api/exit/101",
-      "time": 37,
+      "time": 35,
       "responseCode": {
         "code": 202,
         "name": "Accepted"
@@ -283,7 +283,7 @@
         }
       },
       "times": [
-        37
+        35
       ],
       "allTests": [
         {
@@ -295,7 +295,7 @@
       "id": "462b57a5-a423-4e7d-bd6b-e199d13f4a86",
       "name": "enterToOffice - ID120",
       "url": "http://localhost:8080/api/entry/120",
-      "time": 10,
+      "time": 9,
       "responseCode": {
         "code": 401,
         "name": "Unauthorized"
@@ -310,7 +310,7 @@
         }
       },
       "times": [
-        10
+        9
       ],
       "allTests": [
         {
@@ -322,23 +322,140 @@
       "id": "06da0a0f-69f2-4f91-bc48-b4959d159fe4",
       "name": "enterToOffice - ID4",
       "url": "http://localhost:8080/api/entry/4",
-      "time": 60156,
+      "time": 533,
       "responseCode": {
-        "code": 500,
-        "name": "Internal Server Error"
+        "code": 202,
+        "name": "Accepted"
       },
-      "tests": {},
-      "testPassFailCounts": {},
+      "tests": {
+        "Status code is 202": true
+      },
+      "testPassFailCounts": {
+        "Status code is 202": {
+          "pass": 1,
+          "fail": 0
+        }
+      },
       "times": [
-        60156
+        533
       ],
       "allTests": [
-        {}
+        {
+          "Status code is 202": true
+        }
+      ]
+    },
+    {
+      "id": "f5f57d83-a455-4f46-a7b2-fe6a51752b4a",
+      "name": "getStatus - ID120",
+      "url": "http://localhost:8080/api/status/120",
+      "time": 8,
+      "responseCode": {
+        "code": 200,
+        "name": "OK"
+      },
+      "tests": {
+        "Status code is 200 and position should be in response": true
+      },
+      "testPassFailCounts": {
+        "Status code is 200 and position should be in response": {
+          "pass": 1,
+          "fail": 0
+        }
+      },
+      "times": [
+        8
+      ],
+      "allTests": [
+        {
+          "Status code is 200 and position should be in response": true
+        }
+      ]
+    },
+    {
+      "id": "756dfef0-3b5b-4577-ab63-0fea887c8b4c",
+      "name": "enterToOffice - ID250 - VIP",
+      "url": "http://localhost:8080/api/entry/250",
+      "time": 8,
+      "responseCode": {
+        "code": 202,
+        "name": "Accepted"
+      },
+      "tests": {
+        "Status code is 202": true
+      },
+      "testPassFailCounts": {
+        "Status code is 202": {
+          "pass": 1,
+          "fail": 0
+        }
+      },
+      "times": [
+        8
+      ],
+      "allTests": [
+        {
+          "Status code is 202": true
+        }
+      ]
+    },
+    {
+      "id": "3c2bfbc3-1d45-4a89-851a-a2c74b916443",
+      "name": "exitFromOffice - ID250 - VIP",
+      "url": "http://localhost:8080/api/exit/250",
+      "time": 10,
+      "responseCode": {
+        "code": 202,
+        "name": "Accepted"
+      },
+      "tests": {
+        "Status code is 202": true
+      },
+      "testPassFailCounts": {
+        "Status code is 202": {
+          "pass": 1,
+          "fail": 0
+        }
+      },
+      "times": [
+        10
+      ],
+      "allTests": [
+        {
+          "Status code is 202": true
+        }
+      ]
+    },
+    {
+      "id": "128021eb-b215-4c5e-83e9-d584f980a465",
+      "name": "exitFromOffice - ID250 - VIP",
+      "url": "http://localhost:8080/api/exit/250",
+      "time": 5,
+      "responseCode": {
+        "code": 401,
+        "name": "Unauthorized"
+      },
+      "tests": {
+        "Status code is 401": true
+      },
+      "testPassFailCounts": {
+        "Status code is 401": {
+          "pass": 1,
+          "fail": 0
+        }
+      },
+      "times": [
+        5
+      ],
+      "allTests": [
+        {
+          "Status code is 401": true
+        }
       ]
     }
   ],
   "count": 1,
-  "totalTime": 62760,
+  "totalTime": 3205,
   "collection": {
     "requests": [
       {
@@ -483,6 +600,22 @@
       },
       {
         "id": "06da0a0f-69f2-4f91-bc48-b4959d159fe4",
+        "method": "POST"
+      },
+      {
+        "id": "f5f57d83-a455-4f46-a7b2-fe6a51752b4a",
+        "method": "GET"
+      },
+      {
+        "id": "756dfef0-3b5b-4577-ab63-0fea887c8b4c",
+        "method": "POST"
+      },
+      {
+        "id": "3c2bfbc3-1d45-4a89-851a-a2c74b916443",
+        "method": "POST"
+      },
+      {
+        "id": "128021eb-b215-4c5e-83e9-d584f980a465",
         "method": "POST"
       }
     ]
