@@ -1,14 +1,29 @@
 version: "3.4"
 
 services:
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    ports:
+      - 2181:2181
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+
   kafka:
     image: bitnami/kafka:latest
+    depends_on:
+      - zookeeper
     ports:
       - 9092:9092
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
 
   spring:
     depends_on:
       - kafka
-    build: .
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
     ports:
       - 8080:8080
+    command: ["java", "-jar", "/usr/src/app/target/reboarding-0.0.1-SNAPSHOT.jar"]
