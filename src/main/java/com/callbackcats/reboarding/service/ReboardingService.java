@@ -60,6 +60,7 @@ public class ReboardingService {
      *
      * @param employeeId the id of the employee
      * @return whether the employee could enter the office
+     * @throws NoSuchElementException if the employee doesn't have reservation for the day
      */
     public Boolean enterEmployee(String employeeId) {
         boolean employeeEntered;

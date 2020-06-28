@@ -31,9 +31,10 @@ public class WorkStationService {
      * </p>
      *
      * @param disabledWorkstations the list of the closed workstations
-     * @param range the minimum respected range within workstations
-     * @param limit the maximum number of workstations that can be reserved
+     * @param range                the minimum respected range within workstations
+     * @param limit                the maximum number of workstations that can be reserved
      * @return the list of all the reservable workstations
+     * @throws InvalidLayoutException when the given amount of employees can't enter based on the given minimum distance rule
      */
     public List<WorkStation> generateLayoutWithRange(List<PointData> disabledWorkstations, Integer range, Integer limit) {
         List<WorkStation> availableWorkstations = getAvailableWorkstations(disabledWorkstations);
