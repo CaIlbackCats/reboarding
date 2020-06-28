@@ -27,7 +27,7 @@ public class EmployeeImporter {
             log.info("Employees imported");
 
         } catch (IOException e) {
-            log.info(e.getMessage());
+            log.warn(e.getMessage());
         }
         return employees;
     }
