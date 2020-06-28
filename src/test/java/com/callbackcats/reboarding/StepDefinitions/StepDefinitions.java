@@ -8,7 +8,9 @@ import com.callbackcats.reboarding.service.OfficeOptionsService;
 import com.callbackcats.reboarding.service.EmployeeService;
 import com.callbackcats.reboarding.service.ReboardingService;
 import com.callbackcats.reboarding.service.WorkStationService;
+import com.callbackcats.reboarding.util.InvalidLayoutException;
 import io.cucumber.java.DataTableType;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -50,6 +52,8 @@ public class StepDefinitions {
     private Integer position;
     private List<PointData> disabledWorkstations;
     private List<WorkStation> workStations;
+    private Integer minRangeBetweenEmployees;
+    private Integer maxEmployeesInOffice;
 
     @DataTableType
     public OfficeOptionsCreationData createCapacity(Map<String, String> dataTable) {
@@ -175,9 +179,7 @@ public class StepDefinitions {
 
     @When("service creates the map")
     public void serviceCreatesTheMap() {
-        LocalDate date = LocalDate.of(2020, 5, 17);
-        this.workStations = workStationService.generateLayoutWithRange(this.disabledWorkstations,50,50);
-
+        this.workStations = workStationService.generateLayoutWithRange(this.disabledWorkstations, this.minRangeBetweenEmployees, this.maxEmployeesInOffice);
     }
 
 
@@ -185,5 +187,11 @@ public class StepDefinitions {
     public void returnSavedMap() {
         assertNotNull(workStations);
         assertEquals(50, workStations.size());
+    }
+
+    @And("the minimum distance between workstations is {int} and the maximum number of employees are {int}")
+    public void theMinimumDistanceBetweenWorkstationsIsAndTheMaximumNumberOfEmployeesAre(int range, int limit) {
+        this.minRangeBetweenEmployees = range;
+        this.maxEmployeesInOffice = limit;
     }
 }

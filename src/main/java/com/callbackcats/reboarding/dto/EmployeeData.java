@@ -14,8 +14,11 @@ public class EmployeeData {
 
     private Boolean inOffice;
 
+    private Boolean vip;
+
     public EmployeeData(Employee employee) {
         this.id = employee.getId();
         this.inOffice = employee.getInOffice();
+        this.vip = employee.getVip();
     }
 }

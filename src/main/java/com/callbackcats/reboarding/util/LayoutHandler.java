@@ -50,9 +50,7 @@ public class LayoutHandler {
      * @return the list of the points of workstations
      */
     public List<Point> getWorkstationPosition() {
-        // List<Point> workstationPositions = new ArrayList<>();
         List<Point> workstationPositions = new CopyOnWriteArrayList<>();
-        // List<Point> synchronizedList = Collections.synchronizedList(workstationPositions);
         Mat officeLayout = Imgcodecs.imread(officeLayoutPath);
         Mat clonedOfficeLayout = officeLayout.clone();
         blurLayout(officeLayout, clonedOfficeLayout);

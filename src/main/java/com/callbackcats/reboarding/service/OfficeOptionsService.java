@@ -44,7 +44,10 @@ public class OfficeOptionsService {
     }
 
     public List<CapacityData> saveOfficeOptions(List<OfficeOptionsCreationData> officeOptionsCreationData) {
-        List<OfficeOptions> officeOptions = officeOptionsCreationData.stream().map(OfficeOptions::new).collect(Collectors.toList());
+        List<OfficeOptions> officeOptions = officeOptionsCreationData
+                .stream()
+                .map(OfficeOptions::new)
+                .collect(Collectors.toList());
 
         officeOptionsRepository.saveAll(officeOptions);
 

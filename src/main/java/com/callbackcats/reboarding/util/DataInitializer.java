@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,7 +61,7 @@ public class DataInitializer {
 
     //In order to initialize some employees and workstations to the db upon application start
     @EventListener
-    public void init(ApplicationStartedEvent event) throws SQLException {
+    public void init(ApplicationStartedEvent event) {
         initEmployees();
         List<Point> workstationPoints = initWorkstations();
 

@@ -9,7 +9,3 @@ Feature: Employee reservation for the current day
       | currentEmployeeId | valid |
       | 0                 | true  |
       | 1                 | false |
-
-  Scenario Outline:
-
-    Examples:
