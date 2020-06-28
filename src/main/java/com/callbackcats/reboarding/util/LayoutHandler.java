@@ -33,6 +33,11 @@ public class LayoutHandler {
     private static final Scalar GREEN_SCALAR = new Scalar(0, 255, 0);
     private static final Scalar BLACK_SCALAR = new Scalar(0, 0, 0);
 
+    private static final Integer CIRCLE_RADIUS = 5;
+    private static final Integer FILLED_THICKNESS = -1;
+    private static final Integer UNFILLED_THICKNESS = 1;
+    private static final Integer MAX_PIXEL_TOLERANCE = 3;
+
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
@@ -41,22 +46,21 @@ public class LayoutHandler {
         List<Point> workstationPositions = new ArrayList<>();
         Mat officeLayout = Imgcodecs.imread(officeLayoutPath);
         Mat clonedOfficeLayout = officeLayout.clone();
-        Imgproc.GaussianBlur(officeLayout, clonedOfficeLayout, new Size(0, 0), 10);
-        Core.addWeighted(officeLayout, 1.5, clonedOfficeLayout, -0.5, 0, clonedOfficeLayout);
+        blurLayout(officeLayout, clonedOfficeLayout);
         try {
             Path officeChairTemplate = Paths.get(officeChairTemplatePath);
-            long numberOfTemplates = Files.find(officeChairTemplate, Integer.MAX_VALUE, (path, attribute) -> attribute.isRegularFile()).count();
-            for (int i = 0; i < numberOfTemplates; i++) {
-                String workstationTemplatePath = officeChairTemplatePath + "/chair_" + i + pictureExtension;
-                signTemplate(workstationTemplatePath, clonedOfficeLayout, workstationPositions);
-            }
+            List<Path> workstationTemplateList = Files.find(officeChairTemplate, Integer.MAX_VALUE, (path, attribute) -> attribute.isRegularFile()).collect(Collectors.toList());
+            workstationTemplateList
+                    .stream()
+                    .map(Path::toString)
+                    .forEach(pathString -> signTemplate(pathString, clonedOfficeLayout, workstationPositions));
+
         } catch (IOException e) {
             log.warn(e.getMessage());
         }
-        PointComparator pointComparator = new PointComparator();
-        workstationPositions.sort(pointComparator);
         return workstationPositions;
     }
+
 
     public byte[] createCurrentLayout(List<EmployeeReservation> employeeReservations, List<OfficeWorkstation> dailyLayout) {
         Mat sourceImage = Imgcodecs.imread(officeLayoutPath);
@@ -113,17 +117,17 @@ public class LayoutHandler {
     private void drawCircle(WorkStation workStation, Boolean inOffice, Mat sourceImage) {
         Point currentPoint = new Point(workStation.getXPosition(), workStation.getYPosition());
         if (inOffice) {
-            Imgproc.circle(sourceImage, currentPoint, 5, RED_SCALAR, -1);
+            Imgproc.circle(sourceImage, currentPoint, CIRCLE_RADIUS, RED_SCALAR, FILLED_THICKNESS);
         } else {
-            Imgproc.circle(sourceImage, currentPoint, 5, YELLOW_SCALAR, -1);
+            Imgproc.circle(sourceImage, currentPoint, CIRCLE_RADIUS, YELLOW_SCALAR, FILLED_THICKNESS);
         }
-        Imgproc.circle(sourceImage, currentPoint, 5, BLACK_SCALAR, 1);
+        Imgproc.circle(sourceImage, currentPoint, CIRCLE_RADIUS, BLACK_SCALAR, UNFILLED_THICKNESS);
     }
 
     private void drawCircle(WorkStation workStation, Mat sourceImage) {
         Point currentPoint = new Point(workStation.getXPosition(), workStation.getYPosition());
-        Imgproc.circle(sourceImage, currentPoint, 5, GREEN_SCALAR, -1);
-        Imgproc.circle(sourceImage, currentPoint, 5, BLACK_SCALAR, 1);
+        Imgproc.circle(sourceImage, currentPoint, CIRCLE_RADIUS, GREEN_SCALAR, FILLED_THICKNESS);
+        Imgproc.circle(sourceImage, currentPoint, CIRCLE_RADIUS, BLACK_SCALAR, UNFILLED_THICKNESS);
 
     }
 
@@ -145,7 +149,7 @@ public class LayoutHandler {
                     workstationPositions.add(maxp);
                 }
                 Imgproc.rectangle(result, maxp, new Point(maxp.x + workstationTemplate.cols(),
-                        maxp.y + workstationTemplate.rows()), RED_SCALAR, -1);
+                        maxp.y + workstationTemplate.rows()), RED_SCALAR, FILLED_THICKNESS);
             } else {
                 withinThreshold = false;
             }
@@ -153,7 +157,19 @@ public class LayoutHandler {
     }
 
     private boolean isAlreadyInWorkstationPositionList(Point maxp, List<Point> workstationPositions) {
-        Optional<Point> maybePoint = workstationPositions.stream().filter(p -> Math.abs(maxp.x - p.x) < 3 && Math.abs(maxp.y - p.y) < 3).findFirst();
+        Optional<Point> maybePoint = workstationPositions
+                .stream()
+                .filter(point -> isPointWithinTolerance(point, maxp)).findFirst();
+
         return maybePoint.isPresent();
+    }
+
+    private boolean isPointWithinTolerance(Point currentPoint, Point maxp) {
+        return Math.abs(maxp.x - currentPoint.x) < MAX_PIXEL_TOLERANCE && Math.abs(maxp.y - currentPoint.y) < MAX_PIXEL_TOLERANCE;
+    }
+
+    private void blurLayout(Mat officeLayout, Mat clonedOfficeLayout) {
+        Imgproc.GaussianBlur(officeLayout, clonedOfficeLayout, new Size(0, 0), 10);
+        Core.addWeighted(officeLayout, 1.5, clonedOfficeLayout, -0.5, 0, clonedOfficeLayout);
     }
 }

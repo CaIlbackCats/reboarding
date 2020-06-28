@@ -38,10 +38,9 @@ public class EmployeeController {
     @GetMapping(value = "/layout/{layoutPath}", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getEmployeeLayout(@PathVariable String layoutPath) {
         log.info("Employee reservation layout  is requested");
-        byte[] layout;
         ResponseEntity<byte[]> responseEntity;
         try {
-            layout = employeeReservationService.getEmployeeReservationLayout(layoutPath);
+           byte [] layout = employeeReservationService.getEmployeeReservationLayout(layoutPath);
             responseEntity = new ResponseEntity<>(layout, HttpStatus.OK);
         } catch (NoSuchElementException e) {
             responseEntity = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,10 +93,12 @@ public class DataInitializer {
     }
 
     private List<Point> initWorkstations() {
+        WorkstationComparator comparator = new WorkstationComparator();
         List<Point> workstationPositions = layoutHandler.getWorkstationPosition();
         List<WorkStation> workStations = workstationPositions
                 .stream()
                 .map(WorkStation::new)
+                .sorted(comparator)
                 .collect(Collectors.toList());
         workStationRepository.saveAll(workStations);
         log.info("Workstations initialized");
