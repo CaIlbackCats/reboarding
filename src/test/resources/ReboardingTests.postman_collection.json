@@ -1,648 +1,1058 @@
 {
 	"info": {
-		"_postman_id": "1c3eb137-572a-4d5b-a75a-920b0c56cfc1",
-		"name": "ReboardingTests",
+		"_postman_id": "8d79b4ff-5cd5-4d5b-a143-3e9e5bdce70c",
+		"name": "Reboarding",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "registerEmployees",
-			"item": [
+			"name": "registerReservation_Employee101_Today",
+			"event": [
 				{
-					"name": "registerEmployees",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "02bfa44f-8216-422d-9e9a-a60689eacec8",
-								"exec": [
-									"const moment = require('moment');\r",
-									"let current_date = moment().format(\"YYYY-MM-DD\");\r",
-									"pm.globals.set(\"current_date\",moment().format(\"YYYY-MM-DD\"))\r",
-									"\r",
-									"let index = pm.environment.get(\"register_index\") || 100;\r",
-									"if (index < 125) {\r",
-									"    postman.setNextRequest(\"registerEmployees\");\r",
-									"    index++;\r",
-									"    pm.environment.set(\"register_index\", index);\r",
-									"}\r",
-									"else {\r",
-									"    pm.environment.set(\"register_index\", 100);\r",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"id": "e8d165dc-53e7-4bd1-82ca-7c71e30589a9",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"employeeId\": \"{{register_index}}\",\r\n    \"reservedDate\": \"{{current_date}}\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:8080/api/register",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"register"
-							]
-						}
-					},
-					"response": []
+					"listen": "prerequest",
+					"script": {
+						"id": "1d6507ea-de75-4ade-a97e-c7df52bc0244",
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "069ece46-221a-4d02-aeea-b373ba062c36",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
-			"protocolProfileBehavior": {}
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"employeeId\": \"101\",\r\n    \"reservedDate\": \"{{current_timestamp}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"register"
+					]
+				}
+			},
+			"response": []
 		},
 		{
-			"name": "testLayouts",
-			"item": [
+			"name": "registerReservation_Employee100_Today",
+			"event": [
 				{
-					"name": "getEmployeeLayoutPath - ID101",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "4e37bec2-bca7-440f-b6af-ac0a8610be87",
-								"exec": [
-									"const moment = require('moment');\r",
-									"let queryParams = '?date='+ moment().format(\"YYYY-MM-DD\");\r",
-									"pm.globals.set(\"query_params\",queryParams)"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"id": "e9728dfc-f852-4327-acec-1c51fea29b53",
-								"exec": [
-									"pm.test(\"Status code is 200 and URL should be in response\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"    let url = responseBody;\r",
-									"    pm.globals.set(\"personal_layout_url\", url);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8080/api/employees/101{{query_params}}",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"employees",
-								"101{{query_params}}"
-							]
-						}
-					},
-					"response": []
+					"listen": "prerequest",
+					"script": {
+						"id": "fd547d3a-7ed0-459b-a053-f194cf50d876",
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
 				},
 				{
-					"name": "getEmployeeLayoutPath - ID126",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "b6ea696a-75f0-43e6-a0e7-14265d86e9b8",
-								"exec": [
-									"const moment = require('moment');\r",
-									"let queryParams = '?date='+ moment().format(\"YYYY-MM-DD\");\r",
-									"pm.globals.set(\"query_params\",queryParams)"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"id": "3abcc6d9-4a9c-4781-96de-ec99683e13a0",
-								"exec": [
-									"pm.test(\"Status code is 401\", function () {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8080/api/employees/126{{query_params}}",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"employees",
-								"126{{query_params}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "getEmployeeLayout - ID101",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "197f7380-c131-4990-9806-32485a1740b6",
-								"exec": [
-									"pm.test(\"Status code is 200 and image should be in response\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"    pm.response.to.have.header(\"Content-Type\");\r",
-									"    pm.response.to.be.header(\"Content-Type\", \"image/jpeg\");\r",
-									"});\r",
-									"\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{personal_layout_url}}",
-							"host": [
-								"{{personal_layout_url}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "getDailyLayout",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "0a344ab7-8cff-4979-9dad-03e7a734d03a",
-								"exec": [
-									"pm.test(\"Status code is 200 and image should be in response\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"    pm.response.to.have.header(\"Content-Type\");\r",
-									"    pm.response.to.be.header(\"Content-Type\", \"image/jpeg\");\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8080/api/layout",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"layout"
-							]
-						}
-					},
-					"response": []
+					"listen": "test",
+					"script": {
+						"id": "cb75f0c5-03b0-428e-93f2-4f1628558f9f",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
-			"protocolProfileBehavior": {}
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"employeeId\": \"100\",\r\n    \"reservedDate\": \"{{current_timestamp}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"register"
+					]
+				}
+			},
+			"response": []
 		},
 		{
-			"name": "testQueue",
-			"item": [
+			"name": "entryToOffice_Employee100",
+			"event": [
 				{
-					"name": "enterToOffice - ID101",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "4f44b84a-0df4-44e9-beee-0e857fe26683",
-								"exec": [
-									"pm.test(\"Status code is 202\", function () {\r",
-									"    pm.response.to.have.status(202);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8080/api/entry/101",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"entry",
-								"101"
-							]
-						}
-					},
-					"response": []
+					"listen": "prerequest",
+					"script": {
+						"id": "baab0c75-25ca-4571-96cc-0d1830f2051d",
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
 				},
 				{
-					"name": "enterToOffice - ID120",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "faeb4fd3-ba56-4181-985e-52b4b5af8e5b",
-								"exec": [
-									"pm.test(\"Status code is 401\", function () {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8080/api/entry/120",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"entry",
-								"120"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "getStatus - ID120",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "0eec5e33-0c53-4ca0-b4c8-bdafa5164127",
-								"exec": [
-									"pm.test(\"Status code is 200 and position should be in response\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"    pm.response.to.have.body(\"4\");\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "http://localhost:8080/api/status/120",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"status",
-								"120"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "exitFromOffice - ID101",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "ce9f76c5-ba9c-4c63-8cb1-8703653a4e79",
-								"exec": [
-									"pm.test(\"Status code is 202\", function () {\r",
-									"    pm.response.to.have.status(202);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8080/api/exit/101",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"exit",
-								"101"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "enterToOffice - ID120",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "588c0977-9725-4431-afd5-a09a48dc00b9",
-								"exec": [
-									"pm.test(\"Status code is 401\", function () {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8080/api/entry/120",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"entry",
-								"120"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "enterToOffice - ID4",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "e041b085-3bc2-4d92-879d-a625eeed8f42",
-								"exec": [
-									"pm.test(\"Status code is 202\", function () {\r",
-									"    pm.response.to.have.status(202);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8080/api/entry/4",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"entry",
-								"4"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "getStatus - ID120",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "d9843347-f1ee-4625-964d-de29818dda97",
-								"exec": [
-									"pm.test(\"Status code is 200 and position should be in response\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"    pm.response.to.have.body(\"3\");\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "http://localhost:8080/api/status/120",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"status",
-								"120"
-							]
-						}
-					},
-					"response": []
+					"listen": "test",
+					"script": {
+						"id": "aa2bea35-9e06-42a0-b81c-a8427e86fa71",
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {\r",
+							"    pm.response.to.have.status(202);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
-			"protocolProfileBehavior": {}
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/entry/100",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"entry",
+						"100"
+					]
+				}
+			},
+			"response": []
 		},
 		{
-			"name": "testVIP",
-			"item": [
+			"name": "exitFromOffice_Employee100",
+			"event": [
 				{
-					"name": "enterToOffice - ID250 - VIP",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "9b75843a-3d15-4c74-b776-5d6d965d1f7c",
-								"exec": [
-									"pm.test(\"Status code is 202\", function () {\r",
-									"    pm.response.to.have.status(202);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8080/api/entry/250",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"entry",
-								"250"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "exitFromOffice - ID250 - VIP",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "b989c291-02d2-450e-8f97-28414cb62752",
-								"exec": [
-									"pm.test(\"Status code is 202\", function () {\r",
-									"    pm.response.to.have.status(202);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8080/api/exit/250",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"exit",
-								"250"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "exitFromOffice - ID250 - VIP",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "fe921489-1030-4b80-a1bd-17621df8138e",
-								"exec": [
-									"pm.test(\"Status code is 401\", function () {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8080/api/exit/250",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"exit",
-								"250"
-							]
-						}
-					},
-					"response": []
+					"listen": "test",
+					"script": {
+						"id": "c15f7ff1-fa66-44bf-8beb-76a99e911c43",
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {\r",
+							"    pm.response.to.have.status(202);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
-			"protocolProfileBehavior": {}
-		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"id": "0183dc2c-aab4-4bdb-badc-12c4ac1596a5",
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/exit/100",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"exit",
+						"100"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
 		},
 		{
-			"listen": "test",
-			"script": {
-				"id": "2bad1332-4d78-4169-b71b-1a1fc7e75c3c",
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
+			"name": "getStatus_Employee3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5e61d5fb-d895-463c-8fe7-60a39acb15e6",
+						"exec": [
+							"pm.test(\"Status code is 200 and position should be in response\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.response.to.have.body(\"2\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/status/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"status",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "entryToOffice_Employee4",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "60f49269-b9fe-42eb-b6ca-6e07419637f9",
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "660a3fa8-c061-484c-ac4e-c6418bd06dd5",
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {\r",
+							"    pm.response.to.have.status(202);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/entry/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"entry",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "exitFromOffice_Employee4",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "76e55508-a204-416b-9128-acc81c84c230",
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {\r",
+							"    pm.response.to.have.status(202);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/exit/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"exit",
+						"4"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getStatus_Employee3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "af5ab965-6ab7-4aa4-8890-d1a164510106",
+						"exec": [
+							"pm.test(\"Status code is 200 and position should be in response\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.response.to.have.body(\"1\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/status/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"status",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "entryToOffice_Employee3",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "271fcb68-f1eb-461d-8c7a-addb7276030f",
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "f8771f03-3433-42ab-8935-0b529a73f2a4",
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {\r",
+							"    pm.response.to.have.status(202);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/entry/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"entry",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "exitFromOffice_Employee3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a536514b-9cb5-486a-8b21-eec7b3b0da8d",
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {\r",
+							"    pm.response.to.have.status(202);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/exit/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"exit",
+						"3"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "registerFirstQueuedReservation_Employee100_0707",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a1e48ee1-b479-4158-b443-a85dd58cc946",
+						"exec": [
+							"pm.test(\"Status code is 200 and position should be in response\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.response.to.have.body(\"1\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"employeeId\": \"100\",\r\n    \"reservedDate\": \"2020-07-07\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "registerSecondQueuedReservation_Employee102_0707",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d71adae4-774a-4f8b-849e-d12faf7b92d3",
+						"exec": [
+							"pm.test(\"Status code is 200 and position should be in response\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.response.to.have.body(\"2\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"employeeId\": \"102\",\r\n    \"reservedDate\": \"2020-07-07\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteReservation_Employee100_0707",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "38569dab-3d7d-4618-8d7d-78418b819211",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"employeeId\": \"100\",\r\n    \"reservedDate\": \"2020-07-07\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/delete",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteReservation_Employee102_0707",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b02af4a3-2ac4-4425-a62c-a431a800d15a",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"employeeId\": \"102\",\r\n    \"reservedDate\": \"2020-07-07\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/delete",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteReservation_Employee101_Today",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2d178e8a-15b9-43df-a259-95f0e663ffd8",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "5c815ecf-17aa-4262-8715-01a4d922bf35",
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"employeeId\": \"101\",\r\n    \"reservedDate\": \"{{current_timestamp}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/delete",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "registerReservation_Employee100_Today",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "24598c82-04ca-4e40-8be7-9faed95c7213",
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "427a1116-b0c0-4137-881d-32a2fbf9b13f",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"employeeId\": \"100\",\r\n    \"reservedDate\": \"{{current_timestamp}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "registerReservation_Employee101_Today",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b07b3e5c-26b0-4b05-9e24-f91ec605f353",
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "3ceab3cb-3497-493f-9c2f-cb99b736517c",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"employeeId\": \"101\",\r\n    \"reservedDate\": \"{{current_timestamp}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "registerReservation_Employee4_Today",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "5e4c9848-1de5-4ebd-aa53-0a1f0bad06d0",
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "18aa9e7c-0ba0-44ee-82fc-88f0c637c232",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.response.to.have.body(\"1\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"employeeId\": \"4\",\r\n    \"reservedDate\": \"{{current_timestamp}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "registerReservation_Employee3_Today",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "82e92b44-4058-4b03-8cbb-18e988ca1805",
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8f35523-0730-4d87-95cb-0545651e3d9c",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.response.to.have.body(\"2\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"employeeId\": \"3\",\r\n    \"reservedDate\": \"{{current_timestamp}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteReservation_Employee100_Today",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5bcca509-2538-4ec6-a0a5-e7413ac8c61a",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "e754607f-459a-4b9e-9e0e-9164835519f4",
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"employeeId\": \"100\",\r\n    \"reservedDate\": \"{{current_timestamp}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/delete",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteReservation_Employee101_Today",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3b09b256-f62d-40df-bc6a-14a6b22a88b8",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f3424f57-7eff-42d1-8e71-66e56c851bb8",
+						"exec": [
+							"var current_timestamp = new Date();\r",
+							"postman.setEnvironmentVariable(\"current_timestamp\", current_timestamp.toISOString());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"employeeId\": \"101\",\r\n    \"reservedDate\": \"{{current_timestamp}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/delete",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"delete"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"protocolProfileBehavior": {}
