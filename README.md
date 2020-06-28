@@ -17,6 +17,8 @@ This project can serve as a skeleton code for any project which requires the nee
 
 ```
 docker-compose up --build -d
+docker logs -f [spring|kafka]
+
 docker-compose stop
 ```
 
