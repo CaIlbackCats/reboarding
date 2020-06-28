@@ -13,6 +13,15 @@ This project can serve as a skeleton code for any project which requires the nee
 - Register a place on the waiting list
 - Status update of employees on the waiting list
 
+# How to run
+
+```
+docker-compose up --build -d
+docker logs -f [spring|kafka]
+
+docker-compose stop
+```
+
 # API
 
 ## Architecture

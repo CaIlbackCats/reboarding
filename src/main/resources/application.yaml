@@ -15,9 +15,9 @@ employee-path: localhost:8080/api/employees/
 notifications:
   kafka:
     public-topic: employees
-    message: Yout position in queue is
+    message: Your position in queue is
 office:
-  layout-path: office_layout.jpg
+  layout-path: src/main/resources/office_layout.jpg
   chair-path: src/main/resources/img_templates
   picture-extension: .jpg
 
