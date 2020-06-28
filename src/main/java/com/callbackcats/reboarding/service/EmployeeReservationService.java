@@ -57,6 +57,7 @@ public class EmployeeReservationService {
      *
      * @param employee    the employee who requested a reservation
      * @param reservation the reservation to connect to employee
+     * @return the created employee's reservations
      */
     EmployeeReservation saveReservationToEmployee(Employee employee, Reservation reservation) {
         EmployeeReservation employeeReservation;
@@ -74,7 +75,14 @@ public class EmployeeReservationService {
         return employeeReservation;
     }
 
-    public EmployeeReservationData getEmployeeResevationData(Reservation reservation) {
+    /**
+     * <p>Determines the current position in queue
+     * </p>
+     *
+     * @param reservation the reservation to get the data from
+     * @return a data containing the current position in queue and the type of reservation
+     */
+    public EmployeeReservationData getEmployeeReservationData(Reservation reservation) {
         Integer position = (int) findEmployeeReservationsByDate(reservation.getDate())
                 .stream()
                 .map(EmployeeReservation::getReserved)
@@ -83,6 +91,13 @@ public class EmployeeReservationService {
         return new EmployeeReservationData(reservation.getReservationType(), position);
     }
 
+    /**
+     * <p>Saves an image in byte array to the given employee's reservation
+     * </p>
+     *
+     * @param employeeReservation the employee's reservations to modify
+     * @param layout              the image in byte array to save to employee's reservation
+     */
     public void saveEmployeeReservationLayout(EmployeeReservation employeeReservation, byte[] layout) {
         PersonalLayout personalLayout;
         if (employeeReservation.getPersonalLayout() != null) {
@@ -96,6 +111,14 @@ public class EmployeeReservationService {
         log.info("Personal layout saved to employee reservation id:\t" + employeeReservation.getId());
     }
 
+    /**
+     * <p>Finds and returns the path of the image of the employee's reservation
+     * </p>
+     *
+     * @param employeeId      the employee's id
+     * @param reservationDate the date of reservation
+     * @return path of the image
+     */
     public String getEmployeeReservationLayoutPath(String employeeId, LocalDate reservationDate) {
         PersonalLayout personalLayout = findPersonalLayoutByEmployeeIdAndDate(employeeId, reservationDate);
 
@@ -103,6 +126,13 @@ public class EmployeeReservationService {
         return personalLayout.getImagePath();
     }
 
+    /**
+     * <p>Finds and returns the image of the given image url in byte array
+     * </p>
+     *
+     * @param path the path of the image
+     * @return the found image in byte array
+     */
     public byte[] getEmployeeReservationLayout(String path) {
         PersonalLayout personalLayout = personalLayoutRepository.findPersonalLayoutByPath(path).orElseThrow(() -> new NoSuchElementException("There is no such layout for path:\t" + path));
         log.info("Personal layout is found by path:\t" + path);
@@ -224,8 +254,15 @@ public class EmployeeReservationService {
         employeeReservationRepository.delete(employeeReservation);
     }
 
+    /**
+     * <p>Assigns a workstation to the employee who was waiting in queue
+     * </p>
+     *
+     * @param employeeReservation the employee's reservation to modify
+     * @return the modified employee's reservation
+     */
     public EmployeeReservation setQueuedEmployeeWorkstation(EmployeeReservation employeeReservation) {
-        EmployeeReservation changedEmployeeReservation = setEmployeeReservationType(employeeReservation);
+        EmployeeReservation changedEmployeeReservation = updateQueuedEmployeeWorkstation(employeeReservation);
         employeeReservationRepository.save(changedEmployeeReservation);
         employeeReservationRepository.delete(employeeReservation);
         log.info("Workstation attached to employee reservation id:\t" + employeeReservation.getId());
@@ -233,6 +270,10 @@ public class EmployeeReservationService {
         return changedEmployeeReservation;
     }
 
+    /**
+     * <p>Sends a notification to an employee in queue when his/her position has reached the preconfigured place
+     * </p>
+     */
     public void notifyEmployeeStatus() {
         LocalDate today = LocalDate.now();
         List<EmployeeReservation> employeeReservations = employeeReservationRepository.findEmployeeReservationsByDateAndType(today, ReservationType.QUEUED);
@@ -240,11 +281,11 @@ public class EmployeeReservationService {
         Integer employeeNumber = officeOption.getNotifiableEmployeeNumber();
         if (employeeNumber <= employeeReservations.size() - 1) {
             Employee notifyingEmployee = employeeReservations.get(employeeNumber).getEmployee();
-               kafkaMessageHandler.sendNotification(notifyingEmployee.getId(), employeeNumber);
+            kafkaMessageHandler.sendNotification(notifyingEmployee.getId(), employeeNumber);
         }
     }
 
-    private EmployeeReservation setEmployeeReservationType(EmployeeReservation employeeReservation) {
+    private EmployeeReservation updateQueuedEmployeeWorkstation(EmployeeReservation employeeReservation) {
         Employee employee = employeeReservation.getEmployee();
         Reservation reservation = findReservationByDateAndType(LocalDate.now(), ReservationType.RESERVED);
         WorkStation usableWorkstation = findUsableWorkstation();

@@ -56,6 +56,7 @@ public class ReboardingService {
 
     /**
      * <p>Checks the given employee in if there are enough free spaces in the office and has the permission to enter.
+     * employees with vip status are let in under every circumstances
      * </p>
      *
      * @param employeeId the id of the employee
@@ -76,7 +77,7 @@ public class ReboardingService {
     }
 
     /**
-     * <p>Saves an employee's reservation to the given day.
+     * <p>Saves an employee's reservation to the given day, with the image of the reserved workstation
      * Creates reservation if there has been no for that day
      * </p>
      *
@@ -89,10 +90,10 @@ public class ReboardingService {
         Reservation reservation = employeeReservationService.findOrCreateReservationByDate(reservationCreationData.getReservedDate());
         EmployeeReservation employeeReservation = employeeReservationService.saveReservationToEmployee(employee, reservation);
         if (reservation.getReservationType().equals(ReservationType.RESERVED)) {
-            byte[] personalLayout = layoutHandler.createPersonalLayout(employeeReservation.getWorkStation(), employee);
+            byte[] personalLayout = layoutHandler.createPersonalLayout(employeeReservation.getWorkStation(), employee.getInOffice());
             employeeReservationService.saveEmployeeReservationLayout(employeeReservation, personalLayout);
         }
-        return employeeReservationService.getEmployeeResevationData(employeeReservation.getReserved());
+        return employeeReservationService.getEmployeeReservationData(employeeReservation.getReserved());
     }
 
     /**
@@ -150,6 +151,20 @@ public class ReboardingService {
         employeeReservationService.removeEmployeeReservation(employeeReservation);
     }
 
+    /**
+     * <p>Creates today's office layout image in byte array based on the employees' reservations
+     * </p>
+     *
+     * @return byte array representing the current status of the office
+     * <br>
+     * for better visibility the office is colored in gray
+     * <br>
+     * red - workstation is currently occupied
+     * <br>
+     * yellow - workstation has a reservation
+     * <br>
+     * green - workstation is free to reserve
+     */
     public byte[] getCurrentOfficeLayout() {
         LocalDate today = LocalDate.now();
         List<EmployeeReservation> employeeReservations = employeeReservationService.findEmployeeReservationsByDate(today);
@@ -175,7 +190,7 @@ public class ReboardingService {
                 employeeReservationService.notifyEmployeeStatus();
 
             }
-            byte[] personalLayout = layoutHandler.createPersonalLayout(employeeReservation.getWorkStation(), employee);
+            byte[] personalLayout = layoutHandler.createPersonalLayout(employeeReservation.getWorkStation(), employee.getInOffice());
             employeeReservationService.saveEmployeeReservationLayout(employeeReservation, personalLayout);
 
             employeeEntered = true;

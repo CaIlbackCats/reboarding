@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class KafkaMessageHandler {
 
-    @Value("${notifications.kafka.public-topic}")
-    private String publicTopic;
+    //   @Value("${notifications.kafka.public-topic}")
+//    private String publicTopic;
 
     @Value("${notifications.kafka.message}")
     private String message;
@@ -22,10 +22,17 @@ public class KafkaMessageHandler {
         this.kafkaTemplate = kafkaTemplate;
     }
 
+    /**
+     * <p>Sends a predefined message to the given topic
+     * </p>
+     *
+     * @param employeeId the employee's id as the topic
+     * @param position the position to send the notification about
+     */
     public void sendNotification(String employeeId, Integer position) {
         log.info("Message send requested");
         String sendableMessage = message + "\t" + position;
-        kafkaTemplate.send(publicTopic, sendableMessage);
+        kafkaTemplate.send(employeeId, sendableMessage);
     }
 
 /*    @KafkaListener(topics = "employees", groupId = "group_id")

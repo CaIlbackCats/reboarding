@@ -42,6 +42,12 @@ public class LayoutHandler {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
+    /**
+     * <p>Finds the positions of all the workstations on the predefined layout image
+     * </p>
+     *
+     * @return the list of the points of workstations
+     */
     public List<Point> getWorkstationPosition() {
         List<Point> workstationPositions = new ArrayList<>();
         Mat officeLayout = Imgcodecs.imread(officeLayoutPath);
@@ -53,7 +59,7 @@ public class LayoutHandler {
             workstationTemplateList
                     .stream()
                     .map(Path::toString)
-                    .forEach(pathString -> signTemplate(pathString, clonedOfficeLayout, workstationPositions));
+                    .forEach(pathString -> findWorkstationPointsByTemplate(pathString, clonedOfficeLayout, workstationPositions));
 
         } catch (IOException e) {
             log.warn(e.getMessage());
@@ -61,13 +67,27 @@ public class LayoutHandler {
         return workstationPositions;
     }
 
-
+    /**
+     * <p>Creates an office layout image in byte array based on the current status of the workstations
+     * </p>
+     *
+     * @param employeeReservations the list of reservations for the current day
+     * @param dailyLayout          the list of possible workstations for the current day
+     * @return byte array representing the current status of the office
+     * <br>
+     * for better visibility the office is colored in gray
+     * <br>
+     * red - workstation is currently occupied
+     * <br>
+     * yellow - workstation has a reservation
+     * <br>
+     * green - workstation is free to reserve
+     */
     public byte[] createCurrentLayout(List<EmployeeReservation> employeeReservations, List<OfficeWorkstation> dailyLayout) {
         Mat sourceImage = Imgcodecs.imread(officeLayoutPath);
         Mat currentLayout = sourceImage.clone();
 
-        Imgproc.cvtColor(currentLayout, currentLayout, Imgproc.COLOR_RGB2GRAY);
-        Imgproc.cvtColor(currentLayout, currentLayout, Imgproc.COLOR_GRAY2RGB);
+        colorLayoutToGray(currentLayout);
 
         Map<WorkStation, Boolean> takenWorkstations = getTakenWorkstations(employeeReservations);
         takenWorkstations.forEach((key, value) -> drawCircle(key, value, currentLayout));
@@ -82,14 +102,23 @@ public class LayoutHandler {
         return convertMatToByteArray(currentLayout);
     }
 
-    public byte[] createPersonalLayout(WorkStation workStation, Employee employee) {
+    /**
+     * <p>Creates an office layout image in byte array based on requesting employee's status
+     * </p>
+     *
+     * @param workstation the employee's reserved workstation to show on the image
+     * @param inOffice    the employee's current status
+     * @return byte array representing the employee's reserved workstation
+     * red - employee is in the office
+     * yellow - employee is not in the office
+     */
+    public byte[] createPersonalLayout(WorkStation workstation, Boolean inOffice) {
         Mat sourceImage = Imgcodecs.imread(officeLayoutPath);
         Mat currentLayout = sourceImage.clone();
 
-        Imgproc.cvtColor(currentLayout, currentLayout, Imgproc.COLOR_RGB2GRAY);
-        Imgproc.cvtColor(currentLayout, currentLayout, Imgproc.COLOR_GRAY2RGB);
+        colorLayoutToGray(currentLayout);
 
-        drawCircle(workStation, employee.getInOffice(), currentLayout);
+        drawCircle(workstation, inOffice, currentLayout);
 
         return convertMatToByteArray(currentLayout);
     }
@@ -132,7 +161,7 @@ public class LayoutHandler {
     }
 
 
-    private void signTemplate(String workStationTemplatePath, Mat officeLayout, List<Point> workstationPositions) {
+    private void findWorkstationPointsByTemplate(String workStationTemplatePath, Mat officeLayout, List<Point> workstationPositions) {
         Mat workstationTemplate = Imgcodecs.imread(workStationTemplatePath);
         Mat result = new Mat();
         Imgproc.matchTemplate(officeLayout, workstationTemplate, result, Imgproc.TM_CCOEFF_NORMED);
@@ -171,5 +200,10 @@ public class LayoutHandler {
     private void blurLayout(Mat officeLayout, Mat clonedOfficeLayout) {
         Imgproc.GaussianBlur(officeLayout, clonedOfficeLayout, new Size(0, 0), 10);
         Core.addWeighted(officeLayout, 1.5, clonedOfficeLayout, -0.5, 0, clonedOfficeLayout);
+    }
+
+    private void colorLayoutToGray(Mat currentLayout) {
+        Imgproc.cvtColor(currentLayout, currentLayout, Imgproc.COLOR_RGB2GRAY);
+        Imgproc.cvtColor(currentLayout, currentLayout, Imgproc.COLOR_GRAY2RGB);
     }
 }

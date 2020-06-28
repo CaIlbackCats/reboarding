@@ -26,6 +26,15 @@ public class WorkStationService {
         this.workStationRepository = workStationRepository;
     }
 
+    /**
+     * <p>Creates a list of the reservable workstations based on the given parameters
+     * </p>
+     *
+     * @param disabledWorkstations the list of the closed workstations
+     * @param range the minimum respected range within workstations
+     * @param limit the maximum number of workstations that can be reserved
+     * @return the list of all the reservable workstations
+     */
     public List<WorkStation> generateLayoutWithRange(List<PointData> disabledWorkstations, Integer range, Integer limit) {
         List<WorkStation> availableWorkstations = getAvailableWorkstations(disabledWorkstations);
         List<WorkStation> layout = new ArrayList<>();
@@ -39,7 +48,6 @@ public class WorkStationService {
             throw new InvalidLayoutException("Invalid range and place combination");
         }
         log.info("Daily layout created");
-        // LayoutHandler.drawMap(layout);
         return layout;
     }
 
