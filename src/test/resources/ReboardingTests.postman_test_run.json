@@ -1,0 +1,490 @@
+{
+  "id": "fa8a1851-e97a-42bd-92b8-ec999dc40673",
+  "name": "ReboardingTests",
+  "timestamp": "2020-06-28T18:06:48.874Z",
+  "collection_id": "1c3eb137-572a-4d5b-a75a-920b0c56cfc1",
+  "folder_id": 0,
+  "environment_id": "0",
+  "totalPass": 9,
+  "totalFail": 0,
+  "results": [
+    {
+      "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+      "name": "registerEmployees",
+      "time": 23,
+      "responseCode": {
+        "code": 200,
+        "name": "OK"
+      },
+      "tests": {},
+      "testPassFailCounts": {},
+      "times": [
+        284,
+        97,
+        96,
+        93,
+        94,
+        97,
+        95,
+        108,
+        106,
+        99,
+        109,
+        135,
+        103,
+        102,
+        114,
+        116,
+        96,
+        117,
+        33,
+        25,
+        24,
+        36,
+        37,
+        28,
+        26,
+        23
+      ],
+      "allTests": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "8c570c62-0e16-4ff2-ba0a-7d6e3adb1ad8",
+      "name": "getEmployeeLayoutPath - ID101",
+      "url": "http://localhost:8080/api/employees/101?date=2020-06-28",
+      "time": 19,
+      "responseCode": {
+        "code": 200,
+        "name": "OK"
+      },
+      "tests": {
+        "Status code is 200 and URL should be in response": true
+      },
+      "testPassFailCounts": {
+        "Status code is 200 and URL should be in response": {
+          "pass": 1,
+          "fail": 0
+        }
+      },
+      "times": [
+        19
+      ],
+      "allTests": [
+        {
+          "Status code is 200 and URL should be in response": true
+        }
+      ]
+    },
+    {
+      "id": "13bde4e9-91e7-47a8-bc5d-94743fd02991",
+      "name": "getEmployeeLayoutPath - ID126",
+      "url": "http://localhost:8080/api/employees/126?date=2020-06-28",
+      "time": 9,
+      "responseCode": {
+        "code": 400,
+        "name": "Bad Request"
+      },
+      "tests": {
+        "Status code is 400": true
+      },
+      "testPassFailCounts": {
+        "Status code is 400": {
+          "pass": 1,
+          "fail": 0
+        }
+      },
+      "times": [
+        9
+      ],
+      "allTests": [
+        {
+          "Status code is 400": true
+        }
+      ]
+    },
+    {
+      "id": "35a5f676-8d30-4021-b4b7-d4826b0f522f",
+      "name": "getEmployeeLayout - ID101",
+      "url": "http://localhost:8080/api/employees/layout/4d7941a8-177a-4509-9f16-cfb089724df5",
+      "time": 16,
+      "responseCode": {
+        "code": 200,
+        "name": "OK"
+      },
+      "tests": {
+        "Status code is 200 and image should be in response": true
+      },
+      "testPassFailCounts": {
+        "Status code is 200 and image should be in response": {
+          "pass": 1,
+          "fail": 0
+        }
+      },
+      "times": [
+        16
+      ],
+      "allTests": [
+        {
+          "Status code is 200 and image should be in response": true
+        }
+      ]
+    },
+    {
+      "id": "4b41442f-1059-4ded-8d42-0d98c8c50f4b",
+      "name": "getDailyLayout",
+      "url": "http://localhost:8080/api/layout",
+      "time": 93,
+      "responseCode": {
+        "code": 200,
+        "name": "OK"
+      },
+      "tests": {
+        "Status code is 200 and image should be in response": true
+      },
+      "testPassFailCounts": {
+        "Status code is 200 and image should be in response": {
+          "pass": 1,
+          "fail": 0
+        }
+      },
+      "times": [
+        93
+      ],
+      "allTests": [
+        {
+          "Status code is 200 and image should be in response": true
+        }
+      ]
+    },
+    {
+      "id": "02353ec3-f6c1-496d-be4a-d46452767329",
+      "name": "enterToOffice - ID101",
+      "url": "http://localhost:8080/api/entry/101",
+      "time": 107,
+      "responseCode": {
+        "code": 202,
+        "name": "Accepted"
+      },
+      "tests": {
+        "Status code is 202": true
+      },
+      "testPassFailCounts": {
+        "Status code is 202": {
+          "pass": 1,
+          "fail": 0
+        }
+      },
+      "times": [
+        107
+      ],
+      "allTests": [
+        {
+          "Status code is 202": true
+        }
+      ]
+    },
+    {
+      "id": "0c0423cf-519c-4d78-9f7d-8064572a0513",
+      "name": "enterToOffice - ID120",
+      "url": "http://localhost:8080/api/entry/120",
+      "time": 11,
+      "responseCode": {
+        "code": 401,
+        "name": "Unauthorized"
+      },
+      "tests": {
+        "Status code is 401": true
+      },
+      "testPassFailCounts": {
+        "Status code is 401": {
+          "pass": 1,
+          "fail": 0
+        }
+      },
+      "times": [
+        11
+      ],
+      "allTests": [
+        {
+          "Status code is 401": true
+        }
+      ]
+    },
+    {
+      "id": "cfe6526d-31b9-47af-95a1-b86f13b0e3ef",
+      "name": "getStatus - ID120",
+      "url": "http://localhost:8080/api/status/120",
+      "time": 9,
+      "responseCode": {
+        "code": 200,
+        "name": "OK"
+      },
+      "tests": {
+        "Status code is 200 and position should be in response": true
+      },
+      "testPassFailCounts": {
+        "Status code is 200 and position should be in response": {
+          "pass": 1,
+          "fail": 0
+        }
+      },
+      "times": [
+        9
+      ],
+      "allTests": [
+        {
+          "Status code is 200 and position should be in response": true
+        }
+      ]
+    },
+    {
+      "id": "81e17989-8565-4308-ba97-3c2c2cbf9f97",
+      "name": "exitFromOffice - ID101",
+      "url": "http://localhost:8080/api/exit/101",
+      "time": 37,
+      "responseCode": {
+        "code": 202,
+        "name": "Accepted"
+      },
+      "tests": {
+        "Status code is 202": true
+      },
+      "testPassFailCounts": {
+        "Status code is 202": {
+          "pass": 1,
+          "fail": 0
+        }
+      },
+      "times": [
+        37
+      ],
+      "allTests": [
+        {
+          "Status code is 202": true
+        }
+      ]
+    },
+    {
+      "id": "462b57a5-a423-4e7d-bd6b-e199d13f4a86",
+      "name": "enterToOffice - ID120",
+      "url": "http://localhost:8080/api/entry/120",
+      "time": 10,
+      "responseCode": {
+        "code": 401,
+        "name": "Unauthorized"
+      },
+      "tests": {
+        "Status code is 401": true
+      },
+      "testPassFailCounts": {
+        "Status code is 401": {
+          "pass": 1,
+          "fail": 0
+        }
+      },
+      "times": [
+        10
+      ],
+      "allTests": [
+        {
+          "Status code is 401": true
+        }
+      ]
+    },
+    {
+      "id": "06da0a0f-69f2-4f91-bc48-b4959d159fe4",
+      "name": "enterToOffice - ID4",
+      "url": "http://localhost:8080/api/entry/4",
+      "time": 60156,
+      "responseCode": {
+        "code": 500,
+        "name": "Internal Server Error"
+      },
+      "tests": {},
+      "testPassFailCounts": {},
+      "times": [
+        60156
+      ],
+      "allTests": [
+        {}
+      ]
+    }
+  ],
+  "count": 1,
+  "totalTime": 62760,
+  "collection": {
+    "requests": [
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "e45988be-c8a4-4f54-a620-eca45a69440b",
+        "method": "POST"
+      },
+      {
+        "id": "8c570c62-0e16-4ff2-ba0a-7d6e3adb1ad8",
+        "method": "GET"
+      },
+      {
+        "id": "13bde4e9-91e7-47a8-bc5d-94743fd02991",
+        "method": "GET"
+      },
+      {
+        "id": "35a5f676-8d30-4021-b4b7-d4826b0f522f",
+        "method": "GET"
+      },
+      {
+        "id": "4b41442f-1059-4ded-8d42-0d98c8c50f4b",
+        "method": "GET"
+      },
+      {
+        "id": "02353ec3-f6c1-496d-be4a-d46452767329",
+        "method": "POST"
+      },
+      {
+        "id": "0c0423cf-519c-4d78-9f7d-8064572a0513",
+        "method": "POST"
+      },
+      {
+        "id": "cfe6526d-31b9-47af-95a1-b86f13b0e3ef",
+        "method": "GET"
+      },
+      {
+        "id": "81e17989-8565-4308-ba97-3c2c2cbf9f97",
+        "method": "POST"
+      },
+      {
+        "id": "462b57a5-a423-4e7d-bd6b-e199d13f4a86",
+        "method": "POST"
+      },
+      {
+        "id": "06da0a0f-69f2-4f91-bc48-b4959d159fe4",
+        "method": "POST"
+      }
+    ]
+  }
+}
