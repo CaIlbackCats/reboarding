@@ -1,4 +1,4 @@
-FROM ubuntu:18.04 as build-opencv
+FROM ubuntu:18.04
 
 RUN apt-get update && apt-get install -y build-essential cmake curl default-jdk libgtk2.0-dev \
     pkg-config libv4l-dev libavcodec-dev libavformat-dev libswscale-dev python-dev \
@@ -25,20 +25,3 @@ RUN cd opencv-4.3.0/build && make -j2
 RUN cd opencv-4.3.0/build && make install
 RUN mv /opencv-4.3.0/build/bin/opencv-430.jar /usr/lib
 RUN mv /opencv-4.3.0/build/lib/libopencv_java430.so /usr/lib
-
-# TODO: fix java build + entrypoint
-
-# copy all from directory in to the image?
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
-COPY src src
-
-RUN ./mvnw test && ./mvnw package -DskipTests
-EXPOSE 8080
-CMD java -jar target/reboarding-0.0.1-SNAPSHOT.jar
-
-#RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
-
-
-#CMD bin/sh
