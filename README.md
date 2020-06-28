@@ -16,8 +16,7 @@ This project can serve as a skeleton code for any project which requires the nee
 # How to run
 
 ```
-docker build .
-docker run -p 8080:8080 [container_id]
+docker-compose up --build -d
 ```
 
 # API
