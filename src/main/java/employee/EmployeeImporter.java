@@ -14,8 +14,7 @@ import java.util.List;
 @Slf4j
 public class EmployeeImporter {
 
-
-    private static final String PATH_TO_EMPLOYEE_LIST = "src\\main\\resources\\employees.txt";
+    private static final String PATH_TO_EMPLOYEE_LIST = "src/main/resources/employees.txt";
 
     public List<Employee> importEmployees() {
         List<Employee> employees = new ArrayList<>();
