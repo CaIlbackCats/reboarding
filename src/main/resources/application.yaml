@@ -12,6 +12,9 @@ spring:
 
 employee-path: localhost:8080/api/employees/
 
+kafka-options:
+  bootstrap-server: kafka:9092
+
 notifications:
   kafka:
     public-topic: employees
@@ -31,6 +34,7 @@ data-initialize:
       y: 640
     max-position:
       x: 1270
+
 
 
 
