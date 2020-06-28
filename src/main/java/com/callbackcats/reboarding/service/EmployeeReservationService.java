@@ -162,8 +162,8 @@ public class EmployeeReservationService {
     public void updateEmployeesCanEnterOffice() {
         LocalDate today = LocalDate.now();
         OfficeOptions officeOptions = officeOptionsService.findOfficeOptionsByReservationDate(today);
-        Integer employeesInOffice = employeeService.getNumberOfEmployeesInOffice();
-        int freeSpace = officeOptions.getLimit() - employeesInOffice;
+        int reservedCount = findReservationByDateAndType(today, ReservationType.RESERVED).getReservedEmployees().size();
+        int freeSpace = officeOptions.getLimit() - reservedCount;
         if (freeSpace > 0) {
             Reservation reservation = findReservationByDateAndType(today, ReservationType.QUEUED);
             List<EmployeeReservation> reservedEmployees = reservation.getReservedEmployees();
