@@ -1,0 +1,649 @@
+{
+	"info": {
+		"_postman_id": "1c3eb137-572a-4d5b-a75a-920b0c56cfc1",
+		"name": "ReboardingTests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "registerEmployees",
+			"item": [
+				{
+					"name": "registerEmployees",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "02bfa44f-8216-422d-9e9a-a60689eacec8",
+								"exec": [
+									"const moment = require('moment');\r",
+									"let current_date = moment().format(\"YYYY-MM-DD\");\r",
+									"pm.globals.set(\"current_date\",moment().format(\"YYYY-MM-DD\"))\r",
+									"\r",
+									"let index = pm.environment.get(\"register_index\") || 100;\r",
+									"if (index < 125) {\r",
+									"    postman.setNextRequest(\"registerEmployees\");\r",
+									"    index++;\r",
+									"    pm.environment.set(\"register_index\", index);\r",
+									"}\r",
+									"else {\r",
+									"    pm.environment.set(\"register_index\", 100);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "e8d165dc-53e7-4bd1-82ca-7c71e30589a9",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"employeeId\": \"{{register_index}}\",\r\n    \"reservedDate\": \"{{current_date}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "testLayouts",
+			"item": [
+				{
+					"name": "getEmployeeLayoutPath - ID101",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4e37bec2-bca7-440f-b6af-ac0a8610be87",
+								"exec": [
+									"const moment = require('moment');\r",
+									"let queryParams = '?date='+ moment().format(\"YYYY-MM-DD\");\r",
+									"pm.globals.set(\"query_params\",queryParams)"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "e9728dfc-f852-4327-acec-1c51fea29b53",
+								"exec": [
+									"pm.test(\"Status code is 200 and URL should be in response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    let url = responseBody;\r",
+									"    pm.globals.set(\"personal_layout_url\", url);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/employees/101{{query_params}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"employees",
+								"101{{query_params}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getEmployeeLayoutPath - ID126",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b6ea696a-75f0-43e6-a0e7-14265d86e9b8",
+								"exec": [
+									"const moment = require('moment');\r",
+									"let queryParams = '?date='+ moment().format(\"YYYY-MM-DD\");\r",
+									"pm.globals.set(\"query_params\",queryParams)"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "3abcc6d9-4a9c-4781-96de-ec99683e13a0",
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/employees/126{{query_params}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"employees",
+								"126{{query_params}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getEmployeeLayout - ID101",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "197f7380-c131-4990-9806-32485a1740b6",
+								"exec": [
+									"pm.test(\"Status code is 200 and image should be in response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"    pm.response.to.be.header(\"Content-Type\", \"image/jpeg\");\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{personal_layout_url}}",
+							"host": [
+								"{{personal_layout_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getDailyLayout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0a344ab7-8cff-4979-9dad-03e7a734d03a",
+								"exec": [
+									"pm.test(\"Status code is 200 and image should be in response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"    pm.response.to.be.header(\"Content-Type\", \"image/jpeg\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/layout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"layout"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "testQueue",
+			"item": [
+				{
+					"name": "enterToOffice - ID101",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4f44b84a-0df4-44e9-beee-0e857fe26683",
+								"exec": [
+									"pm.test(\"Status code is 202\", function () {\r",
+									"    pm.response.to.have.status(202);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/entry/101",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"entry",
+								"101"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "enterToOffice - ID120",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "faeb4fd3-ba56-4181-985e-52b4b5af8e5b",
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/entry/120",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"entry",
+								"120"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getStatus - ID120",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0eec5e33-0c53-4ca0-b4c8-bdafa5164127",
+								"exec": [
+									"pm.test(\"Status code is 200 and position should be in response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.body(\"4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/status/120",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"status",
+								"120"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "exitFromOffice - ID101",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ce9f76c5-ba9c-4c63-8cb1-8703653a4e79",
+								"exec": [
+									"pm.test(\"Status code is 202\", function () {\r",
+									"    pm.response.to.have.status(202);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/exit/101",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"exit",
+								"101"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "enterToOffice - ID120",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "588c0977-9725-4431-afd5-a09a48dc00b9",
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/entry/120",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"entry",
+								"120"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "enterToOffice - ID4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e041b085-3bc2-4d92-879d-a625eeed8f42",
+								"exec": [
+									"pm.test(\"Status code is 202\", function () {\r",
+									"    pm.response.to.have.status(202);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/entry/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"entry",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getStatus - ID120",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d9843347-f1ee-4625-964d-de29818dda97",
+								"exec": [
+									"pm.test(\"Status code is 200 and position should be in response\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.body(\"3\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/status/120",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"status",
+								"120"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "testVIP",
+			"item": [
+				{
+					"name": "enterToOffice - ID250 - VIP",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9b75843a-3d15-4c74-b776-5d6d965d1f7c",
+								"exec": [
+									"pm.test(\"Status code is 202\", function () {\r",
+									"    pm.response.to.have.status(202);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/entry/250",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"entry",
+								"250"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "exitFromOffice - ID250 - VIP",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b989c291-02d2-450e-8f97-28414cb62752",
+								"exec": [
+									"pm.test(\"Status code is 202\", function () {\r",
+									"    pm.response.to.have.status(202);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/exit/250",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"exit",
+								"250"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "exitFromOffice - ID250 - VIP",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "fe921489-1030-4b80-a1bd-17621df8138e",
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/exit/250",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"exit",
+								"250"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "0183dc2c-aab4-4bdb-badc-12c4ac1596a5",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "2bad1332-4d78-4169-b71b-1a1fc7e75c3c",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
