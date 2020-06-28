@@ -1,11 +1,14 @@
 FROM tlaura/reboarding:latest
 
-# copy all from directory in to the image
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
-COPY src src
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
 
-RUN ./mvnw test && ./mvnw package -DskipTests
-EXPOSE 8080
-ENTRYPOINT java -jar target/reboarding-0.0.1-SNAPSHOT.jar
+# install maven dependency packages
+COPY pom.xml /usr/src/app
+COPY mvnw /usr/src/app
+COPY .mvn /usr/src/app/.mvn
+RUN ./mvnw dependency:resolve && ./mvnw dependency:resolve-plugins && rm -rf target
+
+# copy other source files and create jar
+COPY src /usr/src/app/src
+RUN ./mvnw package -DskipTests
