@@ -118,6 +118,7 @@ public class EmployeeReservationService {
      * @param employeeId      the employee's id
      * @param reservationDate the date of reservation
      * @return path of the image
+     * @throws NoSuchElementException when there is no existing layout
      */
     public String getEmployeeReservationLayoutPath(String employeeId, LocalDate reservationDate) {
         PersonalLayout personalLayout = findPersonalLayoutByEmployeeIdAndDate(employeeId, reservationDate);

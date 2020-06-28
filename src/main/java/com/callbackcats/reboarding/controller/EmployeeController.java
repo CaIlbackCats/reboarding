@@ -30,9 +30,16 @@ public class EmployeeController {
     public ResponseEntity<String> getEmployeeLayoutPathByDate(@PathVariable String employeeId, @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
 
         log.info("Employee reservation layout path is requested");
-        String path = employeeReservationService.getEmployeeReservationLayoutPath(employeeId, date);
-        String url = employeePath + "layout/" + path;
-        return new ResponseEntity<>(url, HttpStatus.OK);
+        ResponseEntity<String> responseEntity;
+        try {
+            String path = employeeReservationService.getEmployeeReservationLayoutPath(employeeId, date);
+            String url = employeePath + "layout/" + path;
+            responseEntity = new ResponseEntity<>(url, HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            responseEntity = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        return responseEntity;
     }
 
     @GetMapping(value = "/layout/{layoutPath}", produces = MediaType.IMAGE_JPEG_VALUE)
@@ -40,7 +47,7 @@ public class EmployeeController {
         log.info("Employee reservation layout  is requested");
         ResponseEntity<byte[]> responseEntity;
         try {
-           byte [] layout = employeeReservationService.getEmployeeReservationLayout(layoutPath);
+            byte[] layout = employeeReservationService.getEmployeeReservationLayout(layoutPath);
             responseEntity = new ResponseEntity<>(layout, HttpStatus.OK);
         } catch (NoSuchElementException e) {
             responseEntity = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

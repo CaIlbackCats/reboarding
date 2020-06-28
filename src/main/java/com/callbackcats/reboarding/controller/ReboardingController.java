@@ -25,45 +25,45 @@ public class ReboardingController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity registerReservation(@RequestBody ReservationCreationData reservation) {
+    public ResponseEntity<Integer> registerReservation(@RequestBody ReservationCreationData reservation) {
+        ResponseEntity<Integer> responseEntity;
         log.info("Reservation is requested by employee id:\t" + reservation.getEmployeeId());
-
         boolean hasEmployeeAlreadyReservedDay = reboardingService.isEmployeeReservedGivenDay(reservation.getEmployeeId(), reservation.getReservedDate());
-        if (hasEmployeeAlreadyReservedDay) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-
         EmployeeReservationData employeeReservation = reboardingService.handleReservationRequest(reservation);
-
-        if (ReservationType.valueOf(employeeReservation.getReservationType()).equals(ReservationType.QUEUED)) {
-            return new ResponseEntity<>(employeeReservation.getPosition(), HttpStatus.OK);
+        if (hasEmployeeAlreadyReservedDay) {
+            responseEntity = new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } else if (ReservationType.valueOf(employeeReservation.getReservationType()).equals(ReservationType.QUEUED)) {
+            responseEntity = new ResponseEntity<>(employeeReservation.getPosition(), HttpStatus.OK);
+        } else {
+            responseEntity = new ResponseEntity<>(HttpStatus.CREATED);
         }
-
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return responseEntity;
     }
 
     @GetMapping("/status/{employeeId}")
     public ResponseEntity<Integer> getStatus(@PathVariable String employeeId) {
-
+        ResponseEntity<Integer> responseEntity;
         log.info("Current status is requested by employeeId:\t" + employeeId);
         try {
             Integer currentPosition = reboardingService.getStatus(employeeId);
-            return new ResponseEntity<>(currentPosition, HttpStatus.OK);
+            responseEntity = new ResponseEntity<>(currentPosition, HttpStatus.OK);
         } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            responseEntity = new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
+        return responseEntity;
     }
 
     @PostMapping("/entry/{employeeId}")
     public ResponseEntity<Boolean> enterToOffice(@PathVariable String employeeId) {
+        ResponseEntity<Boolean> responseEntity;
         log.info("Employee by id:\t" + employeeId + " requested to enter to office");
 
         if (reboardingService.enterEmployee(employeeId)) {
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            responseEntity = new ResponseEntity<>(HttpStatus.ACCEPTED);
+        } else {
+            responseEntity = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        return responseEntity;
     }
 
     @PostMapping("/exit/{employeeId}")
@@ -81,14 +81,16 @@ public class ReboardingController {
 
     @DeleteMapping("/delete")
     public ResponseEntity<Void> removeReservation(@RequestBody ReservationCreationData reservation) {
+        ResponseEntity<Void> responseEntity;
         log.info("Employee by id:\t" + reservation.getEmployeeId() + " requested to remove reservation for the day:\t" + reservation.getReservedDate());
         try {
             reboardingService.removeReservation(reservation.getEmployeeId(), reservation.getReservedDate());
-            return new ResponseEntity<>(HttpStatus.OK);
+            responseEntity = new ResponseEntity<>(HttpStatus.OK);
         } catch (NoSuchElementException e) {
             log.info("Employee by id:\t" + reservation.getEmployeeId() + " do not have reservation for the day:\t" + reservation.getReservedDate());
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            responseEntity = new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        return responseEntity;
     }
 
     @GetMapping(value = "/layout", produces = MediaType.IMAGE_JPEG_VALUE)
@@ -99,7 +101,6 @@ public class ReboardingController {
 
         return new ResponseEntity<>(layout, HttpStatus.OK);
     }
-
 
 
 }
