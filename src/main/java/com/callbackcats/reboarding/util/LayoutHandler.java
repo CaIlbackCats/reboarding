@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @Component
@@ -49,16 +50,20 @@ public class LayoutHandler {
      * @return the list of the points of workstations
      */
     public List<Point> getWorkstationPosition() {
-        List<Point> workstationPositions = new ArrayList<>();
+        // List<Point> workstationPositions = new ArrayList<>();
+        List<Point> workstationPositions = new CopyOnWriteArrayList<>();
+        // List<Point> synchronizedList = Collections.synchronizedList(workstationPositions);
         Mat officeLayout = Imgcodecs.imread(officeLayoutPath);
         Mat clonedOfficeLayout = officeLayout.clone();
         blurLayout(officeLayout, clonedOfficeLayout);
         try {
             Path officeChairTemplate = Paths.get(officeChairTemplatePath);
             List<Path> workstationTemplateList = Files.find(officeChairTemplate, Integer.MAX_VALUE, (path, attribute) -> attribute.isRegularFile()).collect(Collectors.toList());
+
             workstationTemplateList
                     .stream()
                     .map(Path::toString)
+                    .parallel()
                     .forEach(pathString -> findWorkstationPointsByTemplate(pathString, clonedOfficeLayout, workstationPositions));
 
         } catch (IOException e) {

@@ -103,7 +103,6 @@ public class DataInitializer {
         workStationRepository.saveAll(workStations);
         log.info("Workstations initialized");
         log.info("number of workstations:\t" + workstationPositions.size());
-
         return workstationPositions;
     }
 
