@@ -13,6 +13,13 @@ This project can serve as a skeleton code for any project which requires the nee
 - Register a place on the waiting list
 - Status update of employees on the waiting list
 
+# How to run
+
+```
+docker build .
+docker run -p 8080:8080 [container_id]
+```
+
 # API
 
 ## Architecture

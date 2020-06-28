@@ -28,14 +28,17 @@ RUN mv /opencv-4.3.0/build/lib/libopencv_java430.so /usr/lib
 
 # TODO: fix java build + entrypoint
 
+# copy all from directory in to the image?
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
-COPY office_layout.jpg office_layout.jpg
 
-RUN ./mvnw install -DskipTests
-RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+RUN ./mvnw test && ./mvnw package -DskipTests
+EXPOSE 8080
+CMD java -jar target/reboarding-0.0.1-SNAPSHOT.jar
+
+#RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
 
-CMD bin/sh
+#CMD bin/sh
