@@ -102,11 +102,13 @@ Implemented 8 RESTful endpoints for HTTP requests. They send and recieve message
 
 
 
+
+
 #### Reservation Layout Path for Employee by Date:
 
 - **URL**
 
-  /api/employees/:employeeId
+  /api/employees/{employeeId}?=date={yyyy-mm-dd}
 
 - **Method:**
 
@@ -118,6 +120,8 @@ Implemented 8 RESTful endpoints for HTTP requests. They send and recieve message
 
   `employeeId=[integer]`
 
+  `yyyy-mm-dd=[localDate]`
+
 - **Success Response:**
 
   - **Code:** 200 OK
@@ -125,7 +129,6 @@ Implemented 8 RESTful endpoints for HTTP requests. They send and recieve message
 - **Error Response:**
 
   - **Code:** 400 BAD_REQUEST
-
     
 
 #### Get Reservation Layout:
@@ -159,7 +162,7 @@ Implemented 8 RESTful endpoints for HTTP requests. They send and recieve message
 
   **Required:**
 
-  `employeeId=[integer]`
+  `employeeId=[string]`
 
 - **Success Response:**
 
@@ -185,7 +188,7 @@ Implemented 8 RESTful endpoints for HTTP requests. They send and recieve message
 
   **Required:**
 
-  `employeeId=[integer]`
+  `employeeId=[string]`
 
 - **Success Response:**
 
@@ -211,7 +214,7 @@ Implemented 8 RESTful endpoints for HTTP requests. They send and recieve message
 
   **Required:**
 
-  `employeeId=[integer]`
+  `employeeId=[string]`
 
 - **Success Response:**
 
