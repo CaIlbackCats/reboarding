@@ -42,7 +42,7 @@ Build the image :
 
 To see the logs for Spring or Kafka: 
 
-``` docker logs -f [spring|kafka] ```
+``` docker-compose logs -f [spring|kafka] ```
 
 To stop the container:
 
