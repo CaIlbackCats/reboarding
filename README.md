@@ -61,6 +61,7 @@ Java Spring, H2 db
 The project is divided into layers:
 
 - Service layer - service package contains service classes with business logic
+- Config - contains Kafka configurations
 - DTO layer - dto package containing dto classes
 - Repository - contains repository classes
 - Entity layers
